@@ -5,91 +5,172 @@
 
 ---
 
-## 📌 Visão Geral do Projeto
+## 👥 Equipe e Integrantes
 
-Enquanto o e-commerce conhece cada clique e intenção de compra do usuário em tempo real, o varejo físico tradicional opera sob uma **cegueira analítica**: sabe-se quantas pessoas entram pelas portas do shopping, mas não quem consome, qual é o ticket médio real, quais os horários de pico por categoria ou como os clientes transitam entre diferentes marcas.
-
-O **Shopping Analytics & Loyalty Hub** resolve essa dor através de um **ecossistema cooperativo tripartite** fundamentado em dados fiscais reais (**NFC-e / Cupom Fiscal com CPF**), eliminando a necessidade de sensores físicos invasivos ou câmeras de rastreamento.
+* **Equipe:** Equipe 22 — Ho-Ho
+* **Integrantes:**
+  * Lucas Anjos
+  * Victor Augusto
+  * Walisson Kupertino
+  * Breno Brito
 
 ---
 
-## 🎯 Proposta de Valor Tripartite (Ganha-Ganha-Ganha)
+## 📌 Contextualização e Proposta do Projeto
 
-```
-                    ┌──────────────────────────────┐
-                    │      Consumidor Final        │
-                    │ (Estacionamento Grátis/Clube)│
-                    └──────────────┬───────────────┘
-                                   │ Cadastra NFC-e
-                                   ▼
-┌──────────────────────────┐  API REST  ┌──────────────────────────┐
-│   Lojistas do Shopping   │◄──────────►│  Administração Shopping  │
-│ (Benchmarking/Campanhas) │            │ (Visão Macro/Tenant Mix) │
-└──────────────────────────┘            └──────────────────────────┘
-```
+### 1. Contexto
+Os shopping centers consolidaram-se como hubs de convivência, lazer e experiência. No entanto, enquanto o comércio eletrônico (e-commerce) possui visibilidade granular de cada clique, busca e carrinho abandonado em tempo real, o varejo físico tradicional opera sob uma histórica **cegueira analítica**: sabe-se quantas pessoas entram pelas portas do empreendimento, mas não quem realmente compra, qual o ticket médio real por categoria ou como o fluxo de clientes transita entre diferentes lojas.
 
-1. **Para o Consumidor:**
-   * **Gancho de Atração Principal:** Isenção de taxa de estacionamento ao atingir meta de consumo diário (ex: R$ 150,00 acumulados em compras no mesmo dia).
-   * Clube de benefícios, cashback e ofertas hiperpersonalizadas.
-   * *Privacy by Design:* Consentimento explícito e transparência sob a LGPD.
+### 2. Problemática
+* **Para o Shopping:** Falta de dados transacionais reais para otimizar o mix de lojas (*Tenant Mix*), precificar mídias indoor e antecipar tendências de consumo.
+* **Para os Lojistas:** Dificuldade em conhecer o perfil do público do shopping, dependência de campanhas genéricas e ausência de ferramentas acessíveis para ações de atração direcionadas.
+* **Para o Consumidor:** Fricção no pagamento de tarifas de estacionamento e excesso de propagandas genéricas sem relevância.
 
-2. **Para os Lojistas (Portal Web do Lojista):**
-   * **Benchmarking Setorial:** Comparação do desempenho da loja contra a média da categoria (ex: ticket médio próprio vs. mediana do setor de calçados).
-   * **Afinidade de Cestas (Cross-Shopping):** Mapeamento de quais outras categorias os seus clientes consomem no shopping.
-   * **Campanhas Direcionadas em 1 Clique:** Disparo de cupons via app do shopping para audiências qualificadas (ex: clientes inativos há 60 dias) sem violação de dados pessoais.
-   * **CRM Próprio:** Métricas de recompra e retenção da sua própria base de clientes.
+### 3. Justificativa
+Tentativas de rastreamento físico (Wi-Fi, Beacons ou câmeras com reconhecimento facial) enfrentam barreiras técnicas severas (*MAC Address Randomization* no iOS/Android), alto custo de hardware e alto risco legal perante a **LGPD**. 
+A nossa solução resolve o problema na fonte: adota o princípio de **Privacy by Design**, onde o próprio consumidor fornece voluntariamente seus dados fiscais (**NFC-e / Cupom Fiscal com CPF**) em troca de um benefício imediato e de altíssimo valor percebido: **isenção da tarifa de estacionamento** e participação em clube de vantagens.
 
-3. **Para a Administração do Shopping (Portal Corporativo):**
-   * Mapeamento do faturamento real por andar, corredor e segmento.
-   * Otimização estratégica do mix de lojas (*Tenant Mix*).
-   * Monetização B2B por meio de assinaturas de módulos analíticos e taxas de conversão de campanhas.
+### 4. Objetivo Geral
+Desenvolver uma plataforma cooperativa e integrada de inteligência de dados transacionais para shopping centers, conectando consumidores, lojistas e administração em um ecossistema ganha-ganha-ganha baseado em ingestão fiscal.
+
+### 5. Objetivos Específicos
+* Implementar o cadastro e processamento de notas fiscais eletrônicas (NFC-e) associadas ao CPF do cliente via API REST.
+* Automatizar o cálculo diário de consumo do consumidor, concedendo a isenção de estacionamento ao atingir a meta estipulada (ex: R$ 150,00 no dia).
+* Disponibilizar aos lojistas um portal web com métricas de *benchmarking* setorial (ticket médio da loja vs. média da categoria) e ferramenta de disparo de campanhas direcionadas sem violação de sigilo concorrencial.
+* Prover à administração do shopping um painel executivo com visão macro do faturamento real, horários de pico por setor e conversão do programa de estacionamento.
+
+---
+
+## 🎲 Tecnologia da Roleta: API REST
+
+A prática sorteada para o nosso projeto foi a **API REST**, que atua como o **coração integrador de toda a solução**:
+
+* **Desacoplamento Completo Front ↔ Back:** O backend Java 21 / Spring Boot 3 expõe uma API REST pura e *stateless*, consumida de forma reativa pelo frontend em React + TypeScript.
+* **Ingestão Fiscal Padronizada:** A captura de notas opera via endpoints REST sem exigir que lojistas instalem plugins ou alterem seus sistemas de ponto de venda (PDV).
+* **Contratos Tipados com OpenAPI/Swagger:** A API é integralmente documentada com a especificação OpenAPI (SpringDoc), permitindo geração automática de contratos de dados e tipagens espelhadas no TypeScript.
+* **Segurança e RBAC:** Endpoints protegidos por autenticação **JWT (JSON Web Token)** com controle de acesso granular baseado em perfis (`CONSUMIDOR`, `LOJISTA`, `ADMIN_SHOPPING`) e isolamento lógico *multi-tenant*.
 
 ---
 
 ## 🛠️ Stack Tecnológica e Arquitetura
 
-O projeto adota uma arquitetura de **Monólito Modular** (com módulos isolados por domínio: `fiscal`, `beneficios` e `analytics` seguindo **Clean Architecture** e **SOLID**), evitando a complexidade prematura de microsserviços distribuídos sem abrir mão de desacoplamento.
+O projeto adota a arquitetura de **Monólito Modular** (módulos isolados por domínio: `fiscal`, `beneficios` e `analytics`), aplicando princípios de **Clean Architecture**, **SOLID** (com foco no *Dependency Inversion Principle*) e **Domain-Driven Design (DDD)**.
 
-### Base Atual (MVP Funcional)
+```
+┌───────────────────────────────────────────────────────────────┐
+│                      FRONTEND (Vite / React)                  │
+│       Portal Consumidor  │  Portal Lojista  │  Portal Admin   │
+└───────────────────────────────┬───────────────────────────────┘
+                                │ HTTPS / JSON (API REST)
+┌───────────────────────────────▼───────────────────────────────┐
+│                   BACKEND (Spring Boot 3 / Java 21)           │
+│  ┌──────────────────┐ ┌──────────────────┐ ┌───────────────┐  │
+│  │  Módulo Fiscal   │ │ Módulo Benefício │ │ Mód. Analytics│  │
+│  └─────────┬────────┘ └─────────┬────────┘ └───────┬───────┘  │
+└────────────┼────────────────────┼──────────────────┼──────────┘
+             ▼                    ▼                  ▼
+┌───────────────────────────────────────────────────────────────┐
+│              PostgreSQL (Migrations via Flyway)               │
+└───────────────────────────────────────────────────────────────┘
+```
 
-* **Backend:**
-  * **Java 21 LTS** + **Spring Boot 3.x:** Aproveitando *Records*, *Pattern Matching* e **Virtual Threads (Project Loom)** para alta eficiência em operações I/O.
-  * **PostgreSQL + Flyway:** Banco relacional robusto com *migrations* versionadas em Git (paridade entre desenvolvimento e produção, sem depender de `ddl-auto`).
-  * **Spring Security + JWT:** Controle de acesso baseado em perfis (`CONSUMIDOR`, `LOJISTA`, `ADMIN_SHOPPING`) e isolamento lógico *multi-tenant*.
-  * **SpringDoc OpenAPI (Swagger):** Documentação viva da API REST e geração de contratos tipados para o frontend.
-* **Frontend:**
-  * **React + TypeScript + Vite:** Tipagem forte alinhada aos DTOs da API e build ultrarrápido.
-  * **TanStack Query (React Query):** Gerenciamento de estado servidor, loading e cache de requisições REST.
-  * **Tailwind CSS + shadcn/ui + Recharts:** Construção ágil de interfaces e gráficos analíticos para os portais.
-* **Infraestrutura, Testes e CI/CD:**
-  * **Docker & Docker Compose:** Padronização completa do ambiente local (Backend + Frontend + PostgreSQL).
-  * **JUnit 5 + Mockito + Testcontainers:** Testes unitários nas regras de negócio e testes de integração reais subindo PostgreSQL em container.
-  * **GitHub Actions (CI):** Pipeline automática a cada push/PR para validar compilação, testes automatizados e build das imagens Docker.
-
-### Roadmap Futuro (Evolução v2)
-
-Tecnologias mapeadas para escalar o sistema após a validação do MVP, com o **porquê** de cada uma:
-
-* **Integração Real com SEFAZ / Leitor de QR Code (OCR):**
-  * *Por quê:* No MVP, a consulta fiscal usa um `Mock` atrás de uma interface (`Dependency Inversion Principle` — SOLID). Na v2, plugamos a API fiscal real sem alterar nenhuma regra de negócio.
-* **Mensageria Assíncrona (`RabbitMQ`):**
-  * *Por quê:* Consultas à SEFAZ podem ser lentas ou instáveis. Uma fila desacopla o envio da nota pelo cliente do processamento em segundo plano, permitindo *retries* automáticos sem travar a tela do usuário.
-* **Cache em Memória (`Redis`):**
-  * *Por quê:* Queries analíticas (benchmarking setorial, ticket médio e afinidade de cestas) são custosas no banco; o Redis armazena agregações temporárias e protege a API com *rate limiting*.
-* **Observabilidade (`Spring Boot Actuator` + `Micrometer`):**
-  * *Por quê:* Expor *health checks* reais para os containers Docker e métricas de latência/erros em produção.
+### Tecnologias do MVP
+* **Backend:** Java 21 LTS, Spring Boot 3.x, Spring Data JPA, Spring Security, JWT, SpringDoc OpenAPI.
+* **Frontend:** React, TypeScript, Vite, TanStack Query, Tailwind CSS, shadcn/ui, Recharts.
+* **Persistência:** PostgreSQL com versionamento de banco via Flyway (*Database as Code*).
+* **Infraestrutura e Qualidade:** Docker, Docker Compose, JUnit 5, Mockito, Testcontainers e GitHub Actions (CI).
 
 ---
 
-## 📂 Documentação Detalhada
+## 📱 Proposta e Estrutura Inicial das Telas (Wireframes)
 
-A documentação conceitual e técnica completa está disponível no diretório `.docs/markdown/`:
+O MVP inicial é composto por **3 telas essenciais (*Vertical Slice*)**:
 
-* 📄 **[about.md](.docs/markdown/about.md):** Contexto detalhado do negócio, motivação, desafios do varejo físico e estratégias de monetização.
-* 📋 **[requirements.md](.docs/markdown/requirements.md):** Especificação completa de Requisitos de Negócio (RN), Requisitos Funcionais (RF), Requisitos Não Funcionais (RNF) e Regras de Negócio (ReN).
+### Tela 1 — Portal do Consumidor (Ingestão & Estacionamento Grátis)
+```
++-------------------------------------------------------------+
+| [🛍️ Shopping Hub]                     Olá, Lucas (Sair)     |
++-------------------------------------------------------------+
+|                                                             |
+|  🎟️ PROGRAMA ESTACIONAMENTO GRÁTIS                         |
+|  Gaste R$ 150,00 hoje e não pague o estacionamento!         |
+|                                                             |
+|  Progresso de Hoje: R$ 110,00 / R$ 150,00                   |
+|  [===========================>            ] 73%             |
+|  Faltam apenas R$ 40,00 para liberar seu voucher!           |
+|                                                             |
+|  +-------------------------------------------------------+  |
+|  | Enviar Nota Fiscal:                                   |  |
+|  | Chave de Acesso (44 dígitos): [                      ]|  |
+|  | [ 📷 Simular Leitura QR Code ]  [ 🚀 Enviar Cupom ]   |  |
+|  +-------------------------------------------------------+  |
+|                                                             |
+|  Notas Cadastradas Hoje:                                    |
+|  - 14:15 | Praça Alimentação (Burger King) | R$ 45,00 [OK]   |
+|  - 15:40 | Vestuário (Lojas Renner)       | R$ 65,00 [OK]   |
+|                                                             |
++-------------------------------------------------------------+
+```
+
+### Tela 2 — Portal do Lojista (Benchmarking & Campanhas com 1 Clique)
+```
++-------------------------------------------------------------+
+| [🛍️ Portal Lojista] Loja: Calçados Elegance | Setor: Calçados|
++-------------------------------------------------------------+
+|                                                             |
+|  📊 BENCHMARKING DO SETOR (Gap Analysis)                    |
+|  +----------------------------+ +-------------------------+ |
+|  | Ticket Médio da Sua Loja   | | Média Categoria Calçados| |
+|  | R$ 145,00                  | | R$ 210,00               | |
+|  | (31% abaixo da categoria)  | | (Base: 5 lojas ativas)  | |
+|  +----------------------------+ +-------------------------+ |
+|                                                             |
+|  🕒 Horários de Pico: Quinta e Sexta (18h às 21h)           |
+|  🔄 Cestas Cruzadas: 58% dos seus clientes compram em Moda  |
+|                                                             |
+|  🎯 AÇÃO RÁPIDA DE MARKETING:                               |
+|  +-------------------------------------------------------+  |
+|  | "380 clientes de calçados do shopping não compram na  |  |
+|  | sua loja há mais de 45 dias."                         |  |
+|  | [ 🚀 Disparar Cupom 15% OFF no App do Shopping ]      |  |
+|  +-------------------------------------------------------+  |
+|                                                             |
++-------------------------------------------------------------+
+```
+
+### Tela 3 — Portal da Administração do Shopping (Visão Consolidada)
+```
++-------------------------------------------------------------+
+| [🛍️ Shopping Analytics Admin]        Visão: Hoje | Semana    |
++-------------------------------------------------------------+
+|                                                             |
+|  💰 Total Transacionado Capturado: R$ 142.580,00             |
+|  🎟️ Estacionamentos Liberados Hoje: 384 vouchers             |
+|                                                             |
+|  Distribuição por Setor:                                    |
+|  [==== Alimentação (42%) =====][=== Moda (38%) ==][ Outros ]|
+|                                                             |
+|  Picos de Consumo:                                          |
+|  Volume de Compras / Hora:                                  |
+|   |         _/\_                                            |
+|   |   _/\__/    \                                           |
+|   +---------------------                                    |
+|     12h    15h   19h   21h                                  |
+|                                                             |
++-------------------------------------------------------------+
+```
 
 ---
 
-## 👥 Equipe
-* **Equipe 22 — Ho-Ho**
+## 🚀 Roadmap Futuro (v2 Pós-MVP)
 
+* **Integração Real com SEFAZ / OCR:** Substituição do `MockSefazGateway` pela chamada oficial da SEFAZ via certificado digital, respeitando a interface do domínio (DIP).
+* **Fila de Mensageria com RabbitMQ:** Processamento assíncrono de notas com *retry* automático para suportar picos de sábado e datas comerciais.
+* **Cache Distribuído com Redis:** Aceleração de consultas analíticas e controle de taxa de requisições (*Rate Limiting*).
+* **Observabilidade:** Monitoramento de saúde e latência via Spring Boot Actuator e Micrometer.
+
+---
+
+## 📂 Documentação de Apoio
+* 📄 **[about.md](.docs/markdown/about.md):** Contexto aprofundado do varejo e modelo de monetização.
+* 📋 **[requirements.md](.docs/markdown/requirements.md):** Requisitos de Negócio (RN), Funcionais (RF), Não Funcionais (RNF) e Regras de Negócio (ReN).
