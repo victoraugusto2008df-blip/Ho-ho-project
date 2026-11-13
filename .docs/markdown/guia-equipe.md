@@ -129,28 +129,45 @@ Se ambos terminarem sem erro (`BUILD SUCCESS` no Maven e `built in ...` no Vite)
 
 ---
 
-## 5. Fluxo de trabalho no Git e no Kanban
+## 5. Fluxo de trabalho no Git e no Kanban (Git Flow com `develop` e `main`)
 
 Acompanhe e mova seus cards no **[Kanban Oficial (GitHub Projects)](https://github.com/users/victoraugusto2008df-blip/projects/2)** e consulte os detalhes técnicos e dependências no arquivo [`.docs/planning/mvp-sabado-kanban.md`](../planning/mvp-sabado-kanban.md).
 
-### Regras de Git da equipe
-1. **Nunca faça commits direto na `main`.**
-2. Sempre comece um card criando uma branch nova a partir da `main` atualizada:
+### Estrutura de Branches
+* **`main` (Entrega Final / Demonstração):** Código estável e homologado para a banca de sábado. **Nunca recebe commits diretos e nunca recebe PRs vindos direto de `feat/*`**. Só recebe merges vindos da branch `develop` com aprovação obrigatória do time. O CI bloqueia automaticamente PRs de feature mirando na `main`.
+* **`develop` (Ambiente de Integração da Equipe):** Onde todo o trabalho do time se encontra. Todas as branches de feature nascem da `develop` e são integradas nela via Pull Request.
+* **`feat/ORD-XX-...` (Branches de Tarefas):** Branches individuais de cada card do Kanban.
+
+### Passo a passo para trabalhar em um card
+1. **Sempre puxe a `develop` atualizada antes de começar:**
    ```bash
-   git checkout main
-   git pull origin main
+   git checkout develop
+   git pull origin develop
    git checkout -b feat/ORD-05-ingestao-nfce
    ```
-3. Faça commits pequenos e descritivos:
+2. **Faça commits pequenos e descritivos:**
    ```bash
    git add .
    git commit -m "feat(ORD-05): implementa validacao de chave e evento fiscal"
    ```
-4. Suba sua branch e abra um **Pull Request (PR)** no GitHub mirando a `main`:
+3. **Suba sua branch e abra um Pull Request (PR) mirando a `develop`:**
    ```bash
    git push -u origin feat/ORD-05-ingestao-nfce
    ```
-5. Espere os 3 checks do CI ficarem verdes (`Backend`, `Frontend`, `Docker Compose Validation`) e peça para um colega revisar antes de dar merge.
+4. **Aprovação e Merge:**
+   * Espere os checks do CI (`Backend`, `Frontend`, `Docker Compose Validation`) passarem;
+   * Peça para pelo menos um colega revisar e aprovar o PR no GitHub;
+   * Só faça o merge para a `develop` após o review e os testes verdes.
+
+### Como o código chega na `main`?
+* Apenas após uma onda de cards estar totalmente integrada e testada na `develop`, abre-se um **Pull Request de `develop` para `main`**.
+* O CI roda a validação do pipeline e esse PR **exige aprovação do líder/equipe** antes do merge final.
+
+> 🔒 **Dica de configuração no GitHub (para o dono do repo — Victor):**  
+> Em *Settings > Rules > Rulesets* (ou *Branches > Branch protection rules*), adicione uma regra para a branch `main`:
+> 1. Marque **"Require a pull request before merging"** (Require 1 approval).
+> 2. Marque **"Require status checks to pass"** e selecione os checks do CI (`Backend`, `Frontend`, `Docker Compose Validation`).
+> 3. Marque **"Restrict deletions"** e **"Block force pushes"**.
 
 ---
 
@@ -217,7 +234,7 @@ E quando terminar o card, abra **outro chat novo no Qwen** e mande:
 ```text
 Atue como um Revisor Técnico independente (Verifier do tlc-spec-lean). Você não escreveu este código.
 
-Compare as alterações da minha branch (git diff main...HEAD) com os critérios do card [ORD-XX] em .docs/planning/mvp-sabado-kanban.md e com as regras em .docs/architecture/architecture-and-domain.md.
+Compare as alterações da minha branch (git diff develop...HEAD) com os critérios do card [ORD-XX] em .docs/planning/mvp-sabado-kanban.md e com as regras em .docs/architecture/architecture-and-domain.md.
 
 Verifique:
 1. Alguma regra de negócio ou caso de erro ficou de fora?
