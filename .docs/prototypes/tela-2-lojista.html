@@ -76,9 +76,9 @@
 
       <header class="flex flex-wrap items-end justify-between gap-4 border-b border-zinc-200 bg-white px-6 py-5">
         <div>
-          <p class="text-xs text-zinc-500">Portal do Lojista · Shopping Vila Aurora</p>
+          <p class="text-xs text-zinc-500">Portal do Lojista · Capim Dourado Shopping · Palmas – TO</p>
           <h1 class="mt-1 text-2xl font-semibold tracking-tight">Passo Firme Calçados</h1>
-          <p class="mt-1 text-sm text-zinc-500">Categoria Calçados · Piso 1 · <span id="periodo">últimos 30 dias</span></p>
+          <p class="mt-1 text-sm text-zinc-500">Categoria Calçados · Piso único · <span id="periodo">últimos 30 dias</span></p>
         </div>
         <div class="flex items-center gap-2">
           <span class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-600"><span aria-hidden="true">🔒</span> Somente dados agregados da sua loja</span>
@@ -322,7 +322,7 @@
 
     // ===================== Afinidade (RF08) =====================
     const AFINIDADE = [
-      ['Alimentação', 62], ['Vestuário', 48], ['Esportes', 35], ['Eletrônicos', 21], ['Livraria', 14], ['Serviços', 9]
+      ['Alimentação', 62], ['Vestuário', 48], ['Esportes', 35], ['Eletrônicos', 21], ['Lazer', 14], ['Serviços', 9]
     ];
     $('afin-grafico').innerHTML = AFINIDADE.map(([cat, v]) => `
       <div class="grid grid-cols-[6.5rem_1fr_3rem] items-center gap-3" data-tip="<strong>${cat}</strong><br>${v}% dos seus clientes">

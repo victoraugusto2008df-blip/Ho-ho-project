@@ -60,7 +60,7 @@
         </div>
         <!-- cabeçalho do app -->
         <div class="bg-brand-700 px-5 pb-5 pt-3 text-white">
-          <p class="text-xs text-brand-200">Shopping Vila Aurora · Programa de Benefícios</p>
+          <p class="text-xs text-brand-200">Capim Dourado Shopping · Palmas – TO · Programa de Benefícios</p>
           <h1 class="mt-1 text-xl font-semibold">Estacionamento grátis</h1>
           <p class="mt-1 text-sm text-brand-100">Some <strong class="font-semibold text-white">R$ 150,00</strong> em notas de hoje e saia sem pagar.</p>
         </div>
@@ -92,7 +92,8 @@
                 <div><dt class="text-zinc-500">Válido até</dt><dd id="voucher-validade" class="font-medium tabular"></dd></div>
               </dl>
             </div>
-            <p class="mt-3 rounded-lg bg-zinc-50 p-2 text-xs text-zinc-600">Limite de 1 isenção por CPF por dia. Válido para saída até o fechamento do shopping hoje.</p>
+            <p class="mt-3 text-xs text-emerald-800">Economia de <strong class="font-semibold tabular">R$ 15,00</strong> no estacionamento (valor público da diária)</p>
+            <p class="mt-2 rounded-lg bg-zinc-50 p-2 text-xs text-zinc-600">Limite de 1 isenção por CPF por dia. Válido para saída até o fechamento do shopping hoje (seg. a sáb. 22h; dom. 20h).</p>
           </section>
 
           <!-- Formulário de envio (RF01 / RF03) -->
@@ -176,7 +177,7 @@
             <span class="block text-xs text-zinc-500">Voucher pendente → utilizado</span>
           </button>
           <button type="button" id="sim-fechamento" class="rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50" disabled>
-            <span class="font-medium">Fechamento do shopping (22h)</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">ReN04</span>
+            <span class="font-medium">Fechamento do shopping (<span id="rotulo-fechamento">22h</span>)</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">ReN04</span>
             <span class="block text-xs text-zinc-500">Voucher pendente → expirado</span>
           </button>
           <button type="button" id="sim-reset" class="rounded-lg px-3 py-2 text-left text-sm text-zinc-600 underline underline-offset-2 hover:text-zinc-900">Reiniciar demonstração</button>
@@ -206,7 +207,8 @@
 
     // ===================== Utilitários =====================
     const META = 150;
-    const HORA_FECHAMENTO = 22; // fechamento do shopping (ReN04)
+    // Fechamento das lojas do Capim Dourado Shopping (ReN04): seg. a sáb. 22h; dom. 20h (horário público do shopping)
+    const horaFechamento = (d) => (d.getDay() === 0 ? 20 : 22);
     const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     const hhmm = (d) => d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     const dataCurta = (d) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
@@ -242,10 +244,10 @@
       const r = soma % 11;
       return r < 2 ? 0 : 11 - r;
     }
-    // Estrutura: cUF(2) AAMM(4) CNPJ(14) modelo(2)=65 série(3) nNF(9) tpEmis(1) cNF(8) DV(1)
+    // Estrutura (cUF 17 = Tocantins): cUF(2) AAMM(4) CNPJ(14) modelo(2)=65 série(3) nNF(9) tpEmis(1) cNF(8) DV(1)
     function gerarChave(cnpj, data) {
       const aamm = pad(data.getFullYear() % 100, 2) + pad(data.getMonth() + 1, 2);
-      const base = '35' + aamm + cnpj + '65' + pad(rand(1, 9), 3) + pad(rand(1, 999999999), 9) + '1' + pad(rand(0, 99999999), 8);
+      const base = '17' + aamm + cnpj + '65' + pad(rand(1, 9), 3) + pad(rand(1, 999999999), 9) + '1' + pad(rand(0, 99999999), 8);
       return base + dvChave(base);
     }
     const chaveDvOk = (d) => d.length === 44 && dvChave(d.slice(0, 43)) === Number(d[43]);
@@ -256,9 +258,9 @@
     const LOJAS = {
       '11222333000181': { nome: 'Passo Firme Calçados', categoria: 'Calçados' },
       '22333444000172': { nome: 'Sabor da Serra Café', categoria: 'Alimentação' },
-      '33444555000163': { nome: 'Moda Aurora', categoria: 'Vestuário' },
+      '33444555000163': { nome: 'Moda Cerrado', categoria: 'Vestuário' },
       '44555666000154': { nome: 'TecnoPonto Eletrônicos', categoria: 'Eletrônicos' },
-      '55666777000145': { nome: 'Livraria Entrelinhas', categoria: 'Livraria' },
+      '55666777000145': { nome: 'Arena Kids Diversões', categoria: 'Lazer' },
       '66777888000136': { nome: 'Burger do Vale', categoria: 'Alimentação' },
       '77888999000127': { nome: 'Ótica Visão Clara', categoria: 'Serviços' },
       '88999000000118': { nome: 'Esporte & Cia', categoria: 'Esportes' }
@@ -327,7 +329,7 @@
       }
       const nota = consultarSefaz(chave);
       if (!nota) return { erro: 'Nota não localizada', detalhe: 'A SEFAZ não retornou dados para esta chave. Tente novamente mais tarde.', regra: 'RF02' };
-      if (!LOJAS[nota.cnpj]) return { erro: 'Loja não participante', detalhe: 'O CNPJ emissor desta nota não pertence a um lojista ativo do Shopping Vila Aurora.', regra: 'RF03' };
+      if (!LOJAS[nota.cnpj]) return { erro: 'Loja não participante', detalhe: 'O CNPJ emissor desta nota não pertence a um lojista ativo do Capim Dourado Shopping.', regra: 'RF03' };
       const horas = (Date.now() - nota.emitidaEm.getTime()) / 3600000;
       if (horas > 72) return { erro: 'Prazo de envio expirado', detalhe: `Esta nota foi emitida em ${nota.emitidaEm.toLocaleDateString('pt-BR')}. Notas só são aceitas em até 72 horas após a emissão.`, regra: 'ReN02' };
 
@@ -341,7 +343,7 @@
       let voucherNovo = false;
       if (!carteira.voucher && totalHoje(carteira) >= META) {
         const agora = new Date();
-        const validoAte = new Date(agora); validoAte.setHours(HORA_FECHAMENTO, 0, 0, 0);
+        const validoAte = new Date(agora); validoAte.setHours(horaFechamento(agora), 0, 0, 0);
         carteira.voucher = { codigo: 'EST-' + pad(rand(0, 9999), 4) + '-' + pad(rand(0, 9999), 4), emitidoEm: agora, validoAte, status: 'pendente' };
         voucherNovo = true;
       }
@@ -523,6 +525,7 @@
     $('sim-fechamento').addEventListener('click', () => { const a = carteiraAtual(); if (a && a.c.voucher) { a.c.voucher.status = 'expirado'; render(); toast('Shopping fechado: voucher não utilizado expirou.', 'info'); } });
     $('sim-reset').addEventListener('click', iniciar);
 
+    $('rotulo-fechamento').textContent = horaFechamento(new Date()) + 'h';
     const tick = () => { $('relogio').textContent = hhmm(new Date()); };
     tick(); setInterval(tick, 30000);
     iniciar();
