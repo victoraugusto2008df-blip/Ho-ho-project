@@ -264,7 +264,7 @@
       pintar();
     }
 
-    // ===================== Benchmarking (ReN05: k-anonimato) =====================
+    // ===================== Benchmarking (ReN05: K-Anonymity) =====================
     const BENCH = {
       calcados: { nome: 'Calçados', lojistas: 7, loja: 142.3, mediana: 210.0, recompraLoja: 31.5, recompraMediana: 27.0 },
       infantis: { nome: 'Calçados infantis', lojistas: 2, loja: 98.4 }
@@ -315,7 +315,7 @@
     const badgeK = (b) => `
       <p class="mt-4 flex items-start gap-2 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-900">
         <span aria-hidden="true" class="font-bold">i</span>
-        <span><strong>Privacidade (K-anonimato, ReN05):</strong> segmento com ${b.lojistas} lojistas ativos — mínimo exigido: ${K_MIN}. Os valores individuais de concorrentes nunca são exibidos, apenas a mediana do grupo.</span>
+        <span><strong>Privacidade (K-Anonymity, ReN05):</strong> segmento com ${b.lojistas} lojistas ativos — mínimo exigido: ${K_MIN}. Os valores individuais de concorrentes nunca são exibidos, apenas a mediana do grupo.</span>
       </p>`;
     tabs('.seg', (b) => renderBench(b.dataset.seg));
     renderBench('calcados');
