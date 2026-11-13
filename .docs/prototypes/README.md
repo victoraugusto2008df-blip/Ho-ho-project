@@ -7,6 +7,11 @@ e gerados no navegador; a consulta à SEFAZ é simulada, no mesmo espírito do `
 São protótipos de baixo custo para validar fluxo, conteúdo e regras de negócio **antes** da implementação real em
 React + TypeScript + Vite + Tailwind CSS + shadcn/ui + Recharts. Não são código de produção.
 
+As telas usam como contexto o **Capim Dourado Shopping**, em Palmas – TO (ver seção
+[Contexto](#contexto-capim-dourado-shopping-palmas--to)).
+
+> **Aviso:** Protótipo acadêmico da Equipe 22 — Ho-Ho, sem vínculo oficial com o Capim Dourado Shopping. Informações públicas do shopping usadas como contexto; todos os números são fictícios.
+
 ## Como abrir
 
 1. Abra `index.html` no navegador (duplo clique; funciona via `file://`, sem build nem servidor).
@@ -27,6 +32,39 @@ Observações:
 | `tela-2-lojista.html` | Tela 2 — Portal do Lojista (Insights e Ação) | Desktop com sidebar |
 | `tela-3-shopping.html` | Tela 3 — Portal do Shopping (Visão Executiva) | Desktop com sidebar |
 
+## Contexto: Capim Dourado Shopping (Palmas – TO)
+
+Fatos públicos usados para dar realismo às telas. Pesquisa feita em **13/11/2026** (data de acesso de todas as fontes).
+As páginas foram consultadas por mecanismo de busca (o ambiente de desenvolvimento não abria os sites diretamente);
+confirme no site oficial antes de apresentar, pois horários e tarifas podem mudar.
+
+| Fato | Valor | Fonte |
+|---|---|---|
+| Nome oficial | Capim Dourado Shopping | [Site oficial](https://capimdouradosc.com.br/) · [Soul Malls](https://soulmalls.com.br/cliente/?cliente=capim-dourado-shopping) |
+| Endereço | Quadra 107 Norte, Av. NS-5, s/n, Plano Diretor Norte, Palmas – TO, CEP 77001-098 | [Site oficial — SAC](https://capimdouradosc.com.br/servico/?servico=sac-servico-de-atendimento-ao-cliente) |
+| Horário de lojas e quiosques | Seg. a sáb. 10h–22h; dom. 14h–20h | [Site oficial — SAC](https://capimdouradosc.com.br/servico/?servico=sac-servico-de-atendimento-ao-cliente) · [Ingresso.com](https://www.ingresso.com/espetaculos/locais/capim-dourado-shopping) |
+| Horário dos restaurantes | Seg. a sáb. 11h–22h; dom. 11h–20h | [Site oficial — Alimentação](https://capimdouradosc.com.br/alimentacao/) |
+| Inauguração | Agosto de 2010 (17/08/2010) | [Soul Malls](https://soulmalls.com.br/cliente/?cliente=capim-dourado-shopping) · [Prefeitura de Palmas](https://www.palmas.to.gov.br/core/noticias/capim-dourado-shopping-e-inaugurado-com-a-presenca-do-prefeito-raul-filho/) · [Conexão Tocantins](https://conexaoto.com.br/2010/08/12/capim-dourado-shopping-sera-inaugurado-na-terca-17) |
+| Estrutura | 1 piso; ABL de ~39 mil m²; 10 âncoras e megalojas; 6 salas de cinema; 967 vagas de estacionamento | [Soul Malls — ficha técnica](https://soulmalls.com.br/cliente/?cliente=capim-dourado-shopping) |
+| Número de lojas | 147 lojas (Soul Malls) / 153 operações (Hedge Brasil Shopping FII) | [Soul Malls](https://soulmalls.com.br/cliente/?cliente=capim-dourado-shopping) · [Hedge Investments](https://www.hedgeinvest.com.br/en/ativos/capim-dourado-shopping/) |
+| Administração | Soul Malls | [Soul Malls](https://soulmalls.com.br/cliente/?cliente=capim-dourado-shopping) · [Hedge Investments](https://www.hedgeinvest.com.br/en/ativos/capim-dourado-shopping/) |
+| Histórico | Desenvolvido pelo Grupo Skipton; depois adquirido pela BRMalls (R$ 177,1 milhões) | [Conexão Tocantins](https://conexaoto.com.br/2010/08/12/capim-dourado-shopping-sera-inaugurado-na-terca-17) · [Exame](https://exame.com/negocios/br-malls-adquire-seu-50o-shopping/) · [Fusões & Aquisições](https://fusoesaquisicoes.com/acontece-no-setor/brmallscia-compra-shopping-capim/) |
+| Mix (exemplos) | Vestuário (Renner, Riachuelo, C&A), esportes (Centauro), brinquedos (Ri Happy), cinema (Cinemark), lazer infantil (Zig Zag Play), alimentação (praça de alimentação e restaurantes), serviços (Detran, Resolve Palmas, lavanderia) | [Site oficial — Lojas](https://www.capimdouradosc.com.br/lojas/) · [Site oficial — Alimentação](https://capimdouradosc.com.br/alimentacao/) · [Hedge Investments](https://www.hedgeinvest.com.br/en/ativos/capim-dourado-shopping/) |
+| Estacionamento | Pago: diária (sem pernoite) R$ 15,00 (R$ 14,00 pelo app); pernoite R$ 50,00; tolerância de 15 min | [Site oficial — Estacionamento](https://www.capimdouradosc.com.br/servico/?servico=estacionamento) |
+
+Como esses fatos aparecem nos protótipos:
+
+- Nome do shopping e “Palmas – TO” nos cabeçalhos das 3 telas; administração “Administração Capim Dourado” na tela 3.
+- **ReN04:** o voucher vale até o fechamento das lojas no dia (seg. a sáb. 22h; dom. 20h). Feriados e datas especiais têm horários próprios e não foram modelados.
+- Tela 1: linha “Economia de R$ 15,00 no estacionamento” no voucher (valor da diária); chaves NFC-e simuladas com cUF 17 (Tocantins).
+- Tela 2: loja no “Piso único”. Telas 2 e 3: segmento “Lazer” (cinema e diversões) no lugar de “Livraria”, que não foi confirmada no mix.
+- Tela 3: “967 vagas” no card de estacionamento.
+
+O que **não** foi usado: logotipo e imagens do shopping (a marca “SA” do produto foi mantida). As lojas citadas nas telas
+(Passo Firme Calçados, Sabor da Serra Café etc.) continuam **fictícias**, e nenhum faturamento, venda ou resultado de campanha
+é atribuído a marcas reais. Não foi possível confirmar: horários de feriados, qual é hoje o supermercado do shopping
+(as fontes citam Mateus e Mercado&Cia) e a contagem atual exata de lojas.
+
 ## O que cada tela demonstra
 
 ### Tela 1 — Consumidor
@@ -37,8 +75,8 @@ Observações:
 - **Simular leitura de QR Code**: gera uma chave válida de uma loja aleatória do shopping, com valor aleatório.
 - Checkbox de consentimento LGPD (obrigatório para enviar).
 - Barra de progresso até R$ 150,00, atualizada a cada nota (com `role="progressbar"` e `aria-live`).
-- Voucher de estacionamento com QR Code ilustrativo, código, horário de emissão, validade até o fechamento (22h) e status
-  **pendente / utilizado / expirado**.
+- Voucher de estacionamento com QR Code ilustrativo, código, horário de emissão, validade até o fechamento
+  (seg. a sáb. 22h; dom. 20h), economia da diária do estacionamento (R$ 15,00) e status **pendente / utilizado / expirado**.
 - “Painel do protótipo” (fora do celular) para simular: nota duplicada, nota com mais de 72h, CNPJ fora do shopping,
   nota de ontem (aceita, mas não soma para a meta de hoje), saída na cancela e fechamento do shopping.
 
