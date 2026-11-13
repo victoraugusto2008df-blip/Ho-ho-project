@@ -82,11 +82,22 @@ O projeto adota a arquitetura de **Monólito Modular** (módulos isolados por do
 
 ---
 
-## 📱 Proposta e Estrutura Inicial das Telas (Wireframes)
+## 📱 Proposta e Estrutura Inicial das Telas (Wireframes e Protótipo)
 
-O MVP inicial é composto por **3 telas essenciais (*Vertical Slice*)**:
+O MVP inicial é composto por **3 telas essenciais (*Vertical Slice*)**, representadas abaixo através dos mockups do protótipo navegável em conjunto com os esquemas conceituais de wireframe:
+
+> *Nota:* O painel lateral visível nos mockups das telas serve exclusivamente para demonstrar e testar as regras de negócio (ReN01 a ReN05) e a ordem de validação do backend simulado durante as avaliações, não fazendo parte da aplicação final do usuário.
+
+---
 
 ### Tela 1 — Portal do Consumidor (Ingestão & Estacionamento Grátis)
+* **Desktop:**
+![Consumidor Desktop](.docs/images/figura1-consumidor-desktop.png)
+
+* **Mobile (Layout Responsivo):**
+![Consumidor Mobile](.docs/images/figura2-consumidor-mobile.png)
+
+* **Esquema de Wireframe:**
 ```
 +-------------------------------------------------------------+
 | [🛍️ Shopping Hub]                     Olá, Lucas (Sair)     |
@@ -112,7 +123,13 @@ O MVP inicial é composto por **3 telas essenciais (*Vertical Slice*)**:
 +-------------------------------------------------------------+
 ```
 
+---
+
 ### Tela 2 — Portal do Lojista (Benchmarking & Campanhas com 1 Clique)
+* **Mockup do Protótipo:**
+![Portal do Lojista](.docs/images/figura3-portal-lojista.png)
+
+* **Esquema de Wireframe:**
 ```
 +-------------------------------------------------------------+
 | [🛍️ Portal Lojista] Loja: Calçados Elegance | Setor: Calçados|
@@ -138,7 +155,13 @@ O MVP inicial é composto por **3 telas essenciais (*Vertical Slice*)**:
 +-------------------------------------------------------------+
 ```
 
+---
+
 ### Tela 3 — Portal da Administração do Shopping (Visão Consolidada)
+* **Mockup do Protótipo:**
+![Portal da Administração](.docs/images/figura4-portal-shopping.png)
+
+* **Esquema de Wireframe:**
 ```
 +-------------------------------------------------------------+
 | [🛍️ Shopping Analytics Admin]        Visão: Hoje | Semana    |
