@@ -9,6 +9,7 @@
 # Configurações de IA e Assistentes Locais
 # ==========================================
 .agents/
+.skills-guide/
 skills-lock.json
 .gemini/
 .claude/
