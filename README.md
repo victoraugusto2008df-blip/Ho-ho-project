@@ -197,3 +197,4 @@ O MVP inicial é composto por **3 telas essenciais (*Vertical Slice*)**, represe
 ## 📂 Documentação de Apoio
 * 📄 **[about.md](.docs/markdown/about.md):** Contexto aprofundado do varejo e modelo de monetização.
 * 📋 **[requirements.md](.docs/markdown/requirements.md):** Requisitos de Negócio (RN), Funcionais (RF), Não Funcionais (RNF) e Regras de Negócio (ReN).
+* 🏗️ **[architecture-and-domain.md](.docs/architecture/architecture-and-domain.md):** Modelagem de Domínio (DER), ADRs, contratos iniciais de API REST e fluxo do Monólito Modular.
