@@ -41,11 +41,12 @@ Funcionalidades e operações que o sistema deve executar, organizadas por módu
 ## 3. Requisitos Não Funcionais (RNF) - O "Como"
 Critérios de qualidade técnica, arquiteturais e de infraestrutura.
 
-* **RNF01 (Tecnologia Backend):** O backend deve ser desenvolvido em **Java 21 LTS** utilizando o framework **Spring Boot 3.x**, adotando os princípios de **Clean Architecture** e aproveitando recursos modernos como **Virtual Threads (Project Loom)** para chamadas I/O assíncronas com APIs fiscais.
-* **RNF02 (Tecnologia Frontend):** As interfaces web (Portal do Lojista e Dashboard do Shopping) devem ser construídas em **React com TypeScript**, estruturadas com componentes modulares e contratos tipados baseados no OpenAPI/Swagger da API.
-* **RNF03 (Segurança e LGPD):** O CPF do usuário deve ser protegido com criptografia e técnicas de hashing seguro. O acesso aos dados deve seguir controle baseado em perfis (RBAC), aplicando isolamento rigoroso entre inquilinos (*Multi-tenancy* lógico) para que um lojista jamais acesse transações brutas de outra loja.
-* **RNF04 (Desempenho e Resiliência):** A ingestão e validação das notas fiscais devem ocorrer de forma assíncrona (com mensageria ou background tasks), garantindo resposta imediata ao usuário na submissão da nota e tolerância a lentidões ocasionais da SEFAZ.
-* **RNF05 (Disponibilidade e Escalabilidade):** O sistema deve manter 99,5% de disponibilidade, com suporte a picos de tráfego típicos de datas comerciais (ex: Black Friday, Natal e fins de semana).
+* **RNF01 (Tecnologia e Arquitetura Backend):** O backend deve ser desenvolvido em **Java 21 LTS** com **Spring Boot 3.x**, estruturado como um **Monólito Modular** (módulos `fiscal`, `beneficios`, `analytics`) aplicando **Clean Architecture**, **SOLID** (especialmente inversão de dependência para gateways externos) e **Virtual Threads (Project Loom)** para chamadas I/O.
+* **RNF02 (Tecnologia Frontend):** As interfaces web devem ser construídas em **React com TypeScript (Vite)**, utilizando **TanStack Query** para gerenciamento de estado assíncrono, **Tailwind CSS / shadcn/ui** para interface e **Recharts** para gráficos, com contratos tipados gerados a partir do **SpringDoc OpenAPI (Swagger)**.
+* **RNF03 (Persistência e Versionamento de Banco):** O armazenamento principal deve utilizar **PostgreSQL**, com controle rigoroso de schema e dados iniciais (*seeds*) versionados via **Flyway** (*Database as Code*).
+* **RNF04 (Segurança, Autenticação e LGPD):** Autenticação e autorização via **Spring Security + JWT** com controle baseado em perfis (`CONSUMIDOR`, `LOJISTA`, `ADMIN_SHOPPING`) e isolamento lógico *multi-tenant*. O CPF deve ser protegido por criptografia/hashing seguro, garantindo que um lojista nunca acesse transações brutas de concorrentes.
+* **RNF05 (Infraestrutura, Testes e CI/CD):** O ambiente deve ser conteinerizado com **Docker e Docker Compose** (paridade Dev/Prod). A qualidade deve ser validada com **JUnit 5 + Mockito + Testcontainers** (Postgres real em testes de integração) e automatizada via pipeline de CI no **GitHub Actions**.
+* **RNF06 (Desempenho e Resiliência — Evolução v2):** Para suportar picos comerciais e instabilidades da SEFAZ em produção, a arquitetura prevê desacoplamento assíncrono com **RabbitMQ** (fila de processamento de notas com *retry*) e **Redis** (cache de métricas agregadas e *rate limiting*).
 
 ---
 
@@ -57,3 +58,22 @@ Lógicas e restrições que governam o funcionamento das regras de domínio.
 * **ReN03 (Regra do Estacionamento Grátis):** O cliente terá direito a 1 isenção de estacionamento no dia ao acumular no mínimo **R$ 150,00** em notas fiscais cadastradas e validadas, emitidas no **mesmo dia** por lojas físicas do shopping.
 * **ReN04 (Limite de Isenção):** O benefício de isenção de estacionamento é limitado a 1 resgate por CPF por dia civil e possui validade para saída até o horário de fechamento do shopping no mesmo dia.
 * **ReN05 (Privacidade de Benchmarking / K-Anonymity):** O portal só exibirá a média/mediana de benchmarking de uma categoria se houver pelo menos **3 lojistas distintos e ativos** registrados naquele mesmo segmento, impedindo a dedução indireta de dados de um concorrente único.
+
+---
+
+## 5. Estratégia de Entrega: MVP (3 Telas) vs. Roadmap Futuro
+
+Para viabilizar uma entrega funcional enxuta (*Vertical Slice*) sem comprometer a arquitetura de longo prazo, o projeto divide as entregas em duas fases:
+
+### Fase 1 — MVP Funcional (3 Telas Essenciais)
+1. **Tela 1 — Consumidor (Ingestão e Estacionamento):** Envio de CPF + chave NFC-e (com simulador de QR Code), cálculo em tempo real da barra de progresso para os R$ 150,00 e liberação do voucher de estacionamento grátis.
+2. **Tela 2 — Portal do Lojista (Insights e Ação):** Ticket médio da loja vs. média da categoria (*benchmarking*), horários de pico, afinidade de compras cruzadas e botão simulado de disparo de campanha para clientes inativos.
+3. **Tela 3 — Portal do Shopping (Visão Executiva):** Faturamento consolidado por segmento, volume de notas por dia/horário e métricas de adesão ao estacionamento.
+
+*Decisão Técnica do MVP:* A integração com a SEFAZ utiliza uma interface `ConsultaNotaFiscalGateway` com implementação `MockSefazGateway` (**Dependency Inversion Principle — SOLID**), permitindo testar todo o fluxo sem depender de certificado digital nesta etapa.
+
+### Fase 2 — Evolução Tecnológica (v2 / Pós-MVP)
+* **Gateway Fiscal Real (SEFAZ / OCR):** Substituição do mock pela integração real mantendo a mesma interface de domínio.
+* **RabbitMQ:** Fila para absorver picos de notas fiscais com *retry* automático sem bloquear a experiência do cliente.
+* **Redis:** Cache de dashboards analíticos para aliviar o PostgreSQL em consultas pesadas de *Market Basket Analysis*.
+* **Spring Boot Actuator + Micrometer:** Monitoramento de saúde dos containers e métricas de observabilidade em produção.
