@@ -52,7 +52,7 @@ Para ninguém ficar bloqueado esperando outro colega, o trabalho deve seguir **4
 #### `[ORD-01]` Migrations de Domínio (Flyway) & Seeds da Demo
 * **Ordem:** 1º (Destrava todo o backend) | **Importância:** 🔴 P0 — Crítica
 * **O que fazer:**
-  * Criar os scripts SQL das 7 tabelas definidas em [architecture-and-domain.md](file:///c:/Users/lucas/OneDrive/Documentos/HO-ho/.docs/architecture/architecture-and-domain.md): `categorias`, `lojas`, `clientes`, `usuarios`, `notas_fiscais`, `vouchers_estacionamento`, `campanhas`.
+  * Criar os scripts SQL das 7 tabelas definidas em [architecture-and-domain.md](../architecture/architecture-and-domain.md): `categorias`, `lojas`, `clientes`, `usuarios`, `notas_fiscais`, `vouchers_estacionamento`, `campanhas`.
   * Garantir constraints críticas no SQL: `chave_acesso CHAR(44) UNIQUE` e `UNIQUE (cliente_id, data_referencia)` em vouchers.
   * Criar *seed* com: 4 categorias, **mínimo 3 lojas ativas em uma mesma categoria** (para validar K-Anonymity $k \ge 3$), 3 usuários de demo e ~15 notas históricas (para os gráficos já nascerem populados).
 * **Critério de Aceite:** Ao subir a aplicação, todas as tabelas e dados iniciais existem no banco sem intervenção manual.
@@ -136,7 +136,7 @@ Para ninguém ficar bloqueado esperando outro colega, o trabalho deve seguir **4
   * Formulário para digitar chave de 44 dígitos + botão **"Simular Leitura QR Code"** (preenche chaves de teste válidas e inválidas para a demo).
   * Barra de progresso visual até R$ 150,00, lista de notas enviadas hoje e exibição do Voucher/QR Code quando liberado.
   * Tratamento visual claro para erros de negócio (nota duplicada, > 72h, loja não credenciada).
-* **Critério de Aceite:** Fluxo fiel ao mockup ([figura1-consumidor-desktop.png](file:///c:/Users/lucas/OneDrive/Documentos/HO-ho/.docs/images/figura1-consumidor-desktop.png)) e responsivo em mobile.
+* **Critério de Aceite:** Fluxo fiel ao mockup ([.docs/images/figura1-consumidor-desktop.png](../images/figura1-consumidor-desktop.png)) e responsivo em mobile.
 
 #### `[ORD-11]` Tela 2 — Portal do Lojista
 * **Ordem:** 8º (Depende de `ORD-03`, `ORD-08`, `ORD-09`) | **Importância:** 🟠 P1 — Alta
@@ -144,14 +144,14 @@ Para ninguém ficar bloqueado esperando outro colega, o trabalho deve seguir **4
   * Cards comparativos: Ticket Médio da Loja vs. Média da Categoria (exibindo estado bloqueado se $k < 3$).
   * Gráficos (Recharts) de horários de pico e afinidade (*Cross-Shopping*).
   * Card de ação rápida com botão `[Disparar Cupom 15% OFF]` conectado ao `POST /api/v1/campanhas`.
-* **Critério de Aceite:** Layout alinhado ao mockup ([figura3-portal-lojista.png](file:///c:/Users/lucas/OneDrive/Documentos/HO-ho/.docs/images/figura3-portal-lojista.png)).
+* **Critério de Aceite:** Layout alinhado ao mockup ([.docs/images/figura3-portal-lojista.png](../images/figura3-portal-lojista.png)).
 
 #### `[ORD-12]` Tela 3 — Portal da Administração do Shopping
 * **Ordem:** 9º (Depende de `ORD-03`, `ORD-10`) | **Importância:** 🟠 P1 — Alta
 * **O que fazer:**
   * KPIs no topo: Faturamento total capturado, vouchers de estacionamento liberados e campanhas ativas.
   * Gráficos (Recharts): Distribuição por setor e curva/heatmap de consumo por hora.
-* **Critério de Aceite:** Layout alinhado ao mockup ([figura4-portal-shopping.png](file:///c:/Users/lucas/OneDrive/Documentos/HO-ho/.docs/images/figura4-portal-shopping.png)).
+* **Critério de Aceite:** Layout alinhado ao mockup ([.docs/images/figura4-portal-shopping.png](../images/figura4-portal-shopping.png)).
 
 ---
 

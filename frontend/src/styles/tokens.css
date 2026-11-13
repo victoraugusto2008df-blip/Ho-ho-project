@@ -1,0 +1,76 @@
+/* ==========================================================================
+   Design System Tokens — Shopping Analytics & Loyalty Hub (Equipe 22)
+   Arquitetura em 3 camadas: Primitivos -> Semânticos -> Componentes
+   Baseado diretamente nos mockups em .docs/images/
+   ========================================================================== */
+
+:root {
+  /* 1. Primitivos — Cores */
+  --palette-slate-50: #f8fafc;
+  --palette-slate-100: #f1f5f9;
+  --palette-slate-200: #e2e8f0;
+  --palette-slate-400: #94a3b8;
+  --palette-slate-500: #64748b;
+  --palette-slate-600: #475569;
+  --palette-slate-900: #0f172a;
+  --palette-white: #ffffff;
+
+  --palette-indigo-50: #eef2ff;
+  --palette-indigo-600: #4f46e5;
+  --palette-indigo-700: #4338ca;
+  --palette-indigo-900: #312e81;
+
+  --palette-blue-50: #eff6ff;
+  --palette-blue-200: #bfdbfe;
+  --palette-blue-600: #2563eb;
+  --palette-blue-800: #1e40af;
+
+  --palette-emerald-50: #ecfdf5;
+  --palette-emerald-600: #059669;
+  --palette-emerald-500: #10b981;
+
+  --palette-amber-50: #fef3c7;
+  --palette-amber-600: #d97706;
+
+  --palette-red-50: #fef2f2;
+  --palette-red-600: #dc2626;
+
+  /* 2. Semânticos — Superfícies, Texto e Ações */
+  --bg-canvas: var(--palette-slate-50);
+  --bg-surface: var(--palette-white);
+  --bg-subtle: var(--palette-slate-100);
+  --border-hairline: var(--palette-slate-200);
+
+  --text-primary: var(--palette-slate-900);
+  --text-secondary: var(--palette-slate-600);
+  --text-muted: var(--palette-slate-500);
+
+  --color-brand: var(--palette-indigo-600);
+  --color-brand-hover: var(--palette-indigo-700);
+  --color-brand-deep: var(--palette-indigo-900);
+  --color-brand-soft: var(--palette-indigo-50);
+
+  --color-analytics: var(--palette-blue-600);
+  --color-analytics-deep: var(--palette-blue-800);
+  --color-analytics-soft: var(--palette-blue-50);
+
+  --color-success: var(--palette-emerald-600);
+  --color-success-bar: var(--palette-emerald-500);
+  --color-success-soft: var(--palette-emerald-50);
+
+  --color-warning: var(--palette-amber-600);
+  --color-warning-soft: var(--palette-amber-50);
+
+  --color-danger: var(--palette-red-600);
+  --color-danger-soft: var(--palette-red-50);
+
+  /* 3. Tipografia & Raios (Componentes) */
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+  --radius-pill: 9999px;
+}
+

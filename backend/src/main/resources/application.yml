@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: shopping-hub
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:shopping_hub}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:chave_desenvolvimento_local_com_pelo_menos_32_bytes_seguros}
+      expiration-ms: 86400000
+    cpf-hash-pepper: ${CPF_HASH_PEPPER:pepper_desenvolvimento_local_lgpd}
+

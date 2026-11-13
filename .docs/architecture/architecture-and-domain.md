@@ -143,3 +143,30 @@ erDiagram
 * **Decisão:** Manter autenticação JWT real com Spring Security + RBAC, populando usuários de demonstração via *seed* do Flyway e oferecendo botões de acesso rápido na tela de login do React.
 * **Consequência:** Segurança real garantida no backend e navegação fluida entre os 3 perfis durante a apresentação.
 
+### ADR-06: Design Tokens em 3 Camadas e Tailwind CSS v4
+* **Contexto:** As 3 telas do MVP (`.docs/images/`) compartilham identidade visual consistente (Indigo para marca/ações, Blue para analytics, Emerald para metas/vouchers e Slate para superfícies), mas serão implementadas em paralelo no Kanban por diferentes desenvolvedores.
+* **Decisão:** Centralizar o estilo em `frontend/src/styles/tokens.css` seguindo a arquitetura de **3 camadas (`Primitivos -> Semânticos -> Componentes`)** integrada ao Tailwind CSS v4 (`@tailwindcss/vite` + `@theme`), evitando valores hexadecimais dispersos nos componentes e utilizando `lucide-react` (SVG) no lugar de emojis.
+* **Consequência:** Consistência visual imediata entre os cards `ORD-03`, `ORD-07`, `ORD-11` e `ORD-12`, além de manutenção desacoplada de tema e tipografia.
+
+### ADR-07: Vite Dev Proxy (`/api`), React 18 e TanStack Query
+* **Contexto:** Em desenvolvimento local, o frontend roda na porta `5173` e o backend Spring Boot na `8080`; além disso, o dashboard exige gráficos (`recharts`) e sincronização de estado remoto.
+* **Decisão:** Configurar proxy reverso no `vite.config.ts` (`/api` → `http://localhost:8080`), fixar React 18 (`^18.3.1`) para compatibilidade estável de *peer dependencies* com `recharts` (`^2.15.1`) e adotar `@tanstack/react-query` (`QueryClient`) para cache/requisições.
+* **Consequência:** Eliminação de atritos de CORS em desenvolvimento sem acoplar URLs absolutas de `localhost` nos componentes React.
+
+---
+
+## 5. Arquitetura do Frontend (`frontend/`) & Design System
+
+A camada web é uma SPA em **React 18 + TypeScript (`strict`) + Vite + Tailwind CSS v4**, organizada para isolar infraestrutura visual, primitivas de UI e futuras telas do Kanban:
+
+* **Tokens de Design (`src/styles/tokens.css` e `src/index.css`):**
+  1. **Camada Primitiva (`--palette-*`):** Paleta base alinhada aos mockups — Slate (`#f8fafc`..`#0f172a`), Indigo (`#4f46e5` marca/CTAs), Blue (`#2563eb` gráficos/analytics), Emerald (`#10b981`/`#059669` meta de estacionamento e vouchers), Amber (`#d97706`) e Red (`#dc2626`).
+  2. **Camada Semântica:** Significado funcional para superfícies (`--bg-canvas`, `--bg-surface`, `--bg-subtle`, `--border-hairline`), tipografia (`--text-primary`, `--text-secondary`, `--text-muted`) e estados (`--color-brand`, `--color-analytics`, `--color-success`, `--color-warning`, `--color-danger`).
+  3. **Camada de Componentes & Tipografia:** Raios padronizados (`--radius-card`, `--radius-control`, `--radius-pill`), fontes via Google Fonts (`Plus Jakarta Sans`, `Inter`, `JetBrains Mono`) e utilitário `.tabular-nums` para alinhamento numérico em KPIs e tabelas.
+* **Infraestrutura & Primitivas UI:**
+  * `src/lib/utils.ts`: Helper `cn()` (`clsx` + `tailwind-merge`) para composição segura de classes Tailwind.
+  * `src/lib/queryClient.ts`: Instância base do TanStack `QueryClient`.
+  * `src/components/ui/`: Primitivas acessíveis (`Button`, `Card`, `Badge`) com foco visível e consumo exclusivo de tokens semânticos.
+  * `src/App.tsx`: Placeholder da fundação exibindo os slots reservados do Kanban (`ORD-03`, `ORD-07`, `ORD-11`, `ORD-12`).
+* **Integração Local:** `vite.config.ts` expõe o alias `@/*` -> `./src/*` e faz proxy das chamadas `/api/*` para `http://localhost:8080`.
+

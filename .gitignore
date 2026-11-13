@@ -3,7 +3,9 @@
 # ==========================================
 .env
 .env.*
+*.local
 !.env.example
+docker-compose.override.yml
 
 # ==========================================
 # Configurações de IA e Assistentes Locais
@@ -19,10 +21,12 @@ skills-lock.json
 # ==========================================
 # Java / Spring Boot
 # ==========================================
+HELP.md
 *.class
 *.log
 *.ctxt
 .mtj.tmp/
+logs/
 
 # Empacotamento
 *.jar
@@ -35,6 +39,8 @@ skills-lock.json
 
 # Maven
 target/
+!**/src/main/**/target/
+!**/src/test/**/target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -48,18 +54,24 @@ buildNumber.properties
 # Gradle
 .gradle/
 build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 !gradle/wrapper/gradle-wrapper.jar
 
-# Logs e Crashes da JVM
+# Logs, Dumps e Cobertura da JVM
 hs_err_pid*
 replay_pid*
+*.hprof
+coverage/
 
 # ==========================================
-# Node / React / TypeScript
+# Node / React / TypeScript / Vite
 # ==========================================
 node_modules/
 dist/
+dist-ssr/
 out/
+.vite/
 .next/
 .nuxt/
 .cache/
@@ -80,7 +92,6 @@ lerna-debug.log*
 *.iml
 *.iws
 *.ipr
-out/
 
 # Eclipse
 .apt_generated
