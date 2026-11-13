@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tela 2 — Portal do Lojista · Shopping Analytics &amp; Loyalty Hub</title>
+  <!-- CSS do Tailwind compilado (sem dependencia de CDN) -->
+  <link rel="stylesheet" href="tailwind.css" />
+  <style>
+    /* Papéis de cor dos gráficos (paleta categórica validada; série 1 = azul) */
+    :root { --serie-1: #2a78d6; --serie-1-forte: #184f95; --neutro: #a8a29e; --grade: #e4e4e7; --eixo: #d4d4d8; --texto-mudo: #71717a; }
+    .tabular { font-variant-numeric: tabular-nums; }
+    html { scroll-behavior: smooth; }
+    #cdn-aviso { display: none; padding: 8px 12px; background: #fef3c7; color: #78350f; font: 14px system-ui, sans-serif; text-align: center; }
+    #tooltip { position: fixed; pointer-events: none; z-index: 60; opacity: 0; transition: opacity .1s; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-50 text-zinc-900 antialiased">
+  <div id="cdn-aviso" role="status">Aviso: o Tailwind CSS (CDN) não carregou. Verifique a conexão com a internet para ver o layout completo.</div>
+
+  <div class="flex min-h-screen">
+    <!-- ============ Sidebar (padrão comum aos portais) ============ -->
+    <aside class="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-zinc-200 bg-white lg:flex">
+      <a href="tela-1-consumidor.html" class="flex items-center gap-3 border-b border-zinc-200 px-5 py-4">
+        <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-600 text-sm font-bold text-white" aria-hidden="true">SA</span>
+        <span class="leading-tight">
+          <span class="block text-sm font-semibold">Shopping Analytics &amp; Loyalty Hub</span>
+          <span class="block text-xs text-zinc-500">Equipe 22 — Ho-Ho</span>
+        </span>
+      </a>
+      <nav aria-label="Portal do Lojista" class="flex-1 overflow-y-auto px-3 py-4 text-sm">
+        <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Portal do Lojista</p>
+        <a href="#kpis" class="flex items-center gap-2 rounded-md bg-brand-50 px-3 py-2 font-medium text-brand-700" aria-current="page">Visão geral</a>
+        <a href="#benchmarking" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">Benchmarking</a>
+        <a href="#pico" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">Horários de pico</a>
+        <a href="#afinidade" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">Compras cruzadas</a>
+        <a href="#campanha" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">Campanhas</a>
+        <p class="mt-6 px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Telas do protótipo</p>
+        <a href="tela-1-consumidor.html" class="block rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">1 · Consumidor</a>
+        <a href="tela-2-lojista.html" class="block rounded-md px-3 py-2 font-medium text-zinc-900 hover:bg-zinc-100">2 · Lojista</a>
+        <a href="tela-3-shopping.html" class="block rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">3 · Shopping</a>
+      </nav>
+      <div class="flex items-center gap-3 border-t border-zinc-200 px-5 py-4">
+        <span class="grid h-9 w-9 place-items-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700" aria-hidden="true">PF</span>
+        <span class="min-w-0 leading-tight">
+          <span class="block truncate text-sm font-medium">Passo Firme Calçados</span>
+          <span class="block text-xs text-zinc-500">Perfil: LOJISTA</span>
+        </span>
+      </div>
+    </aside>
+
+    <div class="min-w-0 flex-1">
+      <!-- Navegação compacta (telas menores) -->
+      <nav aria-label="Telas do protótipo" class="flex flex-wrap items-center gap-1 border-b border-zinc-200 bg-white px-4 py-2 text-sm lg:hidden">
+        <a href="tela-1-consumidor.html" class="rounded-md px-2 py-1 font-semibold">SA Hub</a>
+        <a href="tela-1-consumidor.html" class="rounded-md px-2 py-1 text-zinc-600">1 · Consumidor</a>
+        <a href="tela-2-lojista.html" class="rounded-md bg-brand-50 px-2 py-1 font-medium text-brand-700">2 · Lojista</a>
+        <a href="tela-3-shopping.html" class="rounded-md px-2 py-1 text-zinc-600">3 · Shopping</a>
+      </nav>
+
+      <header class="flex flex-wrap items-end justify-between gap-4 border-b border-zinc-200 bg-white px-6 py-5">
+        <div>
+          <p class="text-xs text-zinc-500">Portal do Lojista · Capim Dourado Shopping · Palmas – TO</p>
+          <h1 class="mt-1 text-2xl font-semibold tracking-tight">Passo Firme Calçados</h1>
+          <p class="mt-1 text-sm text-zinc-500">Categoria Calçados · Piso único · <span id="periodo">últimos 30 dias</span></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-600"><span aria-hidden="true">🔒</span> Somente dados agregados da sua loja</span>
+          <span class="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">Protótipo · dados fictícios</span>
+        </div>
+      </header>
+
+      <main class="space-y-6 p-6">
+        <!-- KPIs (RF07 / RF10) -->
+        <section id="kpis" aria-label="Indicadores da loja" class="grid scroll-mt-6 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <article class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-zinc-500">Ticket médio</p>
+            <p class="mt-2 text-3xl font-semibold">R$ 142,30</p>
+            <p class="mt-1 text-xs text-zinc-500"><span class="font-medium text-emerald-700">▲ 4,1%</span> vs. 30 dias anteriores</p>
+          </article>
+          <article class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-zinc-500">Nº de vendas identificadas</p>
+            <p class="mt-2 text-3xl font-semibold">1.284</p>
+            <p class="mt-1 text-xs text-zinc-500"><span class="font-medium text-emerald-700">▲ 9,8%</span> vs. 30 dias anteriores</p>
+          </article>
+          <article class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-zinc-500">Taxa de recompra (90 dias)</p>
+            <p class="mt-2 text-3xl font-semibold">31,5%</p>
+            <p class="mt-1 text-xs text-zinc-500"><span class="font-medium text-red-700">▼ 1,2 p.p.</span> vs. 30 dias anteriores</p>
+          </article>
+          <article class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-zinc-500">Faturamento identificado</p>
+            <p class="mt-2 text-3xl font-semibold">R$ 182,7 mil</p>
+            <p class="mt-1 text-xs text-zinc-500">via NFC-e cadastradas pelos clientes</p>
+          </article>
+        </section>
+
+        <div class="grid gap-6 xl:grid-cols-5">
+          <!-- Benchmarking (RF09 / ReN05) -->
+          <section id="benchmarking" aria-labelledby="t-bench" class="scroll-mt-6 min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-3">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 id="t-bench" class="text-base font-semibold">Benchmarking setorial</h2>
+                <p class="text-sm text-zinc-500">Ticket médio da sua loja vs. mediana do segmento</p>
+              </div>
+              <div role="tablist" aria-label="Segmento de comparação" class="inline-flex rounded-lg bg-zinc-100 p-1 text-sm">
+                <button role="tab" data-seg="calcados" aria-selected="true" class="seg rounded-md px-3 py-1.5">Calçados</button>
+                <button role="tab" data-seg="infantis" aria-selected="false" class="seg rounded-md px-3 py-1.5">Calçados infantis</button>
+              </div>
+            </div>
+            <div id="bench-corpo" class="mt-5" role="tabpanel" aria-live="polite"></div>
+          </section>
+
+          <!-- Afinidade (RF08) -->
+          <section id="afinidade" aria-labelledby="t-afin" class="scroll-mt-6 min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-2">
+            <h2 id="t-afin" class="text-base font-semibold">Afinidade de compras cruzadas</h2>
+            <p class="text-sm text-zinc-500">% dos seus clientes que também compraram nestas categorias na mesma visita</p>
+            <div id="afin-grafico" class="mt-4 space-y-3" role="img" aria-label="Gráfico de barras horizontais de afinidade entre categorias"></div>
+            <p id="afin-insight" class="mt-4 rounded-lg bg-brand-50 p-3 text-sm text-brand-900"></p>
+            <p class="mt-2 text-xs text-zinc-500">Mostramos apenas categorias, nunca lojas específicas ou clientes individuais.</p>
+          </section>
+        </div>
+
+        <!-- Horários de pico (RF07) -->
+        <section id="pico" aria-labelledby="t-pico" class="scroll-mt-6 min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 id="t-pico" class="text-base font-semibold">Horários de pico</h2>
+              <p class="text-sm text-zinc-500">Vendas identificadas por faixa horária · últimos 30 dias</p>
+            </div>
+            <div role="tablist" aria-label="Dias considerados" class="inline-flex rounded-lg bg-zinc-100 p-1 text-sm">
+              <button role="tab" data-dias="todos" aria-selected="true" class="dias rounded-md px-3 py-1.5">Todos os dias</button>
+              <button role="tab" data-dias="uteis" aria-selected="false" class="dias rounded-md px-3 py-1.5">Seg–Sex</button>
+              <button role="tab" data-dias="fds" aria-selected="false" class="dias rounded-md px-3 py-1.5">Sáb–Dom</button>
+            </div>
+          </div>
+          <div id="pico-grafico" class="mt-4 h-64" role="img" aria-label="Gráfico de barras de vendas por hora"></div>
+          <p id="pico-resumo" class="mt-2 text-sm text-zinc-600" aria-live="polite"></p>
+          <details class="mt-3 text-sm">
+            <summary class="cursor-pointer text-zinc-500 hover:text-zinc-900">Ver dados em tabela</summary>
+            <div id="pico-tabela" class="mt-2 overflow-x-auto"></div>
+          </details>
+        </section>
+
+        <!-- Campanhas (RF11) -->
+        <section id="campanha" aria-labelledby="t-camp" class="grid scroll-mt-6 gap-6 xl:grid-cols-5">
+          <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-3">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <h2 id="t-camp" class="text-base font-semibold">Nova campanha em 1 clique</h2>
+                <p class="text-sm text-zinc-500">Cupom enviado pelo app do shopping a um segmento pré-qualificado.</p>
+              </div>
+              <span class="rounded-full bg-zinc-100 px-2.5 py-1 text-xs text-zinc-600">Sem acesso a CPFs ou contatos</span>
+            </div>
+            <form id="form-camp" class="mt-5 grid gap-4 md:grid-cols-2" novalidate>
+              <div class="md:col-span-2">
+                <label for="segmento" class="text-sm font-medium">Segmento</label>
+                <select id="segmento" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
+                  <option value="inativos60" data-aud="312">Clientes da sua loja inativos há 60 dias</option>
+                  <option value="setor60" data-aud="846">Clientes do setor de Calçados inativos na sua loja há 60 dias</option>
+                  <option value="vestuario" data-aud="1420">Clientes que compram Vestuário e não visitam sua loja há 60 dias</option>
+                </select>
+              </div>
+              <div>
+                <label for="desconto" class="text-sm font-medium">Desconto do cupom (%)</label>
+                <input id="desconto" type="number" min="5" max="50" step="1" value="15" aria-describedby="desconto-ajuda"
+                  class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm tabular outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200" />
+                <p id="desconto-ajuda" class="mt-1 text-xs text-zinc-500">Entre 5% e 50%.</p>
+              </div>
+              <div>
+                <label for="validade" class="text-sm font-medium">Validade do cupom</label>
+                <select id="validade" class="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
+                  <option value="7">7 dias</option>
+                  <option value="15" selected>15 dias</option>
+                  <option value="30">30 dias</option>
+                </select>
+              </div>
+              <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 md:col-span-2">
+                <div class="grid gap-4 sm:grid-cols-3">
+                  <div><p class="text-xs text-zinc-500">Audiência estimada</p><p class="mt-1 text-xl font-semibold tabular" id="aud">312 clientes</p></div>
+                  <div><p class="text-xs text-zinc-500">Conversão esperada (8–12%)</p><p class="mt-1 text-xl font-semibold tabular" id="conv">25–37 vendas</p></div>
+                  <div><p class="text-xs text-zinc-500">Receita potencial</p><p class="mt-1 text-xl font-semibold tabular" id="receita">R$ 3,0–4,5 mil</p></div>
+                </div>
+                <p class="mt-3 text-xs text-zinc-500">Prévia no app: <span id="previa" class="font-medium text-zinc-700"></span></p>
+              </div>
+              <p id="camp-erro" role="alert" class="hidden text-sm text-red-700 md:col-span-2"></p>
+              <div class="md:col-span-2">
+                <button type="submit" id="btn-disparar" class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 disabled:cursor-wait disabled:opacity-70">Disparar campanha</button>
+              </div>
+            </form>
+          </div>
+          <div class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-2">
+            <h2 class="text-base font-semibold">Campanhas recentes</h2>
+            <ul id="lista-camp" class="mt-3 divide-y divide-zinc-100 text-sm"></ul>
+            <p class="mt-4 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-600">Os cupons são entregues pelo app do shopping. Você vê apenas totais de audiência e conversão — nenhum dado pessoal dos clientes é compartilhado com a loja.</p>
+          </div>
+        </section>
+
+        <p class="text-center text-xs text-zinc-400">Protótipo acadêmico da Equipe 22 — Ho-Ho, sem vínculo oficial com o Capim Dourado Shopping · dados fictícios</p>
+      </main>
+    </div>
+  </div>
+
+  <div id="tooltip" class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs shadow-lg" role="tooltip"></div>
+  <div id="toasts" aria-live="polite" class="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+    const num = new Intl.NumberFormat('pt-BR');
+    const pct = (v) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%';
+
+    // Período
+    const hoje = new Date(); const ini = new Date(hoje.getTime() - 29 * 864e5);
+    $('periodo').textContent = `últimos 30 dias (${ini.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} a ${hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })})`;
+
+    // ===================== Tooltip compartilhado =====================
+    const tip = $('tooltip');
+    document.addEventListener('mousemove', (e) => {
+      const alvo = e.target.closest && e.target.closest('[data-tip]');
+      if (!alvo) { tip.style.opacity = 0; return; }
+      tip.innerHTML = alvo.dataset.tip;
+      tip.style.opacity = 1;
+      const w = tip.offsetWidth;
+      tip.style.left = Math.min(window.innerWidth - w - 8, e.clientX + 12) + 'px';
+      tip.style.top = (e.clientY - tip.offsetHeight - 12) + 'px';
+    });
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.className = 'pointer-events-auto flex max-w-sm items-start gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm shadow-lg';
+      el.innerHTML = `<span aria-hidden="true" class="text-emerald-600">✓</span><span>${msg}</span>`;
+      $('toasts').replaceChildren(el);
+      setTimeout(() => el.remove(), 5000);
+    }
+
+    function tabs(seletor, aoTrocar) {
+      const botoes = document.querySelectorAll(seletor);
+      const pintar = () => botoes.forEach((b) => {
+        const ativo = b.getAttribute('aria-selected') === 'true';
+        b.className = b.className.replace(/ ?(bg-white shadow-sm font-medium text-zinc-900|text-zinc-600)/g, '') + (ativo ? ' bg-white shadow-sm font-medium text-zinc-900' : ' text-zinc-600');
+      });
+      botoes.forEach((b) => b.addEventListener('click', () => {
+        botoes.forEach((o) => o.setAttribute('aria-selected', String(o === b)));
+        pintar(); aoTrocar(b);
+      }));
+      pintar();
+    }
+
+    // ===================== Benchmarking (ReN05: K-Anonymity) =====================
+    const BENCH = {
+      calcados: { nome: 'Calçados', lojistas: 7, loja: 142.3, mediana: 210.0, recompraLoja: 31.5, recompraMediana: 27.0 },
+      infantis: { nome: 'Calçados infantis', lojistas: 2, loja: 98.4 }
+    };
+    const K_MIN = 3;
+    function renderBench(chave) {
+      const b = BENCH[chave];
+      const el = $('bench-corpo');
+      if (b.lojistas < K_MIN) {
+        el.innerHTML = `
+          <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-5">
+            <p class="flex items-center gap-2 text-sm font-semibold"><span aria-hidden="true">🔒</span> Comparação indisponível para "${b.nome}"</p>
+            <p class="mt-2 text-sm text-zinc-600">Este segmento tem apenas <strong>${b.lojistas} lojistas ativos</strong>. Para impedir a dedução dos números de um concorrente, a mediana só é exibida com pelo menos ${K_MIN} lojistas distintos (ReN05).</p>
+            <p class="mt-3 text-sm">Seu ticket médio neste segmento: <strong class="tabular">${brl.format(b.loja)}</strong></p>
+          </div>
+          ${badgeK(b)}`;
+        return;
+      }
+      const max = Math.max(b.loja, b.mediana) * 1.1;
+      const gap = (b.loja / b.mediana - 1) * 100;
+      const barra = (rotulo, valor, cor, extra) => `
+        <div class="grid grid-cols-[9rem_1fr_6rem] items-center gap-3">
+          <span class="text-sm text-zinc-600">${rotulo}</span>
+          <div class="h-8 rounded-r bg-zinc-50" data-tip="<strong>${rotulo}</strong><br>${brl.format(valor)}">
+            <div class="h-full rounded-r" style="width:${(valor / max) * 100}%;background:${cor}"></div>
+          </div>
+          <span class="text-right text-sm font-semibold tabular">${brl.format(valor)}${extra || ''}</span>
+        </div>`;
+      el.innerHTML = `
+        <div class="space-y-3" role="img" aria-label="Ticket médio da loja ${brl.format(b.loja)} contra mediana da categoria ${brl.format(b.mediana)}">
+          ${barra('Sua loja', b.loja, 'var(--serie-1)')}
+          ${barra('Mediana ' + b.nome, b.mediana, 'var(--neutro)')}
+        </div>
+        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+          <div class="rounded-lg border border-zinc-200 p-4">
+            <p class="text-xs text-zinc-500">Gap do ticket médio</p>
+            <p class="mt-1 text-2xl font-semibold tabular">${gap > 0 ? '+' : ''}${pct(gap)}</p>
+            <p class="mt-1 text-sm text-zinc-600">Seu ticket médio é ${brl.format(b.loja)} vs. ${brl.format(b.mediana)} da mediana do setor de ${b.nome}.</p>
+          </div>
+          <div class="rounded-lg border border-zinc-200 p-4">
+            <p class="text-xs text-zinc-500">Taxa de recompra</p>
+            <p class="mt-1 text-2xl font-semibold tabular">${pct(b.recompraLoja)} <span class="text-sm font-normal text-zinc-500">vs. ${pct(b.recompraMediana)} (mediana)</span></p>
+            <p class="mt-1 text-sm text-zinc-600">Sua base é mais fiel que a média: oportunidade para kits e combos que elevem o ticket.</p>
+          </div>
+        </div>
+        ${badgeK(b)}`;
+    }
+    const badgeK = (b) => `
+      <p class="mt-4 flex items-start gap-2 rounded-lg border border-sky-200 bg-sky-50 p-3 text-xs text-sky-900">
+        <span aria-hidden="true" class="font-bold">i</span>
+        <span><strong>Privacidade (K-Anonymity, ReN05):</strong> segmento com ${b.lojistas} lojistas ativos — mínimo exigido: ${K_MIN}. Os valores individuais de concorrentes nunca são exibidos, apenas a mediana do grupo.</span>
+      </p>`;
+    tabs('.seg', (b) => renderBench(b.dataset.seg));
+    renderBench('calcados');
+
+    // ===================== Afinidade (RF08) =====================
+    const AFINIDADE = [
+      ['Alimentação', 62], ['Vestuário', 48], ['Esportes', 35], ['Eletrônicos', 21], ['Lazer', 14], ['Serviços', 9]
+    ];
+    $('afin-grafico').innerHTML = AFINIDADE.map(([cat, v]) => `
+      <div class="grid grid-cols-[6.5rem_1fr_3rem] items-center gap-3" data-tip="<strong>${cat}</strong><br>${v}% dos seus clientes">
+        <span class="text-sm text-zinc-600">${cat}</span>
+        <div class="h-5 rounded-r bg-zinc-50"><div class="h-full rounded-r" style="width:${v}%;background:var(--serie-1)"></div></div>
+        <span class="text-right text-sm font-semibold tabular">${v}%</span>
+      </div>`).join('');
+    $('afin-insight').innerHTML = `<strong>Insight:</strong> ${AFINIDADE[0][1]}% dos seus clientes também compram em <strong>${AFINIDADE[0][0]}</strong> na mesma visita. Que tal uma parceria com a praça de alimentação?`;
+
+    // ===================== Horários de pico (RF07) =====================
+    const HORAS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+    function distribuir(total, pesos) {
+      const soma = pesos.reduce((a, b) => a + b, 0);
+      const v = pesos.map((p) => Math.floor((p / soma) * total));
+      let resto = total - v.reduce((a, b) => a + b, 0);
+      for (let i = 0; resto > 0; i = (i + 1) % v.length, resto--) v[i] += 1;
+      return v;
+    }
+    const UTEIS = distribuir(760, [10, 22, 58, 66, 38, 34, 44, 62, 104, 122, 98, 46]);
+    const FDS = distribuir(524, [18, 30, 44, 56, 62, 66, 70, 68, 60, 50, 38, 22]);
+    const PICO = { uteis: UTEIS, fds: FDS, todos: UTEIS.map((v, i) => v + FDS[i]) };
+
+    function graficoBarras(el, rotulos, valores, { formatar = num.format, unidade = 'vendas' } = {}) {
+      const W = el.clientWidth || 800, H = el.clientHeight || 256;
+      const m = { t: 20, r: 8, b: 26, l: 40 };
+      const iw = W - m.l - m.r, ih = H - m.t - m.b;
+      const max = Math.max(...valores);
+      const passo = Math.ceil(max / 4 / 10) * 10 || 1;
+      const topo = passo * 4;
+      const bw = iw / valores.length;
+      const iMax = valores.indexOf(max);
+      let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true" font-family="system-ui, sans-serif">`;
+      for (let k = 0; k <= 4; k++) {
+        const y = m.t + ih - (k * passo / topo) * ih;
+        s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y}" y2="${y}" stroke="${k === 0 ? 'var(--eixo)' : 'var(--grade)'}" stroke-width="1"/>`;
+        s += `<text x="${m.l - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="var(--texto-mudo)">${num.format(k * passo)}</text>`;
+      }
+      valores.forEach((v, i) => {
+        const h = (v / topo) * ih, x = m.l + i * bw + bw * 0.18, w = bw * 0.64, y = m.t + ih - h;
+        const r = Math.min(4, w / 2, h);
+        const cor = i === iMax ? 'var(--serie-1-forte)' : 'var(--serie-1)';
+        s += `<g data-tip="<strong>${rotulos[i]}</strong><br>${formatar(v)} ${unidade}">`;
+        s += `<rect x="${m.l + i * bw}" y="${m.t}" width="${bw}" height="${ih}" fill="transparent"/>`;
+        s += `<path d="M${x},${m.t + ih} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${m.t + ih} Z" fill="${cor}"/>`;
+        if (i === iMax) s += `<text x="${x + w / 2}" y="${y - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="#18181b">${formatar(v)}</text>`;
+        s += `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--texto-mudo)">${rotulos[i]}</text></g>`;
+      });
+      el.innerHTML = s + '</svg>';
+    }
+
+    let diasAtual = 'todos';
+    function renderPico() {
+      const v = PICO[diasAtual];
+      const rot = HORAS.map((h) => h + 'h');
+      graficoBarras($('pico-grafico'), rot, v);
+      const i = v.indexOf(Math.max(...v));
+      const total = v.reduce((a, b) => a + b, 0);
+      $('pico-resumo').innerHTML = `Pico às <strong>${HORAS[i]}h–${HORAS[i] + 1}h</strong> com ${num.format(v[i])} vendas (${pct((v[i] / total) * 100)} do total de ${num.format(total)}).`;
+      $('pico-tabela').innerHTML = `<table class="w-full text-left text-xs tabular"><thead><tr class="text-zinc-500">${['Faixa', ...rot].map((c) => `<th class="px-2 py-1 font-medium">${c}</th>`).join('')}</tr></thead>
+        <tbody><tr><th class="px-2 py-1 font-medium text-zinc-500">Vendas</th>${v.map((x) => `<td class="px-2 py-1">${x}</td>`).join('')}</tr></tbody></table>`;
+    }
+    tabs('.dias', (b) => { diasAtual = b.dataset.dias; renderPico(); });
+    renderPico();
+    let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(renderPico, 150); });
+
+    // ===================== Campanhas (RF11) =====================
+    const TICKET = 142.3;
+    const campanhas = [
+      { nome: 'Volta às aulas · 10%', seg: 'Clientes da sua loja inativos há 60 dias', aud: 287, status: 'Concluída', conv: '11,8% de conversão' },
+      { nome: 'Dia dos Pais · 15%', seg: 'Clientes do setor de Calçados inativos na sua loja há 60 dias', aud: 790, status: 'Concluída', conv: '9,4% de conversão' }
+    ];
+    function renderCampanhas() {
+      $('lista-camp').innerHTML = campanhas.map((c) => `
+        <li class="py-3">
+          <div class="flex items-center justify-between gap-2">
+            <p class="font-medium">${c.nome}</p>
+            <span class="rounded-full px-2 py-0.5 text-[11px] font-medium ${c.status === 'Enviada' ? 'bg-brand-50 text-brand-700' : 'bg-zinc-100 text-zinc-600'}">${c.status}</span>
+          </div>
+          <p class="mt-0.5 text-xs text-zinc-500">${c.seg} · ${num.format(c.aud)} clientes · ${c.conv}</p>
+        </li>`).join('');
+    }
+    function atualizarEstimativa() {
+      const opt = $('segmento').selectedOptions[0];
+      const aud = Number(opt.dataset.aud);
+      const d = Number($('desconto').value);
+      const min = Math.round(aud * 0.08), max = Math.round(aud * 0.12);
+      const liquido = TICKET * (1 - (isFinite(d) ? d : 0) / 100);
+      const mil = (v) => (v / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      $('aud').textContent = `${num.format(aud)} clientes`;
+      $('conv').textContent = `${min}–${max} vendas`;
+      $('receita').textContent = `R$ ${mil(min * liquido)}–${mil(max * liquido)} mil`;
+      $('previa').textContent = `“Passo Firme Calçados: ${d || '?'}% OFF para você voltar! Válido por ${$('validade').value} dias.”`;
+    }
+    ['segmento', 'desconto', 'validade'].forEach((id) => $(id).addEventListener('input', atualizarEstimativa));
+
+    $('form-camp').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = Number($('desconto').value);
+      const erro = $('camp-erro');
+      if (!Number.isInteger(d) || d < 5 || d > 50) {
+        erro.textContent = 'Informe um desconto inteiro entre 5% e 50%.';
+        erro.classList.remove('hidden');
+        $('desconto').focus();
+        return;
+      }
+      erro.classList.add('hidden');
+      const btn = $('btn-disparar');
+      btn.disabled = true; btn.textContent = 'Disparando…';
+      setTimeout(() => {
+        btn.disabled = false; btn.textContent = 'Disparar campanha';
+        const opt = $('segmento').selectedOptions[0];
+        campanhas.unshift({ nome: `Campanha ${d}% OFF`, seg: opt.textContent, aud: Number(opt.dataset.aud), status: 'Enviada', conv: `validade de ${$('validade').value} dias` });
+        renderCampanhas();
+        toast(`Campanha disparada! Cupom de ${d}% enviado pelo app do shopping para ${num.format(Number(opt.dataset.aud))} clientes (simulação).`);
+      }, 700);
+    });
+    renderCampanhas();
+    atualizarEstimativa();
+  </script>
+</body>
+</html>

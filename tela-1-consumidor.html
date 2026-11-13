@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tela 1 — Consumidor · Shopping Analytics &amp; Loyalty Hub</title>
+  <!-- CSS do Tailwind compilado (sem dependencia de CDN) -->
+  <link rel="stylesheet" href="tailwind.css" />
+  <style>
+    .tabular { font-variant-numeric: tabular-nums; }
+    #cdn-aviso { display: none; padding: 8px 12px; background: #fef3c7; color: #78350f; font: 14px system-ui, sans-serif; text-align: center; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-100 text-zinc-900 antialiased">
+  <div id="cdn-aviso" role="status">Aviso: o Tailwind CSS (CDN) não carregou. Verifique a conexão com a internet para ver o layout completo.</div>
+
+  <!-- Cabeçalho comum às 3 telas -->
+  <header class="border-b border-zinc-200 bg-white">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+      <a href="tela-1-consumidor.html" class="flex items-center gap-3">
+        <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-600 text-sm font-bold text-white" aria-hidden="true">SA</span>
+        <span class="leading-tight">
+          <span class="block text-sm font-semibold">Shopping Analytics &amp; Loyalty Hub</span>
+          <span class="block text-xs text-zinc-500">Equipe 22 — Ho-Ho</span>
+        </span>
+      </a>
+      <nav aria-label="Telas do protótipo" class="flex flex-wrap items-center gap-1 text-sm">
+        <a href="tela-1-consumidor.html" aria-current="page" class="rounded-md bg-brand-50 px-3 py-1.5 font-medium text-brand-700">1 · Consumidor</a>
+        <a href="tela-2-lojista.html" class="rounded-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100">2 · Lojista</a>
+        <a href="tela-3-shopping.html" class="rounded-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100">3 · Shopping</a>
+        <span class="ml-2 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800">Protótipo · dados fictícios</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-8 lg:flex-row lg:items-start lg:justify-center">
+
+    <!-- ============ "Celular": app do consumidor ============ -->
+    <section aria-label="App do consumidor" class="w-full max-w-[400px] sm:rounded-[2.5rem] sm:border-[10px] sm:border-zinc-900 sm:bg-zinc-900 sm:shadow-2xl">
+      <div class="overflow-hidden bg-zinc-50 sm:rounded-[1.9rem]">
+        <!-- barra de status fake -->
+        <div class="flex items-center justify-between bg-brand-700 px-5 pt-3 text-[11px] font-medium text-brand-100" aria-hidden="true">
+          <span id="relogio">--:--</span><span>●●● 4G ▮</span>
+        </div>
+        <!-- cabeçalho do app -->
+        <div class="bg-brand-700 px-5 pb-5 pt-3 text-white">
+          <div class="flex items-start justify-between gap-2"><p class="text-xs text-brand-200">Capim Dourado Shopping · Palmas – TO · Programa de Benefícios</p><span class="shrink-0 rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-medium text-brand-100">Perfil: CONSUMIDOR</span></div>
+          <h1 class="mt-1 text-xl font-semibold">Estacionamento grátis</h1>
+          <p class="mt-1 text-sm text-brand-100">Some <strong class="font-semibold text-white">R$ 150,00</strong> em notas de hoje e saia sem pagar.</p>
+        </div>
+
+        <div class="space-y-4 p-4">
+          <!-- Progresso (RF04 / ReN03) -->
+          <section aria-labelledby="t-progresso" class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div class="flex items-baseline justify-between">
+              <h2 id="t-progresso" class="text-sm font-semibold">Seu progresso hoje</h2>
+              <span id="cpf-mascarado" class="text-xs text-zinc-500"></span>
+            </div>
+            <p class="mt-2 text-2xl font-semibold tabular"><span id="total-dia">R$ 0,00</span> <span class="text-sm font-normal text-zinc-500">de R$ 150,00</span></p>
+            <div id="barra" role="progressbar" aria-label="Progresso para o estacionamento grátis" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0" aria-valuetext="R$ 0,00 de R$ 150,00" class="mt-3 h-3 w-full overflow-hidden rounded-full bg-zinc-100">
+              <div id="barra-preenchimento" class="h-full w-0 rounded-full bg-brand-600 transition-all duration-700 ease-out"></div>
+            </div>
+            <p id="progresso-texto" aria-live="polite" class="mt-2 text-sm text-zinc-600"></p>
+          </section>
+
+          <!-- Voucher (RF05 / ReN04) -->
+          <section id="voucher" aria-labelledby="t-voucher" aria-live="polite" class="hidden rounded-xl border-2 border-dashed border-emerald-400 bg-white p-4 shadow-sm">
+            <h2 id="t-voucher" class="text-sm font-semibold">Voucher de estacionamento grátis</h2>
+            <p class="mt-0.5 text-xs text-zinc-500">Apresente o QR Code na cancela de saída.</p>
+            <p class="mt-2"><span class="sr-only">Status: </span><span id="voucher-status" class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium"></span></p>
+            <div class="mt-3 flex items-center gap-4">
+              <div id="voucher-qr" class="shrink-0 rounded-lg border border-zinc-200 bg-white p-2" role="img" aria-label="QR Code do voucher (ilustrativo)"></div>
+              <dl class="space-y-1.5 text-xs">
+                <div><dt class="text-zinc-500">Código</dt><dd id="voucher-codigo" class="font-mono font-semibold tabular"></dd></div>
+                <div><dt class="text-zinc-500">Emitido às</dt><dd id="voucher-emissao" class="font-medium tabular"></dd></div>
+                <div><dt class="text-zinc-500">Válido até</dt><dd id="voucher-validade" class="font-medium tabular"></dd></div>
+              </dl>
+            </div>
+            <p class="mt-3 text-xs text-emerald-800">Economia de <strong class="font-semibold tabular">R$ 15,00</strong> no estacionamento (valor público da diária)</p>
+            <p class="mt-2 rounded-lg bg-zinc-50 p-2 text-xs text-zinc-600">Limite de 1 isenção por CPF por dia. Válido para saída até o fechamento do shopping hoje (seg. a sáb. 22h; dom. 20h).</p>
+          </section>
+
+          <!-- Formulário de envio (RF01 / RF03) -->
+          <section aria-labelledby="t-enviar" class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <h2 id="t-enviar" class="text-sm font-semibold">Cadastrar nota fiscal (NFC-e)</h2>
+            <form id="form-nota" class="mt-3 space-y-3" novalidate>
+              <div>
+                <label for="cpf" class="text-sm font-medium">CPF</label>
+                <input id="cpf" name="cpf" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" aria-describedby="cpf-ajuda"
+                  class="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm tabular outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200" />
+                <p id="cpf-ajuda" class="mt-1 text-xs text-zinc-500">CPF fictício de teste: <button type="button" id="cpf-teste" class="font-medium text-brand-700 underline underline-offset-2">529.982.247-25</button></p>
+              </div>
+              <div>
+                <div class="flex items-baseline justify-between">
+                  <label for="chave" class="text-sm font-medium">Chave de acesso (44 dígitos)</label>
+                  <span id="chave-contador" class="text-xs text-zinc-500 tabular" aria-live="polite">0/44</span>
+                </div>
+                <textarea id="chave" name="chave" rows="2" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000" aria-describedby="chave-ajuda"
+                  class="mt-1 w-full resize-none rounded-lg border border-zinc-300 px-3 py-2 font-mono text-[13px] tabular outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200"></textarea>
+                <p id="chave-ajuda" class="mt-1 text-xs text-zinc-500">Fica impressa abaixo do QR Code do cupom fiscal.</p>
+              </div>
+              <button type="button" id="btn-qr" class="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>
+                Simular leitura de QR Code
+              </button>
+              <label class="flex items-start gap-2 rounded-lg bg-zinc-50 p-2.5 text-xs text-zinc-700">
+                <input id="lgpd" type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 accent-brand-600" />
+                <span>Autorizo o uso dos dados das minhas notas fiscais para o programa de benefícios, conforme a <strong>LGPD</strong>. Lojistas só veem dados agregados e anonimizados; posso revogar a qualquer momento.</span>
+              </label>
+              <button type="submit" id="btn-enviar" class="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 disabled:cursor-wait disabled:opacity-70">
+                Enviar nota
+              </button>
+            </form>
+            <div id="alerta" role="alert" class="mt-3 hidden rounded-lg border p-3 text-sm"></div>
+          </section>
+
+          <!-- Extrato do dia (RF13) -->
+          <section aria-labelledby="t-notas" class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div class="flex items-baseline justify-between">
+              <h2 id="t-notas" class="text-sm font-semibold">Notas de hoje</h2>
+              <span id="notas-contagem" class="text-xs text-zinc-500"></span>
+            </div>
+            <ul id="lista-notas" class="mt-2 divide-y divide-zinc-100"></ul>
+          </section>
+
+          <p class="pb-2 text-center text-[11px] text-zinc-400">Consulta fiscal simulada (MockSefazGateway)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Painel do protótipo (fora do app) ============ -->
+    <aside aria-labelledby="t-painel" class="w-full max-w-[400px] space-y-4 lg:sticky lg:top-6 lg:w-80">
+      <div class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <h2 id="t-painel" class="text-sm font-semibold">Painel do protótipo</h2>
+        <p class="mt-1 text-xs text-zinc-500">Controles para demonstrar as regras de negócio. Não fazem parte do app final.</p>
+
+        <h3 class="mt-4 text-xs font-semibold uppercase tracking-wide text-zinc-500">Simular erros de validação</h3>
+        <div class="mt-2 grid gap-2">
+          <button type="button" data-cenario="duplicada" class="cenario rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50">
+            <span class="font-medium">Nota duplicada</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">ReN01</span>
+            <span class="block text-xs text-zinc-500">Reenvia uma chave já cadastrada</span>
+          </button>
+          <button type="button" data-cenario="antiga" class="cenario rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50">
+            <span class="font-medium">Nota com mais de 72h</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">ReN02</span>
+            <span class="block text-xs text-zinc-500">Emitida há 4 dias</span>
+          </button>
+          <button type="button" data-cenario="cnpj" class="cenario rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50">
+            <span class="font-medium">CNPJ fora do shopping</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">RF03</span>
+            <span class="block text-xs text-zinc-500">Loja emissora não é lojista ativo</span>
+          </button>
+        </div>
+
+        <h3 class="mt-4 text-xs font-semibold uppercase tracking-wide text-zinc-500">Outros cenários</h3>
+        <div class="mt-2 grid gap-2">
+          <button type="button" data-cenario="ontem" class="cenario rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50">
+            <span class="font-medium">Nota de ontem (dentro de 72h)</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">ReN03</span>
+            <span class="block text-xs text-zinc-500">Aceita, mas não soma para a meta de hoje</span>
+          </button>
+          <button type="button" id="sim-saida" class="rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50" disabled>
+            <span class="font-medium">Passar na cancela de saída</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">RF05</span>
+            <span class="block text-xs text-zinc-500">Voucher pendente → utilizado</span>
+          </button>
+          <button type="button" id="sim-fechamento" class="rounded-lg border border-zinc-200 px-3 py-2 text-left text-sm hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50" disabled>
+            <span class="font-medium">Fechamento do shopping (<span id="rotulo-fechamento">22h</span>)</span> <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] text-zinc-600">ReN04</span>
+            <span class="block text-xs text-zinc-500">Voucher pendente → expirado</span>
+          </button>
+          <button type="button" id="sim-reset" class="rounded-lg px-3 py-2 text-left text-sm text-zinc-600 underline underline-offset-2 hover:text-zinc-900">Reiniciar demonstração</button>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-zinc-200 bg-white p-4 text-xs text-zinc-600 shadow-sm">
+        <h2 class="text-sm font-semibold text-zinc-900">Ordem de validação (mock do backend)</h2>
+        <ol class="mt-2 list-decimal space-y-1 pl-4">
+          <li>CPF válido + consentimento LGPD (RN04)</li>
+          <li>Chave com 44 dígitos e dígito verificador (RF01)</li>
+          <li>Chave nunca cadastrada (ReN01)</li>
+          <li>Consulta à SEFAZ simulada (RF02)</li>
+          <li>CNPJ emissor é lojista ativo (RF03)</li>
+          <li>Emitida há no máximo 72h (ReN02)</li>
+          <li>Soma do dia ≥ R$ 150 → voucher (ReN03/ReN04)</li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+  <p class="mx-auto max-w-6xl px-4 pb-6 text-center text-xs text-zinc-400">Protótipo acadêmico da Equipe 22 — Ho-Ho, sem vínculo oficial com o Capim Dourado Shopping · dados fictícios</p>
+
+  <!-- Toasts -->
+  <div id="toasts" aria-live="polite" class="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2 px-4 sm:inset-x-auto sm:right-4 sm:items-end"></div>
+
+  <script>
+
+    // ===================== Utilitários =====================
+    const META = 150;
+    // Fechamento das lojas do Capim Dourado Shopping (ReN04): seg. a sáb. 22h; dom. 20h (horário público do shopping)
+    const horaFechamento = (d) => (d.getDay() === 0 ? 20 : 22);
+    const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+    const hhmm = (d) => d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const dataCurta = (d) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    const $ = (id) => document.getElementById(id);
+    const soDigitos = (s) => (s || '').replace(/\D/g, '');
+    const mesmoDia = (a, b) => a.toDateString() === b.toDateString();
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const pad = (n, len) => String(n).padStart(len, '0');
+
+    function cpfValido(cpf) {
+      const d = soDigitos(cpf);
+      if (d.length !== 11 || /^(\d)\1+$/.test(d)) return false;
+      for (const t of [9, 10]) {
+        let soma = 0;
+        for (let i = 0; i < t; i++) soma += Number(d[i]) * (t + 1 - i);
+        const dv = ((soma * 10) % 11) % 10;
+        if (dv !== Number(d[t])) return false;
+      }
+      return true;
+    }
+    const mascaraCpf = (v) => {
+      const d = soDigitos(v).slice(0, 11);
+      return d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2');
+    };
+    // exibe só o miolo do CPF (privacidade na tela)
+    const cpfOculto = (d) => `***.${d.slice(3, 6)}.${d.slice(6, 9)}-**`;
+    const formatarChave = (d) => d.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+    // Dígito verificador da chave NF-e/NFC-e (módulo 11, pesos 2..9)
+    function dvChave(d43) {
+      let soma = 0, peso = 2;
+      for (let i = d43.length - 1; i >= 0; i--) { soma += Number(d43[i]) * peso; peso = peso === 9 ? 2 : peso + 1; }
+      const r = soma % 11;
+      return r < 2 ? 0 : 11 - r;
+    }
+    // Estrutura (cUF 17 = Tocantins): cUF(2) AAMM(4) CNPJ(14) modelo(2)=65 série(3) nNF(9) tpEmis(1) cNF(8) DV(1)
+    function gerarChave(cnpj, data) {
+      const aamm = pad(data.getFullYear() % 100, 2) + pad(data.getMonth() + 1, 2);
+      const base = '17' + aamm + cnpj + '65' + pad(rand(1, 9), 3) + pad(rand(1, 999999999), 9) + '1' + pad(rand(0, 99999999), 8);
+      return base + dvChave(base);
+    }
+    const chaveDvOk = (d) => d.length === 44 && dvChave(d.slice(0, 43)) === Number(d[43]);
+    const cnpjDaChave = (d) => d.slice(6, 20);
+
+    // ===================== Dados fictícios =====================
+    // Lojistas ativos do shopping (CNPJs fictícios)
+    const LOJAS = {
+      '11222333000181': { nome: 'Passo Firme Calçados', categoria: 'Calçados' },
+      '22333444000172': { nome: 'Sabor da Serra Café', categoria: 'Alimentação' },
+      '33444555000163': { nome: 'Moda Cerrado', categoria: 'Vestuário' },
+      '44555666000154': { nome: 'TecnoPonto Eletrônicos', categoria: 'Eletrônicos' },
+      '55666777000145': { nome: 'Arena Kids Diversões', categoria: 'Lazer' },
+      '66777888000136': { nome: 'Burger do Vale', categoria: 'Alimentação' },
+      '77888999000127': { nome: 'Ótica Visão Clara', categoria: 'Serviços' },
+      '88999000000118': { nome: 'Esporte & Cia', categoria: 'Esportes' }
+    };
+    const CNPJ_EXTERNO = '99000111000109'; // loja que não pertence ao shopping
+    const CPF_TESTE = '52998224725';
+
+    // ===================== MockSefazGateway =====================
+    // Simula a ConsultaNotaFiscalGateway: "banco" de notas emitidas conhecido pela SEFAZ fictícia.
+    let sefaz, chavesCadastradas, carteiras, ultimaChaveAceita;
+
+    function registrarNaSefaz(cnpj, emitidaEm, valor) {
+      const chave = gerarChave(cnpj, emitidaEm);
+      sefaz.set(chave, { cnpj, emitidaEm, valor });
+      return chave;
+    }
+    function consultarSefaz(chave) {
+      if (sefaz.has(chave)) return sefaz.get(chave);
+      // Chave digitada manualmente: deriva dados do próprio número (determinístico)
+      const aa = Number(chave.slice(2, 4)), mm = Number(chave.slice(4, 6));
+      const agora = new Date();
+      let emitidaEm;
+      if (2000 + aa === agora.getFullYear() && mm === agora.getMonth() + 1) {
+        emitidaEm = new Date(agora.getTime() - (Number(chave.slice(35, 37)) % 90 + 5) * 60000);
+      } else if (mm >= 1 && mm <= 12) {
+        emitidaEm = new Date(2000 + aa, mm - 1, 15, 15, 0);
+      } else return null; // não localizada
+      const valor = (Number(chave.slice(25, 34)) % 11000) / 100 + 15;
+      return { cnpj: cnpjDaChave(chave), emitidaEm, valor: Math.round(valor * 100) / 100 };
+    }
+
+    function minutosAtras(min) { return new Date(Date.now() - min * 60000); }
+    function emissaoHojeAleatoria() {
+      const agora = new Date();
+      const inicioDia = new Date(agora); inicioDia.setHours(0, 0, 0, 0);
+      const t = Math.max(inicioDia.getTime() + 60000, agora.getTime() - rand(2, 90) * 60000);
+      return new Date(t);
+    }
+
+    function iniciar() {
+      sefaz = new Map();
+      chavesCadastradas = new Map(); // chave -> data do cadastro (unicidade global, ReN01)
+      carteiras = new Map();        // cpf -> { notas: [], voucher: null }
+      // Nota já cadastrada hoje pelo CPF de teste (estado inicial)
+      const emitida = minutosAtras(75);
+      const chaveSeed = registrarNaSefaz('22333444000172', emitida, 48.9);
+      carteiras.set(CPF_TESTE, { notas: [{ chave: chaveSeed, cnpj: '22333444000172', emitidaEm: emitida, valor: 48.9, contaHoje: true }], voucher: null });
+      chavesCadastradas.set(chaveSeed, minutosAtras(70));
+      ultimaChaveAceita = chaveSeed;
+      $('cpf').value = mascaraCpf(CPF_TESTE);
+      $('chave').value = '';
+      $('lgpd').checked = false;
+      atualizarContador();
+      esconderAlerta();
+      render();
+    }
+
+    // ===================== Regras (mock do backend) =====================
+    function validarECadastrar(cpf, chave) {
+      if (!cpfValido(cpf)) return { erro: 'CPF inválido', detalhe: 'Confira os 11 dígitos do seu CPF.', regra: 'Cadastro' };
+      if (!$('lgpd').checked) return { erro: 'Consentimento necessário', detalhe: 'Para participar do programa, aceite o termo de uso de dados (LGPD).', regra: 'RN04' };
+      if (chave.length !== 44) return { erro: 'Chave incompleta', detalhe: `A chave de acesso tem 44 dígitos. Você informou ${chave.length}.`, regra: 'RF01' };
+      if (!chaveDvOk(chave)) return { erro: 'Chave inválida', detalhe: 'O dígito verificador não confere. Confira a digitação ou use a leitura do QR Code.', regra: 'RF01' };
+      if (chavesCadastradas.has(chave)) {
+        return { erro: 'Nota já cadastrada', detalhe: `Esta NFC-e já foi registrada no programa em ${dataCurta(chavesCadastradas.get(chave))} às ${hhmm(chavesCadastradas.get(chave))}. Cada nota só pode ser usada uma vez.`, regra: 'ReN01' };
+      }
+      const nota = consultarSefaz(chave);
+      if (!nota) return { erro: 'Nota não localizada', detalhe: 'A SEFAZ não retornou dados para esta chave. Tente novamente mais tarde.', regra: 'RF02' };
+      if (!LOJAS[nota.cnpj]) return { erro: 'Loja não participante', detalhe: 'O CNPJ emissor desta nota não pertence a um lojista ativo do Capim Dourado Shopping.', regra: 'RF03' };
+      const horas = (Date.now() - nota.emitidaEm.getTime()) / 3600000;
+      if (horas > 72) return { erro: 'Prazo de envio expirado', detalhe: `Esta nota foi emitida em ${nota.emitidaEm.toLocaleDateString('pt-BR')}. Notas só são aceitas em até 72 horas após a emissão.`, regra: 'ReN02' };
+
+      // Aceita
+      const carteira = carteiras.get(cpf) || { notas: [], voucher: null };
+      carteiras.set(cpf, carteira);
+      const contaHoje = mesmoDia(nota.emitidaEm, new Date());
+      carteira.notas.unshift({ chave, ...nota, contaHoje });
+      chavesCadastradas.set(chave, new Date());
+      ultimaChaveAceita = chave;
+      let voucherNovo = false;
+      if (!carteira.voucher && totalHoje(carteira) >= META) {
+        const agora = new Date();
+        const validoAte = new Date(agora); validoAte.setHours(horaFechamento(agora), 0, 0, 0);
+        carteira.voucher = { codigo: 'EST-' + pad(rand(0, 9999), 4) + '-' + pad(rand(0, 9999), 4), emitidoEm: agora, validoAte, status: 'pendente' };
+        voucherNovo = true;
+      }
+      return { ok: true, nota, contaHoje, voucherNovo, jaTinhaVoucher: !!carteira.voucher && !voucherNovo };
+    }
+    const totalHoje = (c) => c.notas.filter((n) => n.contaHoje).reduce((s, n) => s + n.valor, 0);
+
+    // ===================== Renderização =====================
+    function carteiraAtual() {
+      const cpf = soDigitos($('cpf').value);
+      return cpfValido(cpf) ? { cpf, c: carteiras.get(cpf) || { notas: [], voucher: null } } : null;
+    }
+
+    function render() {
+      const atual = carteiraAtual();
+      const c = atual ? atual.c : { notas: [], voucher: null };
+      $('cpf-mascarado').textContent = atual ? 'CPF ' + cpfOculto(atual.cpf) : 'Informe seu CPF';
+
+      // Progresso
+      const total = totalHoje(c);
+      const pct = Math.min(100, (total / META) * 100);
+      $('total-dia').textContent = brl.format(total);
+      $('barra-preenchimento').style.width = pct + '%';
+      $('barra-preenchimento').className = 'h-full rounded-full transition-all duration-700 ease-out ' + (total >= META ? 'bg-emerald-600' : 'bg-brand-600');
+      const barra = $('barra');
+      barra.setAttribute('aria-valuenow', Math.min(total, META).toFixed(2));
+      barra.setAttribute('aria-valuetext', `${brl.format(total)} de R$ 150,00`);
+      $('progresso-texto').innerHTML = total >= META
+        ? '<span class="font-medium text-emerald-700">✓ Meta atingida!</span> Seu estacionamento de hoje está liberado.'
+        : `Faltam <strong class="text-zinc-900">${brl.format(META - total)}</strong> para o estacionamento grátis.`;
+
+      // Lista de notas
+      const ul = $('lista-notas');
+      const hoje = c.notas.filter((n) => n.contaHoje).length;
+      $('notas-contagem').textContent = `${hoje} ${hoje === 1 ? 'nota' : 'notas'} · ${brl.format(total)}`;
+      ul.innerHTML = c.notas.length ? c.notas.map((n) => {
+        const loja = LOJAS[n.cnpj];
+        const quando = n.contaHoje ? hhmm(n.emitidaEm) : `ontem, ${hhmm(n.emitidaEm)}`;
+        const selo = n.contaHoje
+          ? '<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700"><span aria-hidden="true">✓</span> Validada</span>'
+          : '<span class="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-600" title="Emitida em outro dia: não soma para a meta de hoje (ReN03)"><span aria-hidden="true">✓</span> Validada · fora da meta</span>';
+        return `<li class="flex items-center justify-between gap-3 py-2.5">
+            <div class="min-w-0">
+              <p class="truncate text-sm font-medium">${loja.nome}</p>
+              <p class="text-xs text-zinc-500">${loja.categoria} · ${quando}</p>
+            </div>
+            <div class="shrink-0 text-right">
+              <p class="text-sm font-semibold tabular">${brl.format(n.valor)}</p>
+              ${selo}
+            </div>
+          </li>`;
+      }).join('') : '<li class="py-6 text-center text-sm text-zinc-500">Nenhuma nota cadastrada hoje.</li>';
+
+      // Voucher
+      const v = c.voucher;
+      $('voucher').classList.toggle('hidden', !v);
+      $('sim-saida').disabled = !(v && v.status === 'pendente');
+      $('sim-fechamento').disabled = !(v && v.status === 'pendente');
+      if (v) {
+        const estilos = {
+          pendente: ['bg-amber-50 text-amber-800 ring-1 ring-amber-200', '●', 'Pendente · pronto para uso'],
+          utilizado: ['bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200', '✓', 'Utilizado'],
+          expirado: ['bg-zinc-100 text-zinc-600 ring-1 ring-zinc-200', '✕', 'Expirado']
+        }[v.status];
+        const st = $('voucher-status');
+        st.className = 'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ' + estilos[0];
+        st.innerHTML = `<span aria-hidden="true">${estilos[1]}</span> ${estilos[2]}`;
+        $('voucher-codigo').textContent = v.codigo;
+        $('voucher-emissao').textContent = hhmm(v.emitidoEm);
+        $('voucher-validade').textContent = `Hoje, ${hhmm(v.validoAte)} (fechamento)`;
+        $('voucher-qr').innerHTML = qrSvg(v.codigo, v.status !== 'pendente');
+        $('voucher').className = 'rounded-xl border-2 border-dashed bg-white p-4 shadow-sm ' + (v.status === 'pendente' ? 'border-emerald-400' : 'border-zinc-300');
+      }
+    }
+
+    // QR Code ilustrativo (não decodificável): padrão pseudoaleatório a partir do código
+    function qrSvg(texto, apagado) {
+      let h = 2166136261;
+      for (const ch of texto) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+      const prng = () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
+      const N = 25, s = 4;
+      const finder = (x, y) => {
+        for (const [fx, fy] of [[0, 0], [N - 7, 0], [0, N - 7]]) {
+          const dx = x - fx, dy = y - fy;
+          if (dx >= -1 && dx <= 7 && dy >= -1 && dy <= 7) {
+            if (dx < 0 || dy < 0 || dx > 6 || dy > 6) return 0;
+            const borda = dx === 0 || dy === 0 || dx === 6 || dy === 6;
+            const miolo = dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4;
+            return borda || miolo ? 1 : 0;
+          }
+        }
+        return -1;
+      };
+      let rects = '';
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+        const f = finder(x, y);
+        if (f === 1 || (f === -1 && prng() > 0.52)) rects += `<rect x="${x * s}" y="${y * s}" width="${s}" height="${s}"/>`;
+      }
+      return `<svg width="${N * s}" height="${N * s}" viewBox="0 0 ${N * s} ${N * s}" fill="${apagado ? '#a1a1aa' : '#18181b'}" aria-hidden="true">${rects}</svg>`;
+    }
+
+    // ===================== Interações =====================
+    function mostrarAlerta(r) {
+      const el = $('alerta');
+      el.className = 'mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800';
+      el.innerHTML = `<p class="flex items-center justify-between gap-2 font-semibold"><span><span aria-hidden="true">⚠</span> ${r.erro}</span><span class="rounded bg-white/70 px-1.5 py-0.5 text-[11px] font-medium text-red-700 ring-1 ring-red-200">${r.regra}</span></p><p class="mt-1 text-red-700">${r.detalhe}</p>`;
+    }
+    function esconderAlerta() { $('alerta').className = 'mt-3 hidden'; $('alerta').innerHTML = ''; }
+
+    function toast(msg, tipo = 'sucesso') {
+      const el = document.createElement('div');
+      const sucesso = tipo === 'sucesso';
+      el.className = `pointer-events-auto flex w-full max-w-sm items-start gap-2 rounded-xl border ${sucesso ? 'border-emerald-200' : 'border-zinc-200'} bg-white px-4 py-3 text-sm text-zinc-900 shadow-lg`;
+      el.innerHTML = `<span aria-hidden="true" class="${sucesso ? 'text-emerald-600' : 'text-brand-600'}">${sucesso ? '✓' : 'ℹ'}</span><span>${msg}</span>`;
+      $('toasts').replaceChildren(el); // mantém só o aviso mais recente
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    function atualizarContador() {
+      const n = soDigitos($('chave').value).length;
+      const el = $('chave-contador');
+      el.textContent = `${n}/44`;
+      el.className = 'text-xs tabular ' + (n === 44 ? 'font-medium text-emerald-700' : 'text-zinc-500');
+    }
+
+    $('cpf').addEventListener('input', (e) => { e.target.value = mascaraCpf(e.target.value); esconderAlerta(); render(); });
+    $('cpf-teste').addEventListener('click', () => { $('cpf').value = mascaraCpf(CPF_TESTE); render(); });
+    $('chave').addEventListener('input', (e) => { e.target.value = formatarChave(soDigitos(e.target.value).slice(0, 44)); atualizarContador(); });
+
+    $('btn-qr').addEventListener('click', () => {
+      const cnpjs = Object.keys(LOJAS);
+      const cnpj = cnpjs[rand(0, cnpjs.length - 1)];
+      const valor = rand(1990, 12990) / 100;
+      const chave = registrarNaSefaz(cnpj, emissaoHojeAleatoria(), valor);
+      $('chave').value = formatarChave(chave);
+      atualizarContador();
+      esconderAlerta();
+      toast('QR Code lido! Confira a chave e toque em “Enviar nota”.', 'info');
+    });
+
+    $('form-nota').addEventListener('submit', (e) => {
+      e.preventDefault();
+      esconderAlerta();
+      const cpf = soDigitos($('cpf').value), chave = soDigitos($('chave').value);
+      const btn = $('btn-enviar');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity=".25"/><path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3"/></svg> Consultando SEFAZ…';
+      setTimeout(() => {
+        const r = validarECadastrar(cpf, chave);
+        btn.disabled = false;
+        btn.textContent = 'Enviar nota';
+        if (!r.ok) { mostrarAlerta(r); return; }
+        $('chave').value = '';
+        atualizarContador();
+        render();
+        const loja = LOJAS[r.nota.cnpj].nome;
+        if (r.voucherNovo) toast(`Nota de ${loja} validada (${brl.format(r.nota.valor)}). Voucher de estacionamento liberado!`);
+        else if (!r.contaHoje) toast(`Nota de ${loja} validada. Emitida ontem: não soma para a meta de hoje.`);
+        else if (r.jaTinhaVoucher) toast(`Nota de ${loja} validada. Você já recebeu a isenção de hoje (limite de 1 por CPF/dia).`);
+        else toast(`Nota de ${loja} validada: ${brl.format(r.nota.valor)}.`);
+      }, 600);
+    });
+
+    // Cenários do painel do protótipo
+    document.querySelectorAll('.cenario').forEach((b) => b.addEventListener('click', () => {
+      let chave;
+      const cen = b.dataset.cenario;
+      if (cen === 'duplicada') chave = ultimaChaveAceita;
+      if (cen === 'antiga') chave = registrarNaSefaz('33444555000163', minutosAtras(4 * 24 * 60), 89.9);
+      if (cen === 'cnpj') chave = registrarNaSefaz(CNPJ_EXTERNO, minutosAtras(20), 64.5);
+      if (cen === 'ontem') chave = registrarNaSefaz('55666777000145', minutosAtras(26 * 60), 42.0);
+      $('chave').value = formatarChave(chave);
+      atualizarContador();
+      if (!$('lgpd').checked) $('lgpd').checked = true; // agiliza a demonstração
+      $('form-nota').requestSubmit();
+    }));
+
+    $('sim-saida').addEventListener('click', () => { const a = carteiraAtual(); if (a && a.c.voucher) { a.c.voucher.status = 'utilizado'; render(); toast('Cancela liberada. Voucher marcado como utilizado.'); } });
+    $('sim-fechamento').addEventListener('click', () => { const a = carteiraAtual(); if (a && a.c.voucher) { a.c.voucher.status = 'expirado'; render(); toast('Shopping fechado: voucher não utilizado expirou.', 'info'); } });
+    $('sim-reset').addEventListener('click', iniciar);
+
+    $('rotulo-fechamento').textContent = horaFechamento(new Date()) + 'h';
+    const tick = () => { $('relogio').textContent = hhmm(new Date()); };
+    tick(); setInterval(tick, 30000);
+    iniciar();
+  </script>
+</body>
+</html>

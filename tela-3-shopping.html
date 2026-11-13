@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tela 3 — Portal do Shopping · Shopping Analytics &amp; Loyalty Hub</title>
+  <!-- CSS do Tailwind compilado (sem dependencia de CDN) -->
+  <link rel="stylesheet" href="tailwind.css" />
+  <style>
+    /* Papéis de cor dos gráficos (paleta categórica validada, em ordem fixa: azul, laranja, verde-água) */
+    :root { --serie-1: #2a78d6; --serie-2: #eb6834; --serie-3: #1baf7a; --grade: #e4e4e7; --eixo: #d4d4d8; --texto-mudo: #71717a; }
+    .tabular { font-variant-numeric: tabular-nums; }
+    html { scroll-behavior: smooth; }
+    #cdn-aviso { display: none; padding: 8px 12px; background: #fef3c7; color: #78350f; font: 14px system-ui, sans-serif; text-align: center; }
+    #tooltip { position: fixed; pointer-events: none; z-index: 60; opacity: 0; transition: opacity .1s; }
+    .coluna .guia, .coluna .ponto { opacity: 0; }
+    .coluna:hover .guia, .coluna:hover .ponto { opacity: 1; }
+    .celula:hover { outline: 2px solid #18181b; outline-offset: -2px; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-50 text-zinc-900 antialiased">
+  <div id="cdn-aviso" role="status">Aviso: o Tailwind CSS (CDN) não carregou. Verifique a conexão com a internet para ver o layout completo.</div>
+
+  <div class="flex min-h-screen">
+    <!-- ============ Sidebar (padrão comum aos portais) ============ -->
+    <aside class="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-zinc-200 bg-white lg:flex">
+      <a href="tela-1-consumidor.html" class="flex items-center gap-3 border-b border-zinc-200 px-5 py-4">
+        <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-600 text-sm font-bold text-white" aria-hidden="true">SA</span>
+        <span class="leading-tight">
+          <span class="block text-sm font-semibold">Shopping Analytics &amp; Loyalty Hub</span>
+          <span class="block text-xs text-zinc-500">Equipe 22 — Ho-Ho</span>
+        </span>
+      </a>
+      <nav aria-label="Portal do Shopping" class="flex-1 overflow-y-auto px-3 py-4 text-sm">
+        <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Portal do Shopping</p>
+        <a href="#kpis" class="flex items-center gap-2 rounded-md bg-brand-50 px-3 py-2 font-medium text-brand-700" aria-current="page">Visão executiva</a>
+        <a href="#segmentos" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">Faturamento por segmento</a>
+        <a href="#volume" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">Volume de notas</a>
+        <a href="#estacionamento" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">Estacionamento</a>
+        <a href="#campanhas" class="flex items-center gap-2 rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">ROI de campanhas</a>
+        <p class="mt-6 px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Telas do protótipo</p>
+        <a href="tela-1-consumidor.html" class="block rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">1 · Consumidor</a>
+        <a href="tela-2-lojista.html" class="block rounded-md px-3 py-2 text-zinc-600 hover:bg-zinc-100">2 · Lojista</a>
+        <a href="tela-3-shopping.html" class="block rounded-md px-3 py-2 font-medium text-zinc-900 hover:bg-zinc-100">3 · Shopping</a>
+      </nav>
+      <div class="flex items-center gap-3 border-t border-zinc-200 px-5 py-4">
+        <span class="grid h-9 w-9 place-items-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700" aria-hidden="true">CD</span>
+        <span class="min-w-0 leading-tight">
+          <span class="block text-sm font-medium">Administração Capim Dourado</span>
+          <span class="block text-xs text-zinc-500">Perfil: ADMIN_SHOPPING</span>
+        </span>
+      </div>
+    </aside>
+
+    <div class="min-w-0 flex-1">
+      <nav aria-label="Telas do protótipo" class="flex flex-wrap items-center gap-1 border-b border-zinc-200 bg-white px-4 py-2 text-sm lg:hidden">
+        <a href="tela-1-consumidor.html" class="rounded-md px-2 py-1 font-semibold">SA Hub</a>
+        <a href="tela-1-consumidor.html" class="rounded-md px-2 py-1 text-zinc-600">1 · Consumidor</a>
+        <a href="tela-2-lojista.html" class="rounded-md px-2 py-1 text-zinc-600">2 · Lojista</a>
+        <a href="tela-3-shopping.html" class="rounded-md bg-brand-50 px-2 py-1 font-medium text-brand-700">3 · Shopping</a>
+      </nav>
+
+      <header class="flex flex-wrap items-end justify-between gap-4 border-b border-zinc-200 bg-white px-6 py-5">
+        <div>
+          <p class="text-xs text-zinc-500">Portal do Shopping · Visão executiva · Palmas – TO</p>
+          <h1 class="mt-1 text-2xl font-semibold tracking-tight">Capim Dourado Shopping</h1>
+          <p class="mt-1 text-sm text-zinc-500" id="periodo-desc" aria-live="polite"></p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <div role="tablist" aria-label="Período" class="inline-flex rounded-lg bg-zinc-100 p-1 text-sm">
+            <button role="tab" data-periodo="hoje" aria-selected="false" class="periodo rounded-md px-3 py-1.5">Hoje</button>
+            <button role="tab" data-periodo="7d" aria-selected="true" class="periodo rounded-md px-3 py-1.5">7 dias</button>
+            <button role="tab" data-periodo="30d" aria-selected="false" class="periodo rounded-md px-3 py-1.5">30 dias</button>
+          </div>
+          <span class="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">Protótipo · dados fictícios</span>
+        </div>
+      </header>
+
+      <main class="space-y-6 p-6">
+        <!-- KPIs -->
+        <section id="kpis" aria-label="Indicadores consolidados" class="grid scroll-mt-6 gap-4 sm:grid-cols-2 xl:grid-cols-4"></section>
+
+        <div class="grid gap-6 xl:grid-cols-5">
+          <!-- Faturamento por segmento (RF12 / RN03) -->
+          <section id="segmentos" aria-labelledby="t-seg" class="scroll-mt-6 min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-2">
+            <h2 id="t-seg" class="text-base font-semibold">Faturamento consolidado por segmento</h2>
+            <p class="text-sm text-zinc-500">Valor das NFC-e cadastradas no programa</p>
+            <div id="seg-grafico" class="mt-5 space-y-3" role="img" aria-label="Gráfico de barras horizontais do faturamento por segmento"></div>
+            <p id="seg-insight" class="mt-4 rounded-lg bg-brand-50 p-3 text-sm text-brand-900"></p>
+          </section>
+
+          <!-- Volume de notas (RF07) -->
+          <section id="volume" aria-labelledby="t-vol" class="scroll-mt-6 min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-3">
+            <h2 id="t-vol" class="text-base font-semibold">Volume de notas cadastradas</h2>
+            <p id="vol-sub" class="text-sm text-zinc-500"></p>
+            <div id="vol-grafico" class="mt-4 h-60" role="img" aria-label="Gráfico de linha do volume de notas"></div>
+            <details class="mt-2 text-sm">
+              <summary class="cursor-pointer text-zinc-500 hover:text-zinc-900">Ver dados em tabela</summary>
+              <div id="vol-tabela" class="mt-2 max-h-48 overflow-auto"></div>
+            </details>
+          </section>
+        </div>
+
+        <div class="grid gap-6 xl:grid-cols-5">
+          <!-- Mapa de calor dia x horário (RF07) -->
+          <section aria-labelledby="t-calor" class="min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-3">
+            <div class="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 id="t-calor" class="text-base font-semibold">Notas por dia da semana e horário</h2>
+                <p id="calor-sub" class="text-sm text-zinc-500"></p>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-zinc-500" aria-hidden="true">
+                <span>Menos</span>
+                <span id="calor-legenda" class="flex gap-0.5"></span>
+                <span>Mais</span>
+              </div>
+            </div>
+            <div id="calor" class="mt-4 overflow-x-auto" role="img" aria-label="Mapa de calor de notas por dia da semana e hora"></div>
+          </section>
+          <!-- Estacionamento (RF12 / RF05) -->
+          <section id="estacionamento" aria-labelledby="t-est" class="scroll-mt-6 min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-2">
+            <h2 id="t-est" class="text-base font-semibold">Adesão ao estacionamento grátis</h2>
+            <p class="text-sm text-zinc-500">Meta de R$ 150,00/dia por CPF · 1 isenção por dia · 967 vagas</p>
+            <div id="est-corpo" class="mt-5"></div>
+          </section>
+
+        </div>
+
+        <!-- ROI de campanhas (RF12) -->
+        <section id="campanhas" aria-labelledby="t-roi" class="scroll-mt-6 min-w-0 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <h2 id="t-roi" class="text-base font-semibold">ROI das campanhas ativas</h2>
+          <p class="text-sm text-zinc-500">Cupons disparados pelos lojistas via app do shopping</p>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full min-w-[640px] text-left text-sm">
+              <thead class="border-b border-zinc-200 text-xs text-zinc-500">
+                <tr>
+                  <th scope="col" class="py-2 pr-3 font-medium">Campanha</th>
+                  <th scope="col" class="py-2 pr-3 text-right font-medium">Enviados</th>
+                  <th scope="col" class="py-2 pr-3 text-right font-medium">Convertidos</th>
+                  <th scope="col" class="py-2 pr-3 text-right font-medium">Receita gerada</th>
+                  <th scope="col" class="py-2 pr-3 text-right font-medium">ROI</th>
+                  <th scope="col" class="py-2 text-right font-medium">Taxa p/ shopping</th>
+                </tr>
+              </thead>
+              <tbody id="roi-corpo" class="divide-y divide-zinc-100 tabular"></tbody>
+            </table>
+          </div>
+          <p class="mt-3 text-xs text-zinc-500">ROI = (receita gerada − custo da campanha) ÷ custo da campanha. Custo = desconto concedido + taxa de sucesso de R$ 2,50 por cupom convertido (receita do shopping).</p>
+        </section>
+
+        <p class="text-center text-xs text-zinc-400">Protótipo acadêmico da Equipe 22 — Ho-Ho, sem vínculo oficial com o Capim Dourado Shopping · dados fictícios</p>
+      </main>
+    </div>
+  </div>
+
+  <div id="tooltip" class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs shadow-lg" role="tooltip"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const num = new Intl.NumberFormat('pt-BR');
+    const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+    const pct = (v, d = 1) => v.toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d }) + '%';
+    const moedaCurta = (v) => v >= 1e6 ? 'R$ ' + (v / 1e6).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' mi'
+      : v >= 1e3 ? 'R$ ' + (v / 1e3).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' mil' : brl.format(v);
+    const ddmm = (d) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const HORAS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+
+    // ===================== Tooltip compartilhado =====================
+    const tip = $('tooltip');
+    document.addEventListener('mousemove', (e) => {
+      const alvo = e.target.closest && e.target.closest('[data-tip]');
+      if (!alvo) { tip.style.opacity = 0; return; }
+      tip.innerHTML = alvo.dataset.tip;
+      tip.style.opacity = 1;
+      tip.style.left = Math.min(window.innerWidth - tip.offsetWidth - 8, e.clientX + 12) + 'px';
+      tip.style.top = (e.clientY - tip.offsetHeight - 12) + 'px';
+    });
+
+    // ===================== Dados fictícios (determinísticos) =====================
+    // Ruído pseudoaleatório estável para que os números não mudem a cada recarga
+    const ruido = (i) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return 0.9 + (x - Math.floor(x)) * 0.2; };
+    const PESO_DIA = [1.35, 0.7, 0.75, 0.8, 0.85, 1.1, 1.5];      // Dom..Sáb
+    const PESO_HORA = [0.25, 0.45, 1.05, 1.15, 0.7, 0.65, 0.8, 1.0, 1.45, 1.6, 1.3, 0.6];
+    const somaH = PESO_HORA.reduce((a, b) => a + b, 0);
+    const NOTAS_BASE_DIA = 1880;
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+
+    function notasDoDia(data, i) { return Math.round(NOTAS_BASE_DIA * PESO_DIA[data.getDay()] * ruido(i)); }
+
+    const SEGMENTOS = [
+      ['Vestuário', 0.30], ['Alimentação', 0.20], ['Eletrônicos', 0.17], ['Calçados', 0.13], ['Esportes', 0.09], ['Serviços', 0.06], ['Lazer', 0.05]
+    ];
+
+    function montarPeriodo(chave) {
+      const dias = chave === 'hoje' ? 1 : chave === '7d' ? 7 : 30;
+      const datas = Array.from({ length: dias }, (_, k) => new Date(hoje.getTime() - (dias - 1 - k) * 864e5));
+      const porDia = datas.map((d, k) => notasDoDia(d, d.getTime() / 864e5));
+      const totalNotas = porDia.reduce((a, b) => a + b, 0);
+      const ticket = { hoje: 108.4, '7d': 104.9, '30d': 102.7 }[chave];
+      const faturamento = totalNotas * ticket;
+
+      // Série do gráfico de linha: por hora (hoje) ou por dia
+      const serie = chave === 'hoje'
+        ? HORAS.map((h, i) => ({ rotulo: h + 'h', dica: `Hoje, ${h}h–${h + 1}h`, valor: Math.round(porDia[0] * PESO_HORA[i] / somaH * ruido(i + 3)) }))
+        : datas.map((d, k) => ({ rotulo: dias === 7 ? DIAS[d.getDay()] : ddmm(d), dica: `${DIAS[d.getDay()]}, ${ddmm(d)}`, valor: porDia[k] }));
+
+      // Mapa de calor: média por dia da semana x hora
+      const linhas = chave === 'hoje' ? [hoje.getDay()] : [1, 2, 3, 4, 5, 6, 0];
+      const calor = chave === 'hoje' ? [{ dia: DIAS[hoje.getDay()], valores: serie.map((p) => p.valor) }] : linhas.map((dw) => {
+        const idx = datas.map((d, k) => [d, k]).filter(([d]) => d.getDay() === dw);
+        const media = idx.reduce((s, [, k]) => s + porDia[k], 0) / Math.max(1, idx.length);
+        return { dia: DIAS[dw], valores: HORAS.map((h, i) => Math.round(media * PESO_HORA[i] / somaH * ruido(dw * 13 + i))) };
+      });
+
+      // Segmentos (participação varia levemente por período)
+      const seg = SEGMENTOS.map(([nome, p], i) => [nome, p * ruido(i + dias)]);
+      const somaP = seg.reduce((s, [, p]) => s + p, 0);
+      const segmentos = seg.map(([nome, p]) => ({ nome, valor: faturamento * p / somaP })).sort((a, b) => b.valor - a.valor);
+
+      // Estacionamento
+      const est = {
+        hoje: { emitidos: 214, utilizados: 162, expirados: 0, pendentes: 52, saidas: 2140, cpfs: 1690 },
+        '7d': { emitidos: 1612, utilizados: 1336, expirados: 224, pendentes: 52, saidas: 14980, cpfs: 9870 },
+        '30d': { emitidos: 6540, utilizados: 5701, expirados: 787, pendentes: 52, saidas: 61200, cpfs: 31450 }
+      }[chave];
+
+      // Campanhas ativas (escala do período)
+      const fator = { hoje: 0.06, '7d': 0.32, '30d': 1 }[chave];
+      const campanhas = [
+        { nome: 'Volta às compras 15%', loja: 'Passo Firme Calçados', seg: 'Calçados', desc: 0.15, ticket: 142.3, env: 790, conv: 74 },
+        { nome: 'Café + bolo 10%', loja: 'Sabor da Serra Café', seg: 'Alimentação', desc: 0.10, ticket: 32.5, env: 2400, conv: 410 },
+        { nome: 'Coleção verão 20%', loja: 'Moda Cerrado', seg: 'Vestuário', desc: 0.20, ticket: 189.9, env: 1420, conv: 128 },
+        { nome: 'Acessórios 12%', loja: 'TecnoPonto Eletrônicos', seg: 'Eletrônicos', desc: 0.12, ticket: 96.0, env: 650, conv: 41 }
+      ].map((c) => {
+        const env = Math.max(1, Math.round(c.env * fator)), conv = Math.round(c.conv * fator);
+        const bruto = conv * c.ticket, desconto = bruto * c.desc, taxa = conv * 2.5;
+        const receita = bruto - desconto, custo = desconto + taxa;
+        return { ...c, env, conv, receita, taxa, roi: custo ? (receita - custo) / custo * 100 : 0 };
+      });
+
+      const rotulo = { hoje: 'Hoje, ' + ddmm(hoje), '7d': `Últimos 7 dias (${ddmm(datas[0])} a ${ddmm(hoje)})`, '30d': `Últimos 30 dias (${ddmm(datas[0])} a ${ddmm(hoje)})` }[chave];
+      return { chave, rotulo, totalNotas, faturamento, ticket, serie, calor, segmentos, est, campanhas };
+    }
+
+    // ===================== Componentes de renderização =====================
+    function kpi(titulo, valor, rodape) {
+      return `<article class="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+        <p class="text-sm text-zinc-500">${titulo}</p>
+        <p class="mt-2 text-3xl font-semibold">${valor}</p>
+        <p class="mt-1 text-xs text-zinc-500">${rodape}</p></article>`;
+    }
+
+    function graficoLinha(el, serie) {
+      const W = el.clientWidth || 700, H = el.clientHeight || 240;
+      const m = { t: 16, r: 12, b: 26, l: 48 };
+      const iw = W - m.l - m.r, ih = H - m.t - m.b;
+      const max = Math.max(...serie.map((p) => p.valor));
+      const passo = Math.pow(10, Math.floor(Math.log10(max / 4)));
+      const step = Math.ceil(max / 4 / passo) * passo;
+      const topo = step * 4;
+      const n = serie.length;
+      const x = (i) => m.l + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
+      const y = (v) => m.t + ih - (v / topo) * ih;
+      let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true" font-family="system-ui, sans-serif">`;
+      for (let k = 0; k <= 4; k++) {
+        const yy = y(k * step);
+        s += `<line x1="${m.l}" x2="${W - m.r}" y1="${yy}" y2="${yy}" stroke="${k === 0 ? 'var(--eixo)' : 'var(--grade)'}"/>`;
+        s += `<text x="${m.l - 8}" y="${yy + 4}" text-anchor="end" font-size="11" fill="var(--texto-mudo)">${num.format(k * step)}</text>`;
+      }
+      const pts = serie.map((p, i) => `${x(i)},${y(p.valor)}`).join(' ');
+      s += `<polygon points="${m.l},${y(0)} ${pts} ${x(n - 1)},${y(0)}" fill="var(--serie-1)" opacity="0.08"/>`;
+      s += `<polyline points="${pts}" fill="none" stroke="var(--serie-1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      const cada = Math.ceil(n / 10); // evita colisão de rótulos no eixo X
+      const larg = n === 1 ? iw : iw / (n - 1);
+      serie.forEach((p, i) => {
+        s += `<g class="coluna" data-tip="<strong>${p.dica}</strong><br>${num.format(p.valor)} notas">
+          <rect x="${x(i) - larg / 2}" y="${m.t}" width="${larg}" height="${ih}" fill="transparent"/>
+          <line class="guia" x1="${x(i)}" x2="${x(i)}" y1="${m.t}" y2="${y(0)}" stroke="#a1a1aa" stroke-dasharray="3 3"/>
+          <circle class="ponto" cx="${x(i)}" cy="${y(p.valor)}" r="5" fill="var(--serie-1)" stroke="#fff" stroke-width="2"/>
+        </g>`;
+        if ((n - 1 - i) % cada === 0) s += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--texto-mudo)">${p.rotulo}</text>`;
+      });
+      // rótulo direto apenas no pico
+      const iMax = serie.findIndex((p) => p.valor === max);
+      s += `<circle cx="${x(iMax)}" cy="${y(max)}" r="4" fill="var(--serie-1)" stroke="#fff" stroke-width="2"/>`;
+      s += `<text x="${Math.min(Math.max(x(iMax), m.l + 30), W - m.r - 30)}" y="${y(max) - 9}" text-anchor="middle" font-size="11" font-weight="600" fill="#18181b">${num.format(max)}</text>`;
+      el.innerHTML = s + '</svg>';
+    }
+
+    // Rampa sequencial (um único matiz, claro → escuro)
+    const RAMPA = ['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95', '#0d366b'];
+    function mapaCalor(el, calor) {
+      const todos = calor.flatMap((l) => l.valores);
+      const min = Math.min(...todos), max = Math.max(...todos);
+      const nivel = (v) => Math.min(RAMPA.length - 1, Math.floor(((v - min) / (max - min || 1)) * RAMPA.length));
+      el.innerHTML = `<table class="w-full min-w-[640px] border-separate text-xs" style="border-spacing:2px">
+        <thead><tr><th class="w-12"></th>${HORAS.map((h) => `<th scope="col" class="pb-1 text-center font-normal text-zinc-500">${h}h</th>`).join('')}</tr></thead>
+        <tbody>${calor.map((l) => `<tr><th scope="row" class="pr-2 text-right font-normal text-zinc-500">${l.dia}</th>${l.valores.map((v, i) => {
+          const nv = nivel(v);
+          return `<td class="celula h-9 rounded text-center tabular" style="background:${RAMPA[nv]};color:${nv >= 3 ? '#fff' : '#18181b'}" data-tip="<strong>${l.dia}, ${HORAS[i]}h–${HORAS[i] + 1}h</strong><br>${num.format(v)} notas (média)">${v >= 1000 ? (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k' : v}</td>`;
+        }).join('')}</tr>`).join('')}</tbody></table>`;
+      $('calor-legenda').innerHTML = RAMPA.map((c) => `<span class="h-3 w-5 rounded-sm" style="background:${c}"></span>`).join('');
+    }
+
+    function estacionamento(e) {
+      const adesao = e.emitidos / e.saidas * 100;
+      const partes = [
+        { nome: 'Utilizados', valor: e.utilizados, cor: 'var(--serie-1)' },
+        { nome: 'Expirados', valor: e.expirados, cor: 'var(--serie-2)' },
+        { nome: 'Pendentes', valor: e.pendentes, cor: 'var(--serie-3)' }
+      ];
+      return `
+        <div class="grid grid-cols-2 gap-4">
+          <div><p class="text-xs text-zinc-500">Vouchers emitidos</p><p class="mt-1 text-2xl font-semibold tabular">${num.format(e.emitidos)}</p></div>
+          <div><p class="text-xs text-zinc-500">Adesão</p><p class="mt-1 text-2xl font-semibold tabular">${pct(adesao)}</p><p class="text-xs text-zinc-500">das ${num.format(e.saidas)} saídas de veículos</p></div>
+        </div>
+        <p class="mt-5 text-xs font-medium text-zinc-500">Status dos vouchers</p>
+        <div class="mt-2 flex h-4 w-full gap-[2px] overflow-hidden rounded" role="img" aria-label="Barra empilhada: ${partes.map((p) => `${p.nome} ${p.valor}`).join(', ')}">
+          ${partes.filter((p) => p.valor > 0).map((p) => `<div style="width:${p.valor / e.emitidos * 100}%;background:${p.cor}" data-tip="<strong>${p.nome}</strong><br>${num.format(p.valor)} (${pct(p.valor / e.emitidos * 100)})"></div>`).join('')}
+        </div>
+        <ul class="mt-3 space-y-1.5 text-sm">
+          ${partes.map((p) => `<li class="flex items-center justify-between"><span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-sm" style="background:${p.cor}" aria-hidden="true"></span>${p.nome}</span><span class="tabular"><strong>${num.format(p.valor)}</strong> <span class="text-zinc-500">· ${pct(p.valor / e.emitidos * 100)}</span></span></li>`).join('')}
+        </ul>
+        <p class="mt-4 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-600">${num.format(e.cpfs)} CPFs distintos cadastraram notas no período. Pendentes = vouchers de hoje ainda não usados; expiram no fechamento (seg. a sáb. 22h; dom. 20h).</p>`;
+    }
+
+    // ===================== Renderização da página =====================
+    let atual;
+    function render(chave) {
+      atual = montarPeriodo(chave);
+      const d = atual;
+      $('periodo-desc').textContent = 'Exibindo: ' + d.rotulo;
+      $('kpis').innerHTML =
+        kpi('Faturamento identificado', moedaCurta(d.faturamento), 'soma das NFC-e validadas') +
+        kpi('Notas cadastradas', num.format(d.totalNotas), d.chave === 'hoje' ? 'até o momento' : `média de ${num.format(Math.round(d.totalNotas / (d.chave === '7d' ? 7 : 30)))}/dia`) +
+        kpi('Ticket médio do shopping', brl.format(d.ticket), 'por nota fiscal') +
+        kpi('Vouchers de estacionamento', num.format(d.est.emitidos), `${pct(d.est.emitidos / d.est.saidas * 100)} das saídas de veículos`);
+
+      const maxSeg = d.segmentos[0].valor;
+      $('seg-grafico').innerHTML = d.segmentos.map((s) => `
+        <div class="grid grid-cols-[6.5rem_1fr_5.5rem] items-center gap-3" data-tip="<strong>${s.nome}</strong><br>${brl.format(s.valor)} · ${pct(s.valor / d.faturamento * 100)} do total">
+          <span class="text-sm text-zinc-600">${s.nome}</span>
+          <div class="h-5 rounded-r bg-zinc-50"><div class="h-full rounded-r" style="width:${s.valor / maxSeg * 100}%;background:var(--serie-1)"></div></div>
+          <span class="text-right text-sm tabular"><strong>${moedaCurta(s.valor)}</strong></span>
+        </div>`).join('');
+      $('seg-insight').innerHTML = `<strong>${d.segmentos[0].nome}</strong> lidera com ${pct(d.segmentos[0].valor / d.faturamento * 100)} do faturamento; <strong>${d.segmentos[d.segmentos.length - 1].nome}</strong> é o segmento com menor participação (${pct(d.segmentos[d.segmentos.length - 1].valor / d.faturamento * 100)}) — insumo para o tenant mix.`;
+
+      $('vol-sub').textContent = d.chave === 'hoje' ? 'Notas por faixa horária · hoje' : `Notas por dia · ${d.chave === '7d' ? 'últimos 7 dias' : 'últimos 30 dias'}`;
+      graficoLinha($('vol-grafico'), d.serie);
+      $('vol-tabela').innerHTML = `<table class="w-full text-left text-xs tabular"><thead class="text-zinc-500"><tr><th class="py-1 pr-3 font-medium">${d.chave === 'hoje' ? 'Horário' : 'Dia'}</th><th class="py-1 text-right font-medium">Notas</th></tr></thead>
+        <tbody>${d.serie.map((p) => `<tr class="border-t border-zinc-100"><td class="py-1 pr-3">${p.dica}</td><td class="py-1 text-right">${num.format(p.valor)}</td></tr>`).join('')}</tbody></table>`;
+
+      $('calor-sub').textContent = d.chave === 'hoje' ? 'Hoje, por faixa horária' : `Média por dia da semana · ${d.chave === '7d' ? 'últimos 7 dias' : 'últimos 30 dias'}`;
+      mapaCalor($('calor'), d.calor);
+      $('est-corpo').innerHTML = estacionamento(d.est);
+
+      $('roi-corpo').innerHTML = d.campanhas.map((c) => `
+        <tr>
+          <td class="py-2.5 pr-3"><p class="font-medium">${c.nome}</p><p class="text-xs text-zinc-500">${c.loja} · ${c.seg}</p></td>
+          <td class="py-2.5 pr-3 text-right">${num.format(c.env)}</td>
+          <td class="py-2.5 pr-3 text-right">${num.format(c.conv)} <span class="text-xs text-zinc-500">(${pct(c.conv / c.env * 100)})</span></td>
+          <td class="py-2.5 pr-3 text-right">${brl.format(c.receita)}</td>
+          <td class="py-2.5 pr-3 text-right font-semibold">${c.conv ? pct(c.roi, 0) : '—'}</td>
+          <td class="py-2.5 text-right">${brl.format(c.taxa)}</td>
+        </tr>`).join('') + (() => {
+          const t = d.campanhas.reduce((a, c) => ({ env: a.env + c.env, conv: a.conv + c.conv, receita: a.receita + c.receita, taxa: a.taxa + c.taxa }), { env: 0, conv: 0, receita: 0, taxa: 0 });
+          return `<tr class="border-t-2 border-zinc-200 font-semibold"><td class="py-2.5 pr-3">Total</td><td class="py-2.5 pr-3 text-right">${num.format(t.env)}</td><td class="py-2.5 pr-3 text-right">${num.format(t.conv)}</td><td class="py-2.5 pr-3 text-right">${brl.format(t.receita)}</td><td></td><td class="py-2.5 text-right">${brl.format(t.taxa)}</td></tr>`;
+        })();
+    }
+
+    // Filtro de período
+    const botoes = document.querySelectorAll('.periodo');
+    function pintarAbas() {
+      botoes.forEach((b) => {
+        const ativo = b.getAttribute('aria-selected') === 'true';
+        b.className = 'periodo rounded-md px-3 py-1.5 ' + (ativo ? 'bg-white font-medium text-zinc-900 shadow-sm' : 'text-zinc-600 hover:text-zinc-900');
+      });
+    }
+    botoes.forEach((b) => b.addEventListener('click', () => {
+      botoes.forEach((o) => o.setAttribute('aria-selected', String(o === b)));
+      pintarAbas();
+      render(b.dataset.periodo);
+    }));
+    pintarAbas();
+    render('7d');
+    let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => render(atual.chave), 150); });
+  </script>
+</body>
+</html>
