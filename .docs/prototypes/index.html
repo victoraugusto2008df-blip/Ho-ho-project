@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protótipos do MVP · Shopping Analytics &amp; Loyalty Hub</title>
+  <!-- Tailwind via Play CDN (espelha a stack escolhida: Tailwind + shadcn/ui) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (window.tailwind) {
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' }
+            },
+            fontFamily: { sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'] }
+          }
+        }
+      };
+    }
+  </script>
+  <style>
+    #cdn-aviso { display: none; padding: 8px 12px; background: #fef3c7; color: #78350f; font: 14px system-ui, sans-serif; text-align: center; }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-50 text-zinc-900 antialiased">
+  <div id="cdn-aviso" role="status">Aviso: o Tailwind CSS (CDN) não carregou. Verifique a conexão com a internet para ver o layout completo.</div>
+
+  <header class="border-b border-zinc-200 bg-white">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+      <a href="index.html" class="flex items-center gap-3" aria-current="page">
+        <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-600 text-sm font-bold text-white" aria-hidden="true">SA</span>
+        <span class="leading-tight">
+          <span class="block text-sm font-semibold">Shopping Analytics &amp; Loyalty Hub</span>
+          <span class="block text-xs text-zinc-500">Equipe 22 — Ho-Ho</span>
+        </span>
+      </a>
+      <nav aria-label="Telas do protótipo" class="flex flex-wrap items-center gap-1 text-sm">
+        <a href="index.html" aria-current="page" class="rounded-md bg-brand-50 px-3 py-1.5 font-medium text-brand-700">Início</a>
+        <a href="tela-1-consumidor.html" class="rounded-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100">1 · Consumidor</a>
+        <a href="tela-2-lojista.html" class="rounded-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100">2 · Lojista</a>
+        <a href="tela-3-shopping.html" class="rounded-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100">3 · Shopping</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-10">
+    <section aria-labelledby="t-hero">
+      <span class="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">Protótipo · dados fictícios</span>
+      <h1 id="t-hero" class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Protótipos do MVP — 3 telas</h1>
+      <p class="mt-3 max-w-3xl text-zinc-600">
+        Protótipos navegáveis, em HTML estático, das três telas essenciais do MVP (Fase 1 do documento de requisitos).
+        Todos os dados são <strong>fictícios</strong> e gerados no próprio navegador; a consulta à SEFAZ é simulada, como o
+        <code class="rounded bg-zinc-100 px-1 py-0.5 text-sm">MockSefazGateway</code> previsto para o backend.
+        Servem para validar fluxo e regras de negócio antes da implementação em React + TypeScript + Tailwind + shadcn/ui + Recharts.
+      </p>
+    </section>
+
+    <section aria-label="Telas" class="mt-10 grid gap-6 md:grid-cols-3">
+      <a href="tela-1-consumidor.html" class="group flex flex-col rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-brand-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-300">
+        <span class="text-xs font-semibold uppercase tracking-wide text-brand-700">Tela 1 · Mobile</span>
+        <h2 class="mt-2 text-lg font-semibold">Consumidor</h2>
+        <p class="text-sm text-zinc-500">Ingestão e estacionamento</p>
+        <p class="mt-3 flex-1 text-sm text-zinc-600">CPF + chave NFC-e de 44 dígitos (com simulador de QR Code), barra de progresso em tempo real até R$ 150,00 e voucher de estacionamento grátis. Inclui erros de nota duplicada, prazo de 72h e CNPJ fora do shopping.</p>
+        <p class="mt-4 flex flex-wrap gap-1.5 text-[11px]">
+          <span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF01</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF02*</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF03</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF04</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF05</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF13</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">ReN01–ReN04</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RN04</span>
+        </p>
+        <span class="mt-5 text-sm font-medium text-brand-700 group-hover:underline">Abrir tela →</span>
+      </a>
+      <a href="tela-2-lojista.html" class="group flex flex-col rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-brand-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-300">
+        <span class="text-xs font-semibold uppercase tracking-wide text-brand-700">Tela 2 · Desktop</span>
+        <h2 class="mt-2 text-lg font-semibold">Portal do Lojista</h2>
+        <p class="text-sm text-zinc-500">Insights e ação</p>
+        <p class="mt-3 flex-1 text-sm text-zinc-600">KPIs da loja, ticket médio vs. mediana da categoria com regra de K-anonimato, horários de pico, afinidade de compras cruzadas e disparo simulado de campanha para clientes inativos há 60 dias.</p>
+        <p class="mt-4 flex flex-wrap gap-1.5 text-[11px]">
+          <span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF07</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF08</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF09</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF10</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF11</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">ReN05</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RN02</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RN04</span>
+        </p>
+        <span class="mt-5 text-sm font-medium text-brand-700 group-hover:underline">Abrir tela →</span>
+      </a>
+      <a href="tela-3-shopping.html" class="group flex flex-col rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-brand-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-300">
+        <span class="text-xs font-semibold uppercase tracking-wide text-brand-700">Tela 3 · Desktop</span>
+        <h2 class="mt-2 text-lg font-semibold">Portal do Shopping</h2>
+        <p class="text-sm text-zinc-500">Visão executiva</p>
+        <p class="mt-3 flex-1 text-sm text-zinc-600">Faturamento consolidado por segmento, volume de notas por dia e horário (linha + mapa de calor), adesão ao estacionamento e ROI das campanhas ativas, com filtro de período (hoje, 7 e 30 dias).</p>
+        <p class="mt-4 flex flex-wrap gap-1.5 text-[11px]">
+          <span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF07</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF12</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RF05</span><span class="rounded bg-zinc-100 px-1.5 py-0.5 text-zinc-700">RN03</span>
+        </p>
+        <span class="mt-5 text-sm font-medium text-brand-700 group-hover:underline">Abrir tela →</span>
+      </a>
+    </section>
+
+    <section aria-labelledby="t-rastreio" class="mt-12 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+      <h2 id="t-rastreio" class="text-lg font-semibold">Rastreabilidade: tela → requisitos</h2>
+      <p class="mt-1 text-sm text-zinc-500">Onde cada requisito/regra pode ser visto ou testado nos protótipos.</p>
+      <div class="mt-4 overflow-x-auto">
+        <table class="w-full min-w-[640px] text-left text-sm">
+          <thead class="border-b border-zinc-200 text-xs text-zinc-500">
+            <tr><th scope="col" class="py-2 pr-4 font-medium">Código</th><th scope="col" class="py-2 pr-4 font-medium">Requisito / regra</th><th scope="col" class="py-2 pr-4 font-medium">Tela</th><th scope="col" class="py-2 font-medium">Como demonstrar</th></tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-100">
+            <tr><td class="py-2 pr-4 font-medium">RF01</td><td class="py-2 pr-4">Envio da NFC-e por QR Code ou chave de 44 dígitos</td><td class="py-2 pr-4">1</td><td class="py-2 text-zinc-600">Digite a chave ou use “Simular leitura de QR Code”; contador e dígito verificador validados</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF02*</td><td class="py-2 pr-4">Extração dos dados oficiais da nota (SEFAZ)</td><td class="py-2 pr-4">1</td><td class="py-2 text-zinc-600">Simulada: loja, horário e valor vêm de um mock local (sem itens/SKU)</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF03</td><td class="py-2 pr-4">Unicidade e CNPJ de lojista ativo</td><td class="py-2 pr-4">1</td><td class="py-2 text-zinc-600">Painel do protótipo → “CNPJ fora do shopping” / “Nota duplicada”</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF04 · ReN03</td><td class="py-2 pr-4">Progresso diário até R$ 150,00 (notas do mesmo dia)</td><td class="py-2 pr-4">1</td><td class="py-2 text-zinc-600">Barra atualiza a cada nota; “Nota de ontem” é aceita mas não soma</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF05 · ReN04</td><td class="py-2 pr-4">Voucher com QR Code e status; 1 por CPF/dia, válido até o fechamento</td><td class="py-2 pr-4">1 e 3</td><td class="py-2 text-zinc-600">Atinja a meta; simule saída (utilizado) ou fechamento (expirado). Tela 3 mostra os totais por status</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">ReN01</td><td class="py-2 pr-4">Nota processada uma única vez</td><td class="py-2 pr-4">1</td><td class="py-2 text-zinc-600">“Nota duplicada” ou reenviar a mesma chave</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">ReN02</td><td class="py-2 pr-4">Prazo de 72h após a emissão</td><td class="py-2 pr-4">1</td><td class="py-2 text-zinc-600">“Nota com mais de 72h”</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF13</td><td class="py-2 pr-4">Extrato de notas e status do estacionamento</td><td class="py-2 pr-4">1</td><td class="py-2 text-zinc-600">Lista “Notas de hoje” + card do voucher</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RN04</td><td class="py-2 pr-4">LGPD: consentimento explícito e dados agregados</td><td class="py-2 pr-4">1, 2 e 3</td><td class="py-2 text-zinc-600">Checkbox de consentimento; CPF mascarado; portais sem dados pessoais</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF07</td><td class="py-2 pr-4">Ticket médio, dias/horários de pico, frequência de retorno</td><td class="py-2 pr-4">2 e 3</td><td class="py-2 text-zinc-600">KPIs, gráfico de horários de pico, linha e mapa de calor de notas</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF08</td><td class="py-2 pr-4">Afinidade de compras cruzadas</td><td class="py-2 pr-4">2</td><td class="py-2 text-zinc-600">Card “Afinidade de compras cruzadas”</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF09 · RF10</td><td class="py-2 pr-4">Benchmarking e dashboard do lojista</td><td class="py-2 pr-4">2</td><td class="py-2 text-zinc-600">Ticket médio da loja vs. mediana de Calçados</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">ReN05</td><td class="py-2 pr-4">K-anonimato: benchmark só com ≥ 3 lojistas</td><td class="py-2 pr-4">2</td><td class="py-2 text-zinc-600">Aba “Calçados infantis” (2 lojistas) bloqueia a comparação</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF11</td><td class="py-2 pr-4">Campanha para segmento pré-qualificado</td><td class="py-2 pr-4">2</td><td class="py-2 text-zinc-600">“Disparar campanha” (clientes inativos há 60 dias)</td></tr>
+            <tr><td class="py-2 pr-4 font-medium">RF12</td><td class="py-2 pr-4">Faturamento por segmento, adesão ao estacionamento, ROI de campanhas</td><td class="py-2 pr-4">3</td><td class="py-2 text-zinc-600">Troque o período (hoje / 7 / 30 dias)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-zinc-500">* Parcial/simulado. Fora do escopo destes protótipos: RF06 (carteira de pontos e catálogo de resgate), ofertas personalizadas, autenticação real e integração SEFAZ.</p>
+    </section>
+
+    <section class="mt-8 grid gap-6 md:grid-cols-2">
+      <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <h2 class="text-base font-semibold">Como usar</h2>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-600">
+          <li>Basta abrir os arquivos <code>.html</code> no navegador (duplo clique). Não há build nem servidor.</li>
+          <li>É preciso internet para carregar o Tailwind CSS via CDN.</li>
+          <li>Os dados reiniciam ao recarregar a página.</li>
+        </ul>
+      </div>
+      <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <h2 class="text-base font-semibold">Para quem vai implementar</h2>
+        <p class="mt-2 text-sm text-zinc-600">O visual segue o padrão do shadcn/ui (cards <code>rounded-xl</code>, bordas sutis, cinzas neutros) e os gráficos são SVG simples, fáceis de trocar por Recharts. Sugestões de componentes estão no <code>README.md</code> desta pasta.</p>
+      </div>
+    </section>
+
+    <p class="mt-10 text-center text-xs text-zinc-400">Equipe 22 — Ho-Ho · Shopping Analytics &amp; Loyalty Hub</p>
+  </main>
+  <script>if (!window.tailwind) document.getElementById('cdn-aviso').style.display = 'block';</script>
+</body>
+</html>
