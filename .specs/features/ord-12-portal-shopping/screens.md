@@ -1,12 +1,12 @@
 # ORD-12 - Tela 3: Portal da Administração do Shopping screens
 
 **Verifier**: independent sub-agent (author != verifier)
-**Round**: 1
-**HEAD**: 5b953a8
+**Round**: 2
+**HEAD**: 0b71182
 
 | Screen | Compared with | Verdict | Finding |
 | --- | --- | --- | --- |
-| `captures/portal-shopping.running.png` | `captures/portal-shopping.png` | diverges | 1 row differs: o selo `Protótipo · dados fictícios` sem contorno |
+| `captures/portal-shopping.running.png` | `captures/portal-shopping.png` | matches | 0 rows differ: o selo `Protótipo · dados fictícios`, que divergia no round 1, agora é `same`; nenhuma regressão |
 
 ### `captures/portal-shopping.running.png`
 
@@ -27,7 +27,7 @@
 | cabeçalho, `Exibindo: Últimos 7 dias (07/11 a 13/11)` | same | |
 | seletor de período: grupo segmentado `Hoje`, `7 dias`, `30 dias` sobre fundo cinza | same | nota: fundo cinza-azulado |
 | seletor de período, estado: `7 dias` ativo em pílula branca com sombra, texto em negrito | same | |
-| selo `Protótipo · dados fictícios` à direita do seletor: pílula de fundo creme claro com contorno âmbar de 1 px e texto marrom | differs | pílula preenchida de amarelo (`#FEF3C7`) sem contorno, texto laranja, cerca de 3 px mais baixa (19 px contra 22 px) |
+| selo `Protótipo · dados fictícios` à direita do seletor: pílula de fundo creme claro com contorno âmbar de 1 px e texto marrom | same | round 2: pílula de fundo creme (`#FFFBEB`) com contorno âmbar de 1 px, 160 × 25 px contra 162 × 26 px na captura, texto marrom-âmbar; nota: o texto é um pouco mais claro e mais alaranjado que o marrom da captura |
 | faixa de KPIs, arranjo: 4 cartões de largura igual, na ordem faturamento, notas, ticket, vouchers; cada um com rótulo, valor grande e nota abaixo | same | nota: valores na face geométrica; rótulos cinza-azulados |
 | KPI `Faturamento identificado`, `R$ 1,39 mi`, `soma das NFC-e validadas` | same | |
 | KPI `Notas cadastradas`, `13.265`, `média de 1.895/dia` | same | |
