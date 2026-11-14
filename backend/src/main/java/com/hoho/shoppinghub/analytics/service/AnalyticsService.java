@@ -1,6 +1,8 @@
 package com.hoho.shoppinghub.analytics.service;
 
 import com.hoho.shoppinghub.analytics.dto.DashboardResponse;
+import com.hoho.shoppinghub.analytics.dto.FaturamentoCategoria;
+import com.hoho.shoppinghub.analytics.dto.ShoppingDashboardResponse;
 import com.hoho.shoppinghub.analytics.repository.AnalyticsRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -34,6 +36,17 @@ public class AnalyticsService {
                 repository.picosPorHora(lojaId),
                 repository.picosPorDia(lojaId),
                 repository.crossShopping(lojaId, categoriaId));
+    }
+
+    /** Visão consolidada do shopping: todo o histórico, sem recorte por loja. */
+    public ShoppingDashboardResponse montarDashboardShopping() {
+        List<FaturamentoCategoria> porCategoria = repository.faturamentoPorCategoria();
+        BigDecimal faturamentoTotal = porCategoria.stream()
+                .map(FaturamentoCategoria::valor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+        return new ShoppingDashboardResponse(
+                faturamentoTotal, repository.totalVouchers(), repository.totalCampanhas(), porCategoria);
     }
 
     private static BigDecimal media(List<BigDecimal> valores) {

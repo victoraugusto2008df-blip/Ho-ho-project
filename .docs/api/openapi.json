@@ -251,6 +251,25 @@
         }
       }
     },
+    "/api/v1/analytics/shopping/dashboard" : {
+      "get" : {
+        "tags" : [ "Analytics" ],
+        "summary" : "Visão do shopping: faturamento, vouchers, campanhas e faturamento por categoria",
+        "operationId" : "dashboardShopping",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ShoppingDashboardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/analytics/lojista/dashboard" : {
       "get" : {
         "tags" : [ "Analytics" ],
@@ -440,6 +459,39 @@
           "criadoEm" : {
             "type" : "string",
             "format" : "date-time"
+          }
+        }
+      },
+      "FaturamentoCategoria" : {
+        "type" : "object",
+        "properties" : {
+          "categoria" : {
+            "type" : "string"
+          },
+          "valor" : {
+            "type" : "number"
+          }
+        }
+      },
+      "ShoppingDashboardResponse" : {
+        "type" : "object",
+        "properties" : {
+          "faturamentoTotal" : {
+            "type" : "number"
+          },
+          "vouchersLiberados" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "campanhasAtivas" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "faturamentoPorCategoria" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FaturamentoCategoria"
+            }
           }
         }
       },

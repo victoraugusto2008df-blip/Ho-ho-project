@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,6 @@ public class EstacionamentoService {
     private final NotaFiscalRepository notaFiscalRepository;
     private final VoucherEstacionamentoRepository voucherRepository;
     private final Clock clock;
-
-    @Autowired
-    public EstacionamentoService(
-            NotaFiscalRepository notaFiscalRepository,
-            VoucherEstacionamentoRepository voucherRepository) {
-        this(notaFiscalRepository, voucherRepository, Clock.systemDefaultZone());
-    }
 
     public EstacionamentoService(
             NotaFiscalRepository notaFiscalRepository,

@@ -1,5 +1,5 @@
-import { PortalPlaceholder } from './PortalPlaceholder'
+import { PortalShopping } from '@/features/shopping/PortalShopping'
 
 export function ShoppingPage() {
-  return <PortalPlaceholder card="ORD-12" title="Portal do Shopping" />
+  return <PortalShopping />
 }

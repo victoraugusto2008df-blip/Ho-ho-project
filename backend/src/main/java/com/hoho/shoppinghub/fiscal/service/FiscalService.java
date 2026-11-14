@@ -13,7 +13,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -27,15 +26,6 @@ public class FiscalService {
     private final LojaRepository lojaRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
-
-    @Autowired
-    public FiscalService(
-            ConsultaNotaFiscalGateway gateway,
-            NotaFiscalRepository notaFiscalRepository,
-            LojaRepository lojaRepository,
-            ApplicationEventPublisher eventPublisher) {
-        this(gateway, notaFiscalRepository, lojaRepository, eventPublisher, Clock.systemDefaultZone());
-    }
 
     public FiscalService(
             ConsultaNotaFiscalGateway gateway,

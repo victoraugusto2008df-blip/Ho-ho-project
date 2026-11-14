@@ -112,7 +112,7 @@ describe('rotas por perfil', () => {
     const esperado: Record<Role, string> = {
       CONSUMIDOR: 'Cadastrar nota fiscal (NFC-e)',
       LOJISTA: 'Nova campanha em 1 clique',
-      ADMIN_SHOPPING: 'ORD-12',
+      ADMIN_SHOPPING: 'Faturamento consolidado por segmento',
     }
     for (const role of ROLES) {
       const { unmount } = renderApp({ path: PERFIS[role].rota, token: valid(role) })
