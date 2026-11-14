@@ -21,7 +21,9 @@ export function CampaignRoiTable({ campanhas }: { campanhas: ModeloDoDashboard['
                   className={i === COLUNAS_NUMERICAS.length - 1 ? 'py-2 text-right font-medium' : 'py-2 pr-3 text-right font-medium'}
                 >
                   {/* Nenhuma métrica por campanha tem campo no DER atual (critério 12). */}
-                  <Ficticio ativo={ficticio}>{coluna}</Ficticio>
+                  <Ficticio ativo={ficticio} abaixo direita>
+                    {coluna}
+                  </Ficticio>
                 </th>
               ))}
             </tr>

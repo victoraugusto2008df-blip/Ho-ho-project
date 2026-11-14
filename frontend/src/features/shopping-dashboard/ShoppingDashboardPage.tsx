@@ -21,6 +21,13 @@ import { ParkingPanel } from './components/ParkingPanel'
 import { SectorBarChart } from './components/SectorBarChart'
 import { Sidebar, type LinksDasTelas, type SecaoId } from './components/Sidebar'
 
+// Cores do selo misturadas a partir dos tokens do design system, sem hex (decisão D1 do usuário).
+const SELO_DA_FIGURA4 = {
+  borderColor: 'color-mix(in srgb, var(--color-warning) 45%, var(--color-warning-soft))',
+  backgroundColor: 'color-mix(in srgb, var(--color-warning-soft) 35%, var(--bg-surface))',
+  color: 'color-mix(in srgb, var(--color-warning) 65%, var(--text-primary))',
+}
+
 const PERIODOS: { valor: Periodo; rotulo: string }[] = [
   { valor: 'hoje', rotulo: 'Hoje' },
   { valor: '7d', rotulo: '7 dias' },
@@ -88,7 +95,11 @@ export function ShoppingDashboardPage({ client = clienteFixture, links = {} }: S
                 )
               })}
             </div>
-            <Badge tone="warning">Protótipo · dados fictícios</Badge>
+            {/* A figura4 desenha o selo com contorno âmbar, fundo creme e texto âmbar escuro; o tom
+                `warning` do Badge não tem contorno. Ajuste só nesta página, com os tokens existentes. */}
+            <Badge tone="warning" className="py-1" style={SELO_DA_FIGURA4}>
+              Protótipo · dados fictícios
+            </Badge>
           </div>
         </header>
 

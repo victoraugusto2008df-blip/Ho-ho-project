@@ -32,7 +32,7 @@ export function ParkingPanel({ estacionamento }: { estacionamento: ModeloDoDashb
         </div>
       </div>
 
-      <Ficticio ativo={status.ficticio}>
+      <Ficticio ativo={status.ficticio} bloco>
         <span className="mt-5 block text-xs font-medium text-[var(--text-muted)]">Status dos vouchers</span>
         <span
           className="mt-2 flex h-4 w-full gap-[2px] overflow-hidden rounded"

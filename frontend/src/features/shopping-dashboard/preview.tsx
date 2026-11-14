@@ -7,6 +7,7 @@
  *   normal   fixture local, como a captura (padrão)
  *   vazio    faturamento 0 e nenhuma nota (C16)
  *   erro     o endpoint responde 500 até o botão "Religar a origem" do preview ser usado (C17)
+ *   pendurado  o endpoint nunca responde até o mesmo botão, e o limite de 10 s do cliente expira (C17)
  *   401/403  o endpoint nega o acesso (C18)
  *   lento    toda consulta leva 4 s (C15)
  *   corrida  `30 dias` leva 4 s e `Hoje` leva 1 s (C22)
@@ -32,12 +33,24 @@ function json(dto: ShoppingDashboardDto) {
 }
 
 /** Simula o endpoint do ORD-10 para que o preview exercite o cliente HTTP de verdade, inclusive os status. */
-function endpointSimulado(responder: (periodo: Periodo) => Promise<Response>): DashboardClient {
-  return criarClienteHttp((entrada) => responder(periodoDa(String(entrada))))
+function endpointSimulado(
+  responder: (periodo: Periodo, sinal?: AbortSignal | null) => Promise<Response>,
+): DashboardClient {
+  return criarClienteHttp((entrada, init) => responder(periodoDa(String(entrada)), init?.signal))
 }
 
-// Cenário `erro`: a origem começa fora do ar e só volta pelo controle do preview, não por contagem de
-// chamadas - em `npm run dev` o StrictMode cancela e refaz a primeira consulta, o que consumiria a contagem.
+/** Uma resposta que nunca chega, mas que, como o `fetch` real, rejeita quando o sinal é abortado. */
+function semResposta(sinal?: AbortSignal | null) {
+  return new Promise<Response>((_, rejeitar) => {
+    const abortar = () => rejeitar(new DOMException('Consulta abortada', 'AbortError'))
+    if (sinal?.aborted) abortar()
+    sinal?.addEventListener('abort', abortar, { once: true })
+  })
+}
+
+// Cenários `erro` e `pendurado`: a origem começa fora do ar e só volta pelo controle do preview, não por
+// contagem de chamadas - em `npm run dev` o StrictMode cancela e refaz a primeira consulta, o que
+// consumiria a contagem.
 let origemNoAr = false
 
 const CENARIOS: Record<string, DashboardClient> = {
@@ -56,6 +69,9 @@ const CENARIOS: Record<string, DashboardClient> = {
   erro: endpointSimulado(async (periodo) =>
     origemNoAr ? json(payloadSimulado[periodo]) : new Response('erro', { status: 500 }),
   ),
+  pendurado: endpointSimulado(async (periodo, sinal) =>
+    origemNoAr ? json(payloadSimulado[periodo]) : semResposta(sinal),
+  ),
   '401': endpointSimulado(async () => new Response(null, { status: 401 })),
   '403': endpointSimulado(async () => new Response(null, { status: 403 })),
   lento: endpointSimulado(async (periodo) => {
@@ -70,7 +86,7 @@ const CENARIOS: Record<string, DashboardClient> = {
 
 const cenario = new URLSearchParams(window.location.search).get('cenario') ?? 'normal'
 
-/** Controle fora da tela, só no preview do cenário `erro`: o gesto "com a origem de volta" do C17. */
+/** Controle fora da tela, só nos cenários `erro` e `pendurado`: o gesto "com a origem de volta" do C17. */
 function ReligarOrigem() {
   const [noAr, setNoAr] = useState(origemNoAr)
   return (
@@ -92,7 +108,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ShoppingDashboardPage client={CENARIOS[cenario] ?? CENARIOS.normal} />
-      {cenario === 'erro' && <ReligarOrigem />}
+      {(cenario === 'erro' || cenario === 'pendurado') && <ReligarOrigem />}
     </QueryClientProvider>
   </StrictMode>,
 )
