@@ -15,9 +15,9 @@
 ## Handoff
 
 **Feature**: ORD-01-migrations-seeds  
-**Where**: Build completo (V1 schema, V2 seed data e DatabaseMigrationTests C1-C9 passando 10/10 com Testcontainers)  
-**In progress**: Commit local e verificação independente (`verification.md`) conforme tlc-spec-lean (profile: light)  
-**Next step**: Após PASS do Verifier, revisar e subir branch `feat/ORD-01-migrations-seeds` para PR contra `develop` e iniciar ORD-02  
+**Where**: Build e Verificação Round 2 concluídos com **PASS** (`C1`–`C10`, 11/11 testes passando)  
+**In progress**: Aguardando revisão do Lucas e autorização para `git push` da branch `feat/ORD-01-migrations-seeds`  
+**Next step**: Push da branch, PR contra `develop` e início da `ORD-02`  
 **Blockers**: none  
 **Uncommitted**: none  
 **Branch**: feat/ORD-01-migrations-seeds  
