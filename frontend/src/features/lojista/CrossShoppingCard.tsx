@@ -33,10 +33,10 @@ export function CrossShoppingCard() {
                 className="grid grid-cols-[6.5rem_minmax(0,1fr)_5.5rem] items-center gap-3 text-sm sm:grid-cols-[7rem_minmax(0,1fr)_6rem]"
               >
                 <span className="text-[var(--text-secondary)]">{categoria}</span>
-                <div className="h-3 rounded-[var(--radius-control)] bg-[var(--bg-subtle)] overflow-hidden">
+                <div className="h-4 rounded-r-sm bg-[var(--bg-subtle)] overflow-hidden">
                   <div
                     data-testid="barra-afinidade"
-                    className="h-full rounded-[var(--radius-control)] bg-[var(--color-analytics)]"
+                    className="h-full rounded-r-sm bg-[var(--color-analytics)]"
                     style={{ width: `${larguraProporcional(total, maior)}%` }}
                   />
                 </div>

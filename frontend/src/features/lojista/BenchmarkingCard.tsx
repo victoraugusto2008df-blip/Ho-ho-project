@@ -8,10 +8,10 @@ function Barra({ rotulo, valor, maior, cor }: { rotulo: string; valor: number; m
   return (
     <div className="grid grid-cols-[6.5rem_minmax(0,1fr)_5.5rem] items-center gap-3 text-sm sm:grid-cols-[9rem_minmax(0,1fr)_6rem]">
       <span className="text-[var(--text-secondary)]">{rotulo}</span>
-      <div className="h-6 rounded-[var(--radius-control)] bg-[var(--bg-subtle)] overflow-hidden">
+      <div className="h-6 rounded-r-sm bg-[var(--bg-subtle)] overflow-hidden">
         <div
           data-testid="barra-benchmarking"
-          className={`h-full rounded-[var(--radius-control)] ${cor}`}
+          className={`h-full rounded-r-sm ${cor}`}
           style={{ width: `${larguraProporcional(valor, maior)}%` }}
         />
       </div>
