@@ -9,8 +9,12 @@ onde as decisões nasceram e onde a equipe já procura. Nada do conteúdo dos AD
 `references/memory.md` da skill manda acrescentar ao log que já existe e não iniciar um segundo.
 
 O índice existe porque `scripts/validate_plan.py` resolve referências `AD-NNN` lendo exclusivamente
-este arquivo. Decisões novas devem ser escritas **primeiro** como ADR no documento de arquitetura e
-então espelhadas aqui em uma linha, com o mesmo número.
+este arquivo. Decisões **de arquitetura** novas devem ser escritas primeiro como ADR no documento de
+arquitetura e então espelhadas aqui em uma linha, com o mesmo número (ADR-08 vira AD-008).
+
+A faixa a partir de **AD-101** é de outra natureza: decisões que aprovam uma diferença entre uma tela e
+a sua fonte vinculante (a figura do mockup). Não são de arquitetura e não vão para o documento da
+equipe; ficam registradas só aqui, por autorização do usuário em 2026-11-14 (ORD-12, decisão D3).
 
 | ID | Decision | Rationale | Status | Date |
 | --- | --- | --- | --- | --- |
@@ -21,9 +25,11 @@ então espelhadas aqui em uma linha, com o mesmo número.
 | AD-005 | ver ADR-05 - JWT com usuários seedados e acesso rápido na UI | registrado no ADR-05 | active | 2026-11-13 |
 | AD-006 | ver ADR-06 - Design tokens em 3 camadas e Tailwind CSS v4 | registrado no ADR-06 | active | 2026-11-13 |
 | AD-007 | ver ADR-07 - Vite dev proxy (`/api`), React 18 e TanStack Query | registrado no ADR-07 | active | 2026-11-13 |
+| AD-101 | ORD-12: título da página e títulos dos painéis em Plus Jakarta Sans e o restante do texto em Inter, as fontes do design system, no lugar da fonte do sistema (`system-ui`) que a figura4 desenha | pergunta: "Fonte: manter a do design system?"; usuário (D2): "manter as fontes do design system."; registro (D3): "autorizo registrar as diferenças visuais e de tokens em Differences e editar o .specs/STATE.md." | active | 2026-11-14 |
+| AD-102 | ORD-12: cores dos tokens do design system no lugar das cores do protótipo - `--color-analytics` nas barras de setor e na série de volume, rampa do mapa horário por `color-mix` dos tokens azuis, fundo `--bg-canvas` e `Expirados` em `--color-warning` (âmbar), porque o design system não tem token laranja | pergunta: "Registrar fonte e cores dos tokens (incluindo Expirados âmbar) em Differences, com novas decisões no STATE.md"; usuário (D3): "autorizo registrar as diferenças visuais e de tokens em Differences e editar o .specs/STATE.md." | active | 2026-11-14 |
+| AD-103 | ORD-12: ladrilho `SA` quadrado e coluna `21h` do mapa horário inteira, onde a figura4 desenha o ladrilho achatado e corta a coluna na borda - os dois vêm de defeitos do protótipo | pergunta: "Registro as duas em Differences, com a decisão no STATE.md, junto com a fonte e as cores?"; usuário: "Registrar as duas (Recomendado)" | active | 2026-11-14 |
 
-Nenhuma decisão nova foi tomada pela feature ORD-12: seu `plan.md` registra
-`## Differences from the source` como `None`, portanto não há departure da fonte vinculante a
-aprovar. As duas questões `blocks go-live` do plano (contrato do DTO com o ORD-10 e os campos que o
-DER não sustenta) devem virar **ADR-08 em diante** no documento de arquitetura quando a equipe
-decidir, e só então ganhar uma linha aqui.
+A feature ORD-12 registra aqui AD-101 a AD-103, as diferenças entre a Tela 3 e a figura4 que o
+usuário aprovou. As questões `blocks go-live` do plano dela (contrato do DTO com o ORD-10, campos que
+o ORD-10 entrega, ticket médio e soma dos setores) devem virar **ADR-08 em diante** no documento de
+arquitetura quando a equipe decidir, e só então ganhar uma linha aqui.

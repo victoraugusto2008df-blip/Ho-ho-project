@@ -4,27 +4,24 @@ Build: `cd frontend && npm run build`
 Run analytics: `node --test --test-reporter=tap frontend/src/lib/analytics/`
 Plan: `.specs/features/ord-12-portal-shopping/plan.md`
 
-25 checks em 3 slices · 2 portas de mão única · 4 questões abertas, das quais 3 bloqueiam go-live
+29 checks em 3 slices · 4 portas de mão única · 5 questões abertas, das quais 4 bloqueiam go-live
 
-> **Estado de execução (2026-11-14, durante o BUILD).** Os 13 testes automatizados (`run analytics`:
-> C4 a C13, C23, C24 e C25) foram escritos a partir de cada check em
-> `frontend/src/lib/analytics/shoppingDashboardMapper.test.ts`. Antes do mapper existir, o comando da
-> linha `Run analytics:` terminou vermelho (`ERR_MODULE_NOT_FOUND`, exit code 1); com o mapper, a
-> execução real imprimiu `# tests 13`, `# pass 13`, `# fail 0` e terminou com exit code 0. As linhas
-> após `|` nas provas `run` foram conferidas, uma a uma, contra as linhas `ok N - ...` dessa execução
-> e são idênticas.
+> **Estado de execução (2026-11-14, correção do round 1).** Os checks C26 a C29 foram acrescentados a
+> partir dos findings do Verifier, com aprovação do usuário (D11), e os textos de C14, C21 e C25 foram
+> renegociados com ele (D8, D6 e D5). Os testes novos e os reforçados ainda não foram executados
+> nesta rodada; a linha `**Boundary:**` registra o que fecha e em qual commit.
 >
-> Os 25 checks se dividem em três tipos de prova:
+> Os 29 checks se dividem em três tipos de prova:
 >
-> - **13 testes automatizados** (`run analytics`): C4 a C13, C23, C24 e C25 - executados, verdes.
-> - **11 verificações manuais** (`walk`): C2, C3 e C14 a C22 - pendentes até a linha `**Walked:**`.
-> - **1 comparação por imagem** (`browser`): C1, julgada pelo sub-agente de screens - pendente.
+> - **17 testes automatizados** (`run analytics`): C4 a C13 e C23 a C29.
+> - **11 verificações manuais** (`walk`): C2, C3 e C14 a C22.
+> - **1 comparação por imagem** (`browser`): C1, julgada pelo sub-agente de screens.
 
 > **Os 11 checks com prova `walk` são verificação MANUAL, não teste automatizado** - C2, C3, C14,
 > C15, C16, C17, C18, C19, C20, C21 e C22. A evidência é o atestado do autor na linha `**Walked:**`
 > do `## Handoff`: ele executa o gesto no navegador e registra o que a tela mostrou. `check_proofs.py`
 > apenas verifica que essa linha existe, e não visita por visita. Nenhum relatório desta feature deve
-> apresentá-los como execução automatizada. Somente os 13 checks com prova `run analytics` terão
+> apresentá-los como execução automatizada. Somente os 17 checks com prova `run analytics` têm
 > execução por máquina.
 
 ## Checks
@@ -78,11 +75,23 @@ Proof: run analytics | ok 11 - ticket medio e derivado de faturamento por notas
 **C24** - `notasCadastradas` igual a `0` devolve ticket médio `R$ 0,00`, sem divisão por zero (AC 22)
 Proof: run analytics | ok 12 - notas zero devolve ticket medio zero
 
-**C25** - O rodapé do KPI de notas é `até o momento` em `Hoje`, e `média de <N>/dia` em `7 dias` e `30 dias`, com `N` igual às notas divididas pelos dias do período: `7000` em `7 dias` vira `média de 1.000/dia` e `7500` em `30 dias` vira `média de 250/dia` (AC 23)
+**C25** - O rodapé do KPI de notas é `até o momento` em `Hoje`, e `média de <N>/dia` em `7 dias` e `30 dias`, com `N` igual às notas divididas pelos dias do período e arredondado ao inteiro: `7000` em `7 dias` vira `média de 1.000/dia`, `7004` em `7 dias` vira `média de 1.001/dia` e `7500` em `30 dias` vira `média de 250/dia` (AC 23)
 Proof: run analytics | ok 13 - rodape do KPI de notas por periodo
 
-**C14** - A interface identifica visualmente todo valor que o mapper marcou como fictício (AC 12)
-Proof: walk - abrir a Tela 3 carregada e conferir a marca em cada painel sem respaldo no DER: status dos vouchers, saídas de veículos, CPFs distintos e as colunas de ROI
+**C26** - Uma campanha ativa sem as métricas no payload e sem entrada na fixture local mostra `—` em `Enviados`, `Convertidos`, `Receita gerada`, `ROI` e `Taxa p/ shopping`, fica fora da linha de total e nenhuma célula da tabela mostra `NaN` (AC 9, AC 12)
+Proof: run analytics | ok 14 - campanha sem metricas nao vira NaN
+
+**C27** - O valor curto de cada setor arredonda antes de escolher a unidade: `99995000` centavos viram `R$ 1,00 mi`, e `12345600` centavos viram `R$ 123,5 mil` (AC 1)
+Proof: run analytics | ok 15 - valor curto do setor sobe para mi no arredondamento
+
+**C28** - O rótulo do pico do gráfico de volume marca o maior ponto mesmo quando toda a série tem menos de 4 notas: na série `2`, `3`, o pico é o segundo ponto, com `3` notas (AC 1)
+Proof: run analytics | ok 16 - pico marcado mesmo com poucas notas
+
+**C29** - Quando `utilizados`, `expirados` e `pendentes` somam mais que `emitidos`, as larguras da barra empilhada somam no máximo 100% e os percentuais exibidos continuam sobre `emitidos`: `100` emitidos com `80`, `30` e `10` dão `80,0%`, `30,0%` e `10,0%` (AC 8)
+Proof: run analytics | ok 17 - barra de status nunca passa de 100 por cento
+
+**C14** - A interface identifica todo valor que o mapper marcou como fictício: o selo `Protótipo · dados fictícios` no cabeçalho e, em cada valor marcado, a dica `Dado fictício: o payload do ORD-10 não trouxe este valor`, que abre com o ponteiro, com o toque e com o foco do teclado e fecha com `Esc` (AC 12)
+Proof: walk - abrir a Tela 3 carregada e abrir a dica de cada painel marcado como fictício (status dos vouchers, saídas de veículos, CPFs distintos e colunas de ROI) com o ponteiro, com o toque e com `Tab`, fechando com `Esc`
 
 ### S3 - Os estados da tela
 
@@ -104,8 +113,8 @@ Proof: walk - usar os três controles de período em sequência e ler o cabeçal
 **C20** - `Ver dados em tabela` abre a tabela com a mesma série que o gráfico desenha (AC 18)
 Proof: walk - usar o controle e comparar a tabela com a série do gráfico
 
-**C21** - Cada item da navegação lateral leva à sua seção e fica marcado como ativo (AC 19)
-Proof: walk - usar os oito itens da barra lateral, um a um
+**C21** - Cada um dos cinco itens do Portal do Shopping na navegação lateral leva à sua seção e fica marcado como ativo, e `3 · Shopping` fica marcado como a página atual; `1 · Consumidor` e `2 · Lojista` ainda não navegam, porque as rotas das Telas 1 e 2 são do shell do ORD-03 (issue #3) (AC 19)
+Proof: walk - usar os cinco itens do Portal do Shopping, um a um, conferir `3 · Shopping` como página atual e conferir que `1 · Consumidor` e `2 · Lojista` não navegam
 
 **C22** - Trocando de período com uma consulta em voo, a tela mostra o último período escolhido, não a última resposta a chegar (AC 20)
 Proof: walk - com a rede estrangulada, escolher `30 dias` e, antes da resposta, escolher `Hoje`, e ler o cabeçalho e os KPIs
@@ -117,18 +126,20 @@ Proof: walk - com a rede estrangulada, escolher `30 dias` e, antes da resposta, 
 | KPIs que a captura desenha (4) | `Faturamento identificado` C1, C4 · `Notas cadastradas` C1, C25 · `Ticket médio do shopping` C1, C23 · `Vouchers de estacionamento` C1, C7 | - |
 | painéis que a captura desenha (5) | faturamento por segmento C1, C5 · volume de notas C1 · mapa horário C1, C6 · adesão ao estacionamento C1, C8 · ROI das campanhas C1, C9 | - |
 | estados da tela (5) | carregado C1 · carregando C15 · vazio C16 · erro C17 · sem permissão C18 | - |
-| controles que a captura desenha (12) | `Visão executiva` C21 · `Faturamento por segmento` C21 · `Volume de notas` C21 · `Estacionamento` C21 · `ROI de campanhas` C21 · `1 · Consumidor` C21 · `2 · Lojista` C21 · `3 · Shopping` C21 · `Hoje` C19 · `7 dias` C19 · `30 dias` C19 · `Ver dados em tabela` C20 | - |
+| controles que a captura desenha (12) | `Visão executiva` C21 · `Faturamento por segmento` C21 · `Volume de notas` C21 · `Estacionamento` C21 · `ROI de campanhas` C21 · `1 · Consumidor` C21 (sem rota até o ORD-03, issue #3) · `2 · Lojista` C21 (sem rota até o ORD-03, issue #3) · `3 · Shopping` C21 · `Hoje` C19 · `7 dias` C19 · `30 dias` C19 · `Ver dados em tabela` C20 | - |
 | statuses de `GET /api/v1/analytics/shopping/dashboard` (4) | 200 C1 · 401 C18 · 403 C18 · 500 C17 | - |
 | células do mapa horário (84) | C6, table-driven sobre as 84 | - |
 | exemplos do formato de faturamento, AC 4 (3 exemplos) | `250000000` C4 · `9990` C4 · `100000000` C4 | - |
 | exemplos da regra de percentual, AC 5 (3 exemplos) | três setores C5 · setor único C5 · dois setores iguais C12 | - |
 | divisões por zero (3) | faturamento `0` C10 · `saidasVeiculos` `0` C11 · `notasCadastradas` `0` C24 | - |
 | rodapé do KPI de notas por período (3) | `Hoje` C25 · `7 dias` C25 · `30 dias` C25 | - |
-| painéis sem respaldo no DER, marcados como fictícios (4) | status dos vouchers C13, C14 · saídas de veículos C13, C14 · CPFs distintos C13, C14 · colunas de ROI C13, C14 | - |
+| painéis marcados como fictícios até o ORD-10 confirmar o contrato (4) | status dos vouchers C13, C14 · saídas de veículos C13, C14 · CPFs distintos C13, C14 · colunas de ROI C13, C14 | - |
+| formas de abrir a dica de dado fictício (3) | ponteiro C14 · toque C14 · teclado C14 | - |
+| casos de borda da exibição (4) | campanha sem métricas C26 · valor curto do setor no arredondamento C27 · pico com poucas notas C28 · status acima de `emitidos` C29 | - |
 
 ## Swept
 
-- validation: C10, C11, C24
+- validation: C10, C11, C24, C26, C29
 - failure modes: C17
 - idempotency: n/a - a tela só emite `GET`; nenhum pedido altera estado no servidor, então não há efeito a repetir
 - authorization: C18
@@ -140,7 +151,7 @@ Proof: walk - com a rede estrangulada, escolher `30 dias` e, antes da resposta, 
 
 ## Handoff
 
-- **Settled mid-build:** O usuário reafirmou, ao pedir o resumo de continuidade: "Preserve especialmente a regra de não trabalhar nas tarefas dos colegas e não fazer push, merge ou deploy sem autorização." Marca de dado fictício (C14), escolhida entre manter, asterisco visível ou selo por painel: "Manter como está (Recomendado)" - selo global, dica ao passar o ponteiro e texto para leitor de tela, sem divergir da figura4. Prova do C1, depois de medida a escala de 0,95 da figura4: "Ajustar à escala (Recomendado)" - a prova passa de viewport de 1373 x 1600 para janela de 1440 x 1678 a escala 0,9535.
+- **Settled mid-build:** Plano de correção do round 1, autorizado em 2026-11-14, nas palavras do usuário: "D1: aprovado. Corrigir o selo somente na página, utilizando tokens existentes e color-mix." "D2: manter as fontes do design system." "D3: autorizo registrar as diferenças visuais e de tokens em Differences e editar o .specs/STATE.md." "D4: não considerar resolvida. A origem dos dados de vouchers e CPFs distintos depende de confirmação com Lucas. Manter a identificação de dados fictícios até o contrato ser confirmado." "D5: aprovado. Restaurar o arredondamento ao inteiro em C25." "D6: aprovado. Documentar a dependência do ORD-03 em C21 e Coverage." "D7: manter como questão aberta com Lucas, sem inventar a categoria Outros." "D8: manter a decisão anterior sobre C14, garantindo acessibilidade por mouse, toque e teclado." "D9: manter testes no CI fora da ORD-12." "D10: aprovada a representação UUID no contrato provisório, sujeita à confirmação com Lucas." "D11: aprovar C26 a C29." "D12: não autorizo ainda a criação dos arquivos de lições. Vamos decidir depois da validação final." Finding 4, percentuais no caso misto: "Manter o critério 8 (Recomendado)". Ladrilho `SA` e coluna `21h` em Differences: "Registrar as duas (Recomendado)". Antes, o usuário reafirmou, ao pedir o resumo de continuidade: "Preserve especialmente a regra de não trabalhar nas tarefas dos colegas e não fazer push, merge ou deploy sem autorização." Marca de dado fictício (C14), escolhida entre manter, asterisco visível ou selo por painel: "Manter como está (Recomendado)" - selo global, dica ao passar o ponteiro e texto para leitor de tela, sem divergir da figura4. Prova do C1, depois de medida a escala de 0,95 da figura4: "Ajustar à escala (Recomendado)" - a prova passa de viewport de 1373 x 1600 para janela de 1440 x 1678 a escala 0,9535.
 - **Dispatched:** Verifier, round 1, código em `5b953a8` (o commit seguinte só registra este despacho em `.specs/`), diff `20d261b..HEAD` - enviado e `returned`: FAIL, 12 findings, 7 checks com `no` (`verification.md`). Screens, round 1, imagem `captures/portal-shopping.running.png` tirada em `5b953a8` - enviado e `returned`: `diverges`, 1 de 59 linhas `differs`, o selo `Protótipo · dados fictícios` (`screens.md`). Correções aguardando o usuário, que pediu para ver as divergências antes de qualquer mudança na implementação.
 - **Boundary:** C4-C13, C23, C24 e C25 fechados em `998a860` (`run analytics`: 13 de 13, exit code 0). C1: `captures/portal-shopping.running.png` salva de novo na escala da captura, aguardando o sub-agente de screens. C2, C3, C15-C20 e C22 visitados em `57aa7cb` com o resultado que o check pede. C14 visitado e fechado com a marca que o usuário escolheu: dica ao passar o ponteiro, texto para leitor de tela e o selo global. C21 parcial: os cinco itens do Portal do Shopping navegam e ficam ativos; `1 · Consumidor` e `2 · Lojista` não navegam até o ORD-03 (issue #3) registrar as rotas.
 - **Abandoned:** `SectorBarChart` e `HourHeatmap` sobre `Recharts` - o `Recharts` não tem mapa de calor e a captura desenha os setores como lista de rótulo, barra e valor, sem eixo; o hop 5 do `Shape` foi corrigido em `9dc5394`. Cenário `erro` do preview por contagem de falhas - o StrictMode do `npm run dev` cancela e refaz a primeira consulta, e a chamada cancelada consumia a contagem; trocado por um botão do preview em `57aa7cb`.
