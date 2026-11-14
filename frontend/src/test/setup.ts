@@ -24,6 +24,18 @@ function createMemoryStorage(): Storage {
   }
 }
 
+/**
+ * O jsdom troca o `AbortController` global, e o `Request` do Node (usado pelo React Router
+ * ao navegar) rejeita o sinal dele. A navegação dos testes não depende de cancelamento,
+ * então o sinal é descartado.
+ */
+const NodeRequest = globalThis.Request
+globalThis.Request = class extends NodeRequest {
+  constructor(input: RequestInfo | URL, init?: RequestInit) {
+    super(input, init?.signal ? { ...init, signal: undefined } : init)
+  }
+}
+
 beforeEach(() => {
   Object.defineProperty(globalThis, 'localStorage', {
     value: createMemoryStorage(),
