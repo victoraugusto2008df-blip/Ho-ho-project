@@ -6,11 +6,13 @@
 *.local
 !.env.example
 docker-compose.override.yml
+.local-tasks/
 
 # ==========================================
 # Configurações de IA e Assistentes Locais
 # ==========================================
 .agents/
+.specs/**/issue.md
 .skills-guide/
 skills-lock.json
 .gemini/
@@ -123,3 +125,8 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ==========================================
+# Pasta privada local (notas e contexto, nao versionar)
+# ==========================================
+.private/
