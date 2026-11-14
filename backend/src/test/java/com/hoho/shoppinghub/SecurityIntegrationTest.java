@@ -6,9 +6,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.hoho.shoppinghub.auth.security.AuthenticatedUser;
 import com.hoho.shoppinghub.auth.service.JwtService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -29,11 +34,25 @@ class SecurityIntegrationTest {
     @Autowired
     private JwtService jwtService;
 
+    @Value("${app.security.jwt.secret}")
+    private String jwtSecret;
+
     @Test
     void protectedRouteWithoutOrWithInvalidTokenReturns401() throws Exception {
         mockMvc.perform(get("/api/v1/auth/probe/lojista")).andExpect(status().isUnauthorized());
 
         mockMvc.perform(get("/api/v1/auth/probe/lojista").header("Authorization", "Bearer token-invalido"))
+                .andExpect(status().isUnauthorized());
+
+        String expired = Jwts.builder()
+                .subject("probe@shopping.com")
+                .claim("role", "LOJISTA")
+                .claim("lojaId", STORE_A.toString())
+                .issuedAt(new Date(System.currentTimeMillis() - 2L * 86400000L))
+                .expiration(new Date(System.currentTimeMillis() - 86400000L))
+                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)))
+                .compact();
+        mockMvc.perform(get("/api/v1/auth/probe/lojista").header("Authorization", "Bearer " + expired))
                 .andExpect(status().isUnauthorized());
     }
 
