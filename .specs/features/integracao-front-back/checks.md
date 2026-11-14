@@ -103,7 +103,7 @@ Proof: run back | onlyLojistaMayDispatchACampaign -- Time elapsed
 Proof: run back | freshSeedGivesTheDemoStoreAPublicoOf2 -- Time elapsed
 
 **C26** - No banco recém-migrado, `notas_fiscais` tem 17 linhas, todas emitidas antes de hoje (AC 20)
-Proof: run back | historicalReceiptsAreSeededAcrossStoresAndCategories -- Time elapsed
+Proof: run back | historicalReceiptsAreSeeded -- Time elapsed
 
 **C27** - "Disparar Cupom 15% OFF" envia `{"titulo":"Cupom 15% OFF","descontoPercentual":15,"criterioAlvo":"INATIVOS_60_DIAS"}` a `POST /api/v1/campanhas` e a Tela 2 mostra a mensagem de sucesso com o `publicoAtingido` devolvido (AC 21)
 Proof: run front | ✓ INT-27 disparar campanha chama o backend e mostra o público devolvido

@@ -101,6 +101,20 @@ class FiscalServiceRegrasTest {
     }
 
     @Test
+    void registeredKeyIsRejectedWithoutConsultingSefaz() {
+        when(notaFiscalRepository.existsByChaveAcesso(CHAVE)).thenReturn(true);
+
+        FiscalBusinessException rejeicao = rejeicaoAoIngerir();
+
+        assertThat(rejeicao).isNotNull();
+        assertThat(rejeicao.getError()).isEqualTo(FiscalError.NOTA_DUPLICADA);
+        assertThat(rejeicao.getError().status().value()).isEqualTo(409);
+        verify(gateway, never()).consultarPorChave(any());
+        verify(notaFiscalRepository, never()).saveAndFlush(any(NotaFiscal.class));
+        verify(eventPublisher, never()).publishEvent(any());
+    }
+
+    @Test
     void uniqueKeyIsPersistedAndPublishesOneEvent() {
         Instant emissao = AGORA.minus(Duration.ofHours(2));
         sefazDevolveNotaEmitidaHa(Duration.ofHours(2));

@@ -95,6 +95,7 @@ public class EstacionamentoService {
                 percentual,
                 valorFaltante,
                 voucher.isPresent(),
+                voucherRepository.cpfMascaradoDoCliente(clienteId),
                 voucher.map(VoucherResponse::from).orElse(null));
     }
 

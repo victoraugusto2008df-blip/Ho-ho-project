@@ -10,6 +10,8 @@ import com.hoho.shoppinghub.fiscal.domain.NotaFiscalValidadaEvent;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -50,6 +52,10 @@ public class FiscalService {
 
     @Transactional
     public NotaFiscal ingerir(String chaveAcesso, UUID clienteId) {
+        if (notaFiscalRepository.existsByChaveAcesso(chaveAcesso)) {
+            throw new FiscalBusinessException(FiscalError.NOTA_DUPLICADA);
+        }
+
         DadosNotaFiscalSefaz dados;
         try {
             dados = gateway.consultarPorChave(chaveAcesso)
@@ -81,5 +87,12 @@ public class FiscalService {
                 nota.getValorTotal(),
                 nota.getDataEmissao()));
         return nota;
+    }
+
+    /** Janela do dia corrente no fuso do relógio: [meia-noite de hoje, meia-noite de amanhã). */
+    public Instant[] janelaDeHoje() {
+        LocalDate hoje = LocalDate.now(clock);
+        ZoneId zona = clock.getZone();
+        return new Instant[] {hoje.atStartOfDay(zona).toInstant(), hoje.plusDays(1).atStartOfDay(zona).toInstant()};
     }
 }

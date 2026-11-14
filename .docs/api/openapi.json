@@ -1,0 +1,524 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Shopping Analytics & Loyalty Hub API",
+    "description" : "API do MVP da Equipe 22 (Ho-Ho). Faça login em POST /api/v1/auth/login e informe o token em Authorize.",
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost",
+    "description" : "Generated server url"
+  } ],
+  "security" : [ {
+    "bearerAuth" : [ ]
+  } ],
+  "tags" : [ {
+    "name" : "Analytics",
+    "description" : "Painéis agregados, com K-Anonymity (ReN05)"
+  }, {
+    "name" : "Autenticação",
+    "description" : "Login dos usuários de demonstração"
+  }, {
+    "name" : "Estacionamento",
+    "description" : "Meta de R$ 150,00 no dia e voucher (ReN03, ReN04)"
+  }, {
+    "name" : "Campanhas",
+    "description" : "Disparo simulado de cupom pelo lojista, sem expor CPFs"
+  }, {
+    "name" : "Notas fiscais",
+    "description" : "Cadastro de NFC-e pelo consumidor (ReN01, ReN02, RF03)"
+  } ],
+  "paths" : {
+    "/api/v1/notas" : {
+      "post" : {
+        "tags" : [ "Notas fiscais" ],
+        "summary" : "Cadastra uma nota pela chave de acesso de 44 dígitos",
+        "operationId" : "ingerir",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NotaRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/NotaResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campanhas" : {
+      "post" : {
+        "tags" : [ "Campanhas" ],
+        "summary" : "Dispara uma campanha para os clientes da loja do token inativos há mais de 60 dias",
+        "operationId" : "disparar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CampanhaRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CampanhaResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login" : {
+      "post" : {
+        "tags" : [ "Autenticação" ],
+        "summary" : "Autentica por e-mail e senha e devolve o JWT",
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ ]
+      }
+    },
+    "/api/v1/notas/hoje" : {
+      "get" : {
+        "tags" : [ "Notas fiscais" ],
+        "summary" : "Lista as notas aprovadas do consumidor emitidas hoje",
+        "operationId" : "notasDeHoje",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/NotaResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/beneficios/estacionamento/hoje" : {
+      "get" : {
+        "tags" : [ "Estacionamento" ],
+        "summary" : "Progresso do consumidor na meta de hoje e o voucher, se liberado",
+        "operationId" : "consultarHoje",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EstacionamentoHojeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/probe/tenant" : {
+      "get" : {
+        "tags" : [ "probe-controller" ],
+        "operationId" : "currentTenant",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "type" : "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/probe/lojista" : {
+      "get" : {
+        "tags" : [ "probe-controller" ],
+        "operationId" : "lojistaOnly",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "type" : "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/probe/loja/{lojaId}" : {
+      "get" : {
+        "tags" : [ "probe-controller" ],
+        "operationId" : "tenantScoped",
+        "parameters" : [ {
+          "name" : "lojaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "type" : "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/probe/admin" : {
+      "get" : {
+        "tags" : [ "probe-controller" ],
+        "operationId" : "adminOnly",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "type" : "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/lojista/dashboard" : {
+      "get" : {
+        "tags" : [ "Analytics" ],
+        "summary" : "Painel da loja do token: ticket médio, benchmarking, picos e compras cruzadas",
+        "operationId" : "dashboard",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DashboardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "NotaRequest" : {
+        "type" : "object",
+        "properties" : {
+          "chaveAcesso" : {
+            "type" : "string"
+          }
+        }
+      },
+      "NotaResponse" : {
+        "type" : "object",
+        "properties" : {
+          "chaveAcesso" : {
+            "type" : "string"
+          },
+          "valorTotal" : {
+            "type" : "number"
+          },
+          "dataEmissao" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "clienteId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "lojaId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "estabelecimento" : {
+            "type" : "string"
+          },
+          "categoria" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CampanhaRequest" : {
+        "type" : "object",
+        "properties" : {
+          "titulo" : {
+            "type" : "string",
+            "maxLength" : 150,
+            "minLength" : 0
+          },
+          "descontoPercentual" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 100,
+            "minimum" : 1
+          },
+          "criterioAlvo" : {
+            "type" : "string",
+            "pattern" : "INATIVOS_60_DIAS"
+          }
+        },
+        "required" : [ "criterioAlvo", "descontoPercentual" ]
+      },
+      "CampanhaResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "titulo" : {
+            "type" : "string"
+          },
+          "descontoPercentual" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "criterioAlvo" : {
+            "type" : "string"
+          },
+          "publicoAtingido" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "criadoEm" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "LoginRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "minLength" : 1
+          },
+          "senha" : {
+            "type" : "string",
+            "minLength" : 1
+          }
+        }
+      },
+      "LoginResponse" : {
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string"
+          },
+          "lojaId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "clienteId" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }
+      },
+      "EstacionamentoHojeResponse" : {
+        "type" : "object",
+        "properties" : {
+          "valorAcumulado" : {
+            "type" : "number"
+          },
+          "meta" : {
+            "type" : "number"
+          },
+          "percentual" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "valorFaltante" : {
+            "type" : "number"
+          },
+          "voucherLiberado" : {
+            "type" : "boolean"
+          },
+          "cpfMascarado" : {
+            "type" : "string"
+          },
+          "voucher" : {
+            "$ref" : "#/components/schemas/VoucherResponse"
+          }
+        }
+      },
+      "VoucherResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "codigoQr" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "dataReferencia" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "criadoEm" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "CrossShoppingItem" : {
+        "type" : "object",
+        "properties" : {
+          "categoria" : {
+            "type" : "string"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "DashboardResponse" : {
+        "type" : "object",
+        "properties" : {
+          "ticketMedio" : {
+            "type" : "number"
+          },
+          "benchmarkingDisponivel" : {
+            "type" : "boolean"
+          },
+          "mediaCategoria" : {
+            "type" : "number"
+          },
+          "horariosPico" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PicoHora"
+            }
+          },
+          "diasPico" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PicoDia"
+            }
+          },
+          "crossShopping" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CrossShoppingItem"
+            }
+          }
+        }
+      },
+      "PicoDia" : {
+        "type" : "object",
+        "properties" : {
+          "diaSemana" : {
+            "type" : "string"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "PicoHora" : {
+        "type" : "object",
+        "properties" : {
+          "hora" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    }
+  }
+}
