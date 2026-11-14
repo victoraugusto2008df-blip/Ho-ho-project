@@ -192,6 +192,9 @@ O MVP inicial é composto por **3 telas essenciais (*Vertical Slice*)**, represe
 * **Cache Distribuído com Redis:** Aceleração de consultas analíticas e controle de taxa de requisições (*Rate Limiting*).
 * **Observabilidade:** Monitoramento de saúde e latência via Spring Boot Actuator e Micrometer.
 
+
+## pitch
+https://youtube.com/shorts/uFLz5r0V-pM?is=zAXUw2CRUFmwA49E
 ---
 
 ## 📂 Documentação de Apoio
