@@ -171,16 +171,16 @@ Para ninguém ficar bloqueado esperando outro colega, o trabalho deve seguir **4
 
 ---
 
-## 4. Sugestão de Divisão entre os 4 Integrantes
+## 4. Divisão Oficial entre os 4 Integrantes
 
 Para que os **4 integrantes** trabalhem em paralelo sem pisar no código um do outro:
 
 | Integrante | Trilha / Foco | Cards Responsáveis |
 | :--- | :--- | :--- |
-| **Dev 1 (Backend Core & Fiscal)** | Domínio, Segurança e Ingestão | `ORD-01` $\rightarrow$ `ORD-02` $\rightarrow$ `ORD-04` $\rightarrow$ `ORD-05` |
-| **Dev 2 (Backend Benefícios & Analytics)** | Regras de Estacionamento, KPIs e Campanhas | `ORD-06` $\rightarrow$ `ORD-08` $\rightarrow$ `ORD-09` $\rightarrow$ `ORD-10` |
-| **Dev 3 (Frontend B2C & Shell)** | Auth Rápida, Interceptador JWT e Tela 1 | `ORD-03` $\rightarrow$ `ORD-07` $\rightarrow$ apoio em `ORD-14` |
-| **Dev 4 (Frontend B2B & Gráficos)** | Dashboards Analíticos (Telas 2 e 3) | `ORD-11` $\rightarrow$ `ORD-12` $\rightarrow$ apoio em `ORD-13`/`ORD-14` |
+| **Lucas Anjos** | Backend Core, Dados, Fiscal & Analytics | `ORD-01` $\rightarrow$ `ORD-02` $\rightarrow$ `ORD-04` $\rightarrow$ `ORD-05` $\rightarrow$ `ORD-06` $\rightarrow$ `ORD-08`/`ORD-09`/`ORD-10` |
+| **Breno Brito** | Frontend B2C & Shell (Consumidor) | `ORD-03` (Shell & Acesso Rápido) $\rightarrow$ `ORD-07` (Tela 1 — Portal do Consumidor) |
+| **Walisson Kupertino** | Frontend B2B (Lojista) | `ORD-11` (Tela 2 — Portal do Lojista) $\rightarrow$ apoio em DTOs/QA |
+| **Victor Augusto** | Frontend Corporativo (Shopping) & QA | `ORD-12` (Tela 3 — Portal do Shopping) $\rightarrow$ `ORD-14` (Ensaio Ponta a Ponta) |
 
-> 💡 **Dica de Ouro para o Sábado:** Enquanto o **Dev 1** finaliza `ORD-01` e `ORD-02`, o **Dev 3** e o **Dev 4** já podem adiantar o layout visual das telas usando dados mockados no front e só plugar os hooks do TanStack Query assim que os endpoints ficarem prontos!
+> 💡 **Dica de Ouro para o Sábado:** Enquanto o **Lucas** finaliza `ORD-01` e `ORD-02`, o **Breno**, o **Walisson** e o **Victor** já podem adiantar o layout visual das 3 telas no React usando dados mockados e só plugar os hooks do TanStack Query assim que os endpoints ficarem prontos!
 
