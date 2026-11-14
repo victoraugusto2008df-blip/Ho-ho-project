@@ -6,6 +6,7 @@
 *.local
 !.env.example
 docker-compose.override.yml
+.local-tasks/
 
 # ==========================================
 # Configurações de IA e Assistentes Locais
