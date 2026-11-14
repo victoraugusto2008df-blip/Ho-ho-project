@@ -207,9 +207,10 @@ reposicionar nada que a captura desenhe.
 - O que a captura **não** desenha fica abaixo da dobra de 1600 px e, pela regra 9 da skill, é provado
   por `walk`, sem imagem e sem juiz.
 - Todos os quatro mockups do projeto têm exatamente 1600 px de altura, o que indica recorte na
-  captura e não página inteira. Por isso esta feature usa **uma** captura, e a imagem de execução é
-  tirada em viewport de 1373 x 1600 em navegador headless, que reproduz o tamanho exigido sem
-  recortar nem alterar a fonte original.
+  captura e não página inteira. Por isso esta feature usa **uma** captura. A figura4 foi tirada a
+  escala de cerca de 0,95 (a barra lateral de 256 px CSS mede 243 px na imagem), então a imagem de
+  execução é tirada em navegador headless em janela de 1440 x 1678 a escala 0,9535, o que dá
+  1373 x 1600 sem recortar nem alterar a fonte original (decisão do usuário durante o BUILD).
 - **Duas fontes de número, com papéis distintos.** A fixture recria os valores da captura, para que
   a comparação de imagem feche; os critérios de aceite fixam as regras com exemplos independentes,
   escolhidos justamente para não coincidir com nada que a captura desenhe. Um critério que repetisse
