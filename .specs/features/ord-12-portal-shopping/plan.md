@@ -37,7 +37,7 @@ alcança sem passar pelo build.
 2. `ShoppingDashboardPage` (new) -> `useShoppingDashboard` (new) - hook sobre o `queryClient` (exists), chaveado por período
 3. `useShoppingDashboard` (new) -> `analyticsClient` (new) - busca o dashboard pelo proxy `/api` e traduz `401`, `403` e `500` em erro tipado
 4. `analyticsClient` (new) -> `shoppingDashboardMapper` (new) - converte o DTO no modelo de tela: percentual por setor, 84 células do mapa horário, adesão de vouchers, totais de campanhas e formatação pt-BR (door 1, door 2)
-5. out: `ShoppingDashboardPage` (new) desenha os KPIs e entrega as séries a `SectorBarChart` (new), `NotesVolumeChart` (new) e `HourHeatmap` (new); os dois primeiros sobre `Recharts` (exists)
+5. out: `ShoppingDashboardPage` (new) desenha os KPIs e entrega as séries a `SectorBarChart` (new), `NotesVolumeChart` (new) e `HourHeatmap` (new); só `NotesVolumeChart` usa `Recharts` (exists) - `SectorBarChart` e `HourHeatmap` são HTML e CSS, porque o `Recharts` não tem mapa de calor e a captura desenha os setores como lista de rótulo, barra e valor, sem eixo
 
 ```mermaid
 sequenceDiagram
@@ -60,7 +60,6 @@ sequenceDiagram
     P->>S: 5. séries por setor
     P->>N: 5. série de volume
     P->>T: 5. células dia x hora
-    S->>R: 5. desenha
     N->>R: 5. desenha
 ```
 
