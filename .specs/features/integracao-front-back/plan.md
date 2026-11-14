@@ -1,5 +1,7 @@
 # Integração front-back, campanhas e Swagger
 
+**Approved**: 2026-11-14 - user: "pode e faça o build e o push"
+
 ## Problem
 
 O frontend não fala com o backend. O login gera um JWT local (`VITE_AUTH_MOCK`), a Tela 1 e a

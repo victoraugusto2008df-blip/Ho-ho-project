@@ -1,5 +1,7 @@
 # ORD-14 - Ensaio ponta a ponta da demonstração
 
+**Approved**: 2026-11-14 - user: "pode e faça o build e o push"
+
 ## Problem
 
 O roteiro da banca tem quatro passos e o último não existe: ao trocar para Admin Shopping, a rota

@@ -13,7 +13,7 @@ mostre, regra por regra, um caso aceito e um caso rejeitado.
 Quando isto entra, cada regra tem ao menos um teste unitário (JUnit 5 + Mockito) de caso feliz e um
 de rejeição, com o relógio controlado pelo teste, e a suíte completa passa com `./mvnw test`.
 
-13 checks in 6 slices · 0 one-way doors · 0 open, of which 0 block
+14 checks in 6 slices · 0 one-way doors · 0 open, of which 0 block
 
 ## Checks
 
@@ -44,6 +44,9 @@ Proof: run regras | belowTheGoalEmitsNoVoucher -- Time elapsed
 **C7** - A soma é pedida só para o cliente do evento e para a janela que vai da meia-noite do dia do relógio à meia-noite seguinte, no fuso do relógio; só notas `APROVADA` dentro da janela entram (issue AC 3)
 Proof: run regras | sumIsRequestedForTheClientAndTheClockDayOnly -- Time elapsed
 Proof: `cd backend && ./mvnw -B -q test -Dtest=EstacionamentoIntegrationTest#onlyApprovedReceiptsFromTodayAreSummed`
+
+**C14** - Uma nota `APROVADA` do mesmo cliente emitida amanhã (R$ 300,00) e uma nota `APROVADA` de hoje de outro cliente (R$ 400,00) não entram na soma: com uma nota de hoje de R$ 50,00, `valorAcumulado` é 50,00 e nenhum voucher é emitido (achado do Verificador sobre C7)
+Proof: `cd backend && ./mvnw -B -q test -Dtest=EstacionamentoIntegrationTest#receiptsOfTomorrowOrOfAnotherClientAreNotSummed`
 
 ### S4 - ReN04: máximo de 1 voucher por CPF por dia
 
@@ -76,6 +79,7 @@ Proof: `! grep -rn "@Disabled" backend/src/test`
 | regras × caso feliz e rejeição (10) | ReN01 rejeição C1 · ReN01 feliz C2 · ReN02 rejeição C3 · ReN02 feliz C4 · ReN03 feliz C5 · ReN03 rejeição C6 · ReN04 rejeição C8 · ReN04 feliz C9 · ReN05 rejeição C10 · ReN05 feliz C11 | - |
 | ReN02, limite de 72h (4 exemplos) | 96h C3 · 72h + 1s C3 · 72h exatas C4 · 71h59 C4 | - |
 | ReN03, limite de R$ 150,00 (4 exemplos) | 0,00 C6 · 149,99 C6 · 150,00 C5 · 160,00 C5 | - |
+| ReN03, filtros da soma (4 membros) | status `APROVADA` C7 · início do dia C7 · fim do dia C14 · cliente C14 | - |
 | ReN05, limite k = 3 (5 exemplos) | k=0 C10 · k=1 C10 · k=2 C10 · k=3 C11 · k=4 C11 | - |
 | critérios de aceite da issue (6) | AC1 C1 · AC2 C3 · AC3 C5, C7 · AC4 C8 · AC5 C10 · AC6 C12 | - |
 
@@ -102,6 +106,6 @@ Proof: `! grep -rn "@Disabled" backend/src/test`
 ## Handoff
 
 - **Settled mid-build:** none
-- **Dispatched:** none
-- **Boundary:** none
+- **Dispatched:** Verifier at `c92ad7c` - returned
+- **Boundary:** C1-C13 closed at `04c3970`
 - **Abandoned:** none
