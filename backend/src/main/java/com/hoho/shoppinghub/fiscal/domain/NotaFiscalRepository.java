@@ -23,4 +23,35 @@ public interface NotaFiscalRepository extends JpaRepository<NotaFiscal, UUID> {
             @Param("clienteId") UUID clienteId,
             @Param("inicioDia") Instant inicioDia,
             @Param("fimDia") Instant fimDia);
+
+    @Query("""
+            SELECT COUNT(DISTINCT n.clienteId)
+            FROM NotaFiscal n
+            WHERE n.lojaId = :lojaId
+              AND n.status = 'APROVADA'
+            """)
+    long countClientesDistintosAprovadosPorLoja(@Param("lojaId") UUID lojaId);
+
+    @Query("""
+            SELECT COUNT(DISTINCT n.clienteId)
+            FROM NotaFiscal n
+            WHERE n.lojaId = :lojaId
+              AND n.status = 'APROVADA'
+              AND n.valorTotal >= :valorMinimo
+            """)
+    long countClientesTicketAltoPorLoja(
+            @Param("lojaId") UUID lojaId,
+            @Param("valorMinimo") BigDecimal valorMinimo);
+
+    @Query(value = """
+            SELECT COUNT(*) FROM (
+                SELECT cliente_id
+                FROM notas_fiscais
+                WHERE loja_id = :lojaId
+                  AND status = 'APROVADA'
+                GROUP BY cliente_id
+                HAVING COUNT(*) >= 2
+            ) recorrentes
+            """, nativeQuery = true)
+    long countClientesRecorrentesPorLoja(@Param("lojaId") UUID lojaId);
 }

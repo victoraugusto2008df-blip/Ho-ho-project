@@ -14,11 +14,11 @@
 
 ## Handoff
 
-**Feature**: ORD-06-estacionamento  
-**Where**: Build e Verificação da ORD-06 concluídos com **PASS** (`C1`–`C8`, 52/52 testes passando)  
-**In progress**: Aguardando revisão do Lucas e autorização para `git push` da branch `feat/ORD-06-estacionamento`  
-**Next step**: Push da branch, PR contra `develop` e avançar para a Onda 3 (`ORD-08` / `ORD-09` / `ORD-10`)  
+**Feature**: ORD-09-campanhas  
+**Where**: Build da ORD-09 completo (`Campanha`, `CampanhaRepository`, `CampanhaRequest`, `CampanhaResponse`, `CampanhaService`, `CampanhaController`, `CampanhaIntegrationTest` e `NotaFiscalRepository`)  
+**In progress**: Commit local e verificação independente (`verification.md`) conforme `tlc-spec-lean` (`profile: light`)  
+**Next step**: Após PASS do Verifier, revisar e subir `feat/ORD-09-campanhas`  
 **Blockers**: none  
-**Uncommitted**: .specs/features/ORD-06-estacionamento/plan.md, .specs/features/ORD-06-estacionamento/checks.md, .specs/STATE.md  
-**Branch**: feat/ORD-06-estacionamento  
+**Uncommitted**: .specs/features/ORD-09-campanhas/plan.md, .specs/features/ORD-09-campanhas/checks.md, .specs/STATE.md  
+**Branch**: feat/ORD-09-campanhas  
 
