@@ -52,6 +52,57 @@ class DatabaseMigrationTests {
                 "notas_fiscais",
                 "vouchers_estacionamento",
                 "campanhas");
+
+        List<String> foreignKeys = jdbcTemplate.queryForList(
+                """
+                SELECT conrelid::regclass::text || '->' || confrelid::regclass::text
+                FROM pg_constraint
+                WHERE contype = 'f'
+                  AND connamespace = 'public'::regnamespace
+                """,
+                String.class);
+
+        assertThat(foreignKeys).containsExactlyInAnyOrder(
+                "lojas->categorias",
+                "usuarios->clientes",
+                "usuarios->lojas",
+                "notas_fiscais->clientes",
+                "notas_fiscais->lojas",
+                "vouchers_estacionamento->clientes",
+                "campanhas->lojas");
+    }
+
+    @Test
+    void uniqueNaturalIdentifiersAreRejected() {
+        assertThatThrownBy(() -> jdbcTemplate.update(
+                """
+                INSERT INTO clientes (cpf_hash, cpf_mascarado, nome)
+                VALUES (?, ?, ?)
+                """,
+                "a1b2c3d4e5f60718293a4b5c6d7e8f90112233445566778899aabbccddeeff01",
+                "***.000.000-**",
+                "Duplicado"))
+                .isInstanceOf(DataIntegrityViolationException.class);
+
+        assertThatThrownBy(() -> jdbcTemplate.update(
+                """
+                INSERT INTO lojas (cnpj, nome, categoria_id)
+                VALUES (?, ?, ?)
+                """,
+                "11111111000101",
+                "Loja Duplicada",
+                UUID.fromString("11111111-1111-1111-1111-111111111101")))
+                .isInstanceOf(DataIntegrityViolationException.class);
+
+        assertThatThrownBy(() -> jdbcTemplate.update(
+                """
+                INSERT INTO usuarios (email, senha_hash, role)
+                VALUES (?, ?, ?)
+                """,
+                "consumidor@shopping.com",
+                "$2a$10$OEFoVM/HiZiU9psyMw/3j.5GexBnhcmG5AEuP1nfBu92W66eZzQIq",
+                "CONSUMIDOR"))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -235,9 +286,29 @@ class DatabaseMigrationTests {
         Integer validKeyLengthCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM notas_fiscais WHERE LENGTH(chave_acesso) = 44",
                 Integer.class);
+        Integer distinctStores = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT loja_id) FROM notas_fiscais",
+                Integer.class);
+        Integer distinctCategories = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(DISTINCT l.categoria_id)
+                FROM notas_fiscais n
+                JOIN lojas l ON n.loja_id = l.id
+                """,
+                Integer.class);
+        Integer historicalBeforeToday = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM notas_fiscais
+                WHERE data_emissao < DATE_TRUNC('day', CURRENT_TIMESTAMP)
+                """,
+                Integer.class);
 
         assertThat(totalReceipts).isEqualTo(15);
         assertThat(validKeyLengthCount).isEqualTo(15);
+        assertThat(distinctStores).isEqualTo(5);
+        assertThat(distinctCategories).isEqualTo(3);
+        assertThat(historicalBeforeToday).isEqualTo(15);
     }
 }
 

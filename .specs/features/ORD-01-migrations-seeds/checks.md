@@ -5,7 +5,7 @@ Plan: .specs/features/ORD-01-migrations-seeds/plan.md
 
 ## Intent
 
-9 checks in 2 slices · 4 one-way doors · 0 open
+10 checks in 2 slices · 4 one-way doors · 0 open
 
 ## Checks
 
@@ -26,6 +26,9 @@ Proof: `cd backend && ./mvnw test -Dtest=DatabaseMigrationTests#invalidDiscountP
 **C5** - Insertion of receipt with total value less than or equal to 0.00 is rejected by check constraint (ORD-01, AC 5)
 Proof: `cd backend && ./mvnw test -Dtest=DatabaseMigrationTests#negativeOrZeroReceiptValueIsRejected`
 
+**C10** - Duplicate clientes.cpf_hash, lojas.cnpj, and usuarios.email are rejected by unique constraints (ORD-01, AC 1)
+Proof: `cd backend && ./mvnw test -Dtest=DatabaseMigrationTests#uniqueNaturalIdentifiersAreRejected`
+
 ### S2 - Demo Seed Data Insertion
 
 **C6** - Flyway seed migration loads exactly 4 predefined categories (ORD-01, AC 6)
@@ -45,24 +48,24 @@ Proof: `cd backend && ./mvnw test -Dtest=DatabaseMigrationTests#historicalReceip
 | Set (size) | Member -> proof | Unproven |
 | --- | --- | --- |
 | domain tables (7) | `categorias` C1 · `lojas` C1 · `clientes` C1 · `usuarios` C1 · `notas_fiscais` C1 · `vouchers_estacionamento` C1 · `campanhas` C1 | - |
-| one-way constraints (5) | unique chave_acesso C2 · composite unique voucher C3 · check desconto C4 · check valor C5 · foreign keys C1 | - |
+| one-way constraints (8) | unique chave_acesso C2 · composite unique voucher C3 · check desconto C4 · check valor C5 · unique cpf_hash C10 · unique cnpj C10 · unique email C10 · foreign keys C1 | - |
 | demo categories (4) | `Vestuário` C6 · `Alimentação` C6 · `Eletrônicos` C6 · `Farmácia & Beleza` C6 | - |
 | demo user roles (3) | `CONSUMIDOR` C8 · `LOJISTA` C8 · `ADMIN_SHOPPING` C8 | - |
 
 ## Swept
 
-- validation: C2, C3, C4, C5
-- failure modes: C2, C3
+- validation: C2, C3, C4, C5, C10
+- failure modes: C2, C3, C10
 - idempotency: C1, C6
 - authorization: n/a - database migrations execute during application startup using datasource credentials
 - concurrency: C2, C3
 - data lifecycle: C6, C7, C8, C9
-- dependency failure: C1
+- dependency failure: n/a - datasource unavailability or migration checksum mismatch halts Spring Boot startup fail-fast via Flyway
 - state transitions: n/a - DDL schema creation and seed insertion only
 - observability: C1
 
 ## Handoff
 
 - S1 = ~12k tokens, S2 = ~15k tokens; total estimate ~27k tokens, well under the 150k budget - one builder
-- Build status: C1-C9 implemented in `DatabaseMigrationTests` and passing (`./mvnw -B verify`: 10/10 tests pass, 0 failures, 0 errors, 0 skipped)
+- Build status: C1-C10 implemented in `DatabaseMigrationTests` and verified via `./mvnw -B verify`
 
