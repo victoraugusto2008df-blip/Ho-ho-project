@@ -1,7 +1,7 @@
 # ORD-13-testes-regras verification
 
 **Verdict**: FAIL
-**Proofs**: `proofs.md` at c92ad7c
+**Proofs**: `proofs.md` at d5be11a
 **Verifier**: independent sub-agent (author != verifier)
 
 ## Checks
@@ -21,6 +21,7 @@
 | C11 | `KAnonymityRegraTest.java` `fromThreeActiveStoresShowsTheCategoryAverage` | yes |
 | C12 | full backend suite (`./mvnw -B -q test`), all test classes under `backend/src/test` | yes |
 | C13 | `! grep -rn "@Disabled" backend/src/test` (no test method; also no `@Ignore`, `Assumptions`, `@EnabledIf`/`@DisabledIf` found) | yes |
+| C14 | `EstacionamentoIntegrationTest.java` `receiptsOfTomorrowOrOfAnotherClientAreNotSummed` | yes - against the real query: dropping the upper bound gives 350.00, dropping the client filter gives 450.00, either also emits a voucher; the test asserts 50.00 and no voucher |
 
 ## Findings
 
