@@ -24,7 +24,10 @@ const reais = (valor: string) => `R$${NBSP}${valor}`
 const somaDosPercentuais = (percentuais: string[]) =>
   percentuais.reduce((soma, p) => soma + Number(p.replace('%', '').replace(',', '.')), 0).toFixed(1)
 
-// Payload mínimo sem os campos que o DER não sustenta; valores escolhidos para não coincidir com a captura.
+// Id de campanha no formato uuid, como no DER (decisão D10 do usuário).
+const CAMPANHA = '00000000-0000-4000-8000-000000000001'
+
+// Payload mínimo sem os campos opcionais do contrato; valores escolhidos para não coincidir com a captura.
 function dtoBase(): ShoppingDashboardDto {
   return {
     periodo: '7d',
@@ -39,14 +42,14 @@ function dtoBase(): ShoppingDashboardDto {
     serieVolume: [{ data: '2026-01-05', hora: null, notas: 8 }],
     mapaHorario: [],
     vouchers: { emitidos: 10 },
-    campanhas: [{ id: 1, nome: 'C', loja: 'L', segmento: 'S', ativa: true, descontoPercentual: 10 }],
+    campanhas: [{ id: CAMPANHA, nome: 'C', loja: 'L', segmento: 'S', ativa: true, descontoPercentual: 10 }],
   }
 }
 
 function complementoBase(): ComplementoFicticio {
   return {
     vouchers: { utilizados: 5, expirados: 3, pendentes: 2, saidasVeiculos: 1000, cpfsDistintos: 7 },
-    campanhas: { 1: { enviados: 50, convertidos: 5, receitaCentavos: 20000, taxaShoppingCentavos: 1250 } },
+    campanhas: { [CAMPANHA]: { enviados: 50, convertidos: 5, receitaCentavos: 20000, taxaShoppingCentavos: 1250 } },
   }
 }
 
@@ -63,6 +66,24 @@ test('percentuais por setor somam 100,0', () => {
   assert.deepEqual(tres, ['50,0%', '30,0%', '20,0%'])
   assert.equal(somaDosPercentuais(tres), '100.0')
   assert.deepEqual(percentuaisPorSetor([100000], 100000), ['100,0%'])
+  // Pela tela inteira: o percentual de cada setor é sobre `faturamentoCentavos`, e não sobre as notas.
+  const modelo = mapearDashboard(
+    {
+      ...dtoBase(),
+      faturamentoCentavos: 100000,
+      notasCadastradas: 8,
+      setores: [
+        { nome: 'A', valorCentavos: 50000 },
+        { nome: 'B', valorCentavos: 30000 },
+        { nome: 'C', valorCentavos: 20000 },
+      ],
+    },
+    complementoBase(),
+  )
+  assert.deepEqual(
+    modelo.setores.map((setor) => setor.percentual),
+    ['50,0%', '30,0%', '20,0%'],
+  )
 })
 
 // C6 - AC 6
@@ -111,6 +132,12 @@ test('status dos vouchers com absoluto e percentual', () => {
       ['Expirados', '300', '15,0%'],
       ['Pendentes', '200', '10,0%'],
     ],
+  )
+  // Os status não somam `emitidos`: o percentual continua sobre `emitidos`, e não sobre a soma deles.
+  const parcial = statusDosVouchers({ emitidos: 2000, utilizados: 1500, expirados: 300, pendentes: 100 })
+  assert.deepEqual(
+    parcial.map((item) => item.percentual),
+    ['75,0%', '15,0%', '5,0%'],
   )
 })
 
@@ -185,7 +212,7 @@ test('valor sem campo no DTO vem marcado como ficticio', () => {
       vouchers: { emitidos: 10, utilizados: 6, expirados: 3, pendentes: 1, saidasVeiculos: 40, cpfsDistintos: 8 },
       campanhas: [
         {
-          id: 1,
+          id: CAMPANHA,
           nome: 'C',
           loja: 'L',
           segmento: 'S',
@@ -211,6 +238,8 @@ test('valor sem campo no DTO vem marcado como ficticio', () => {
 test('ticket medio e derivado de faturamento por notas', () => {
   assert.equal(ticketMedio(100000, 8), reais('125,00'))
   assert.equal(ticketMedio(100000, 3), reais('333,33'))
+  // 66666,67 centavos: arredondar ao centavo sobe; truncar daria R$ 666,66.
+  assert.equal(ticketMedio(200000, 3), reais('666,67'))
   // Um ticketMedioCentavos divergente no payload não chega à tela.
   const divergente = mapearDashboard({ ...dtoBase(), ticketMedioCentavos: 1 }, complementoBase())
   assert.equal(divergente.kpis.ticketMedio, reais('125,00'))
@@ -225,5 +254,89 @@ test('notas zero devolve ticket medio zero', () => {
 test('rodape do KPI de notas por periodo', () => {
   assert.equal(rodapeNotas('hoje', 7000), 'até o momento')
   assert.equal(rodapeNotas('7d', 7000), 'média de 1.000/dia')
+  // 7004 / 7 = 1000,57: arredondado ao inteiro.
+  assert.equal(rodapeNotas('7d', 7004), 'média de 1.001/dia')
   assert.equal(rodapeNotas('30d', 7500), 'média de 250/dia')
+})
+
+// C26 - AC 9, AC 12
+test('campanha sem metricas nao vira NaN', () => {
+  const desconhecida = '00000000-0000-4000-8000-000000000099'
+  const modelo = mapearDashboard(
+    {
+      ...dtoBase(),
+      campanhas: [
+        ...dtoBase().campanhas,
+        { id: desconhecida, nome: 'D', loja: 'L', segmento: 'S', ativa: true, descontoPercentual: 10 },
+      ],
+    },
+    complementoBase(),
+  )
+  const linha = modelo.campanhas.linhas.find((l) => l.id === desconhecida)
+  assert.ok(linha)
+  assert.deepEqual(
+    [linha.enviados, linha.convertidos, linha.receita, linha.roi, linha.taxaShopping],
+    ['—', '—', '—', '—', '—'],
+  )
+  assert.equal(linha.conversao, null)
+  // O total soma só a campanha que tem métricas (as da fixture).
+  assert.deepEqual(modelo.campanhas.total, {
+    enviados: '50',
+    convertidos: '5',
+    receita: reais('200,00'),
+    taxaShopping: reais('12,50'),
+  })
+  assert.ok(!JSON.stringify(modelo.campanhas).includes('NaN'))
+})
+
+// C27 - AC 1
+test('valor curto do setor sobe para mi no arredondamento', () => {
+  const modelo = mapearDashboard(
+    {
+      ...dtoBase(),
+      faturamentoCentavos: 112340600,
+      setores: [
+        { nome: 'A', valorCentavos: 99995000 },
+        { nome: 'B', valorCentavos: 12345600 },
+      ],
+    },
+    complementoBase(),
+  )
+  assert.deepEqual(
+    modelo.setores.map((setor) => setor.valor),
+    [`${reais('1,00')}${NBSP}mi`, `${reais('123,5')}${NBSP}mil`],
+  )
+})
+
+// C28 - AC 1
+test('pico marcado mesmo com poucas notas', () => {
+  const modelo = mapearDashboard(
+    {
+      ...dtoBase(),
+      serieVolume: [
+        { data: '2026-01-05', hora: null, notas: 2 },
+        { data: '2026-01-06', hora: null, notas: 3 },
+      ],
+    },
+    complementoBase(),
+  )
+  assert.equal(modelo.volume.pico, 1)
+  assert.equal(modelo.volume.pontos[1].notas, 3)
+})
+
+// C29 - AC 8
+test('barra de status nunca passa de 100 por cento', () => {
+  const itens = statusDosVouchers({ emitidos: 100, utilizados: 80, expirados: 30, pendentes: 10 })
+  assert.deepEqual(
+    itens.map((item) => item.percentual),
+    ['80,0%', '30,0%', '10,0%'],
+  )
+  const largura = itens.reduce((soma, item) => soma + item.proporcao, 0)
+  assert.ok(largura <= 1 + 1e-9, `as larguras somam ${largura}`)
+  // Com a soma igual a `emitidos`, cada largura é a própria participação.
+  const exato = statusDosVouchers({ emitidos: 2000, utilizados: 1500, expirados: 300, pendentes: 200 })
+  assert.deepEqual(
+    exato.map((item) => item.proporcao),
+    [0.75, 0.15, 0.1],
+  )
 })

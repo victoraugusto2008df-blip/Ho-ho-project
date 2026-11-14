@@ -35,7 +35,13 @@ export function CampaignRoiTable({ campanhas }: { campanhas: ModeloDoDashboard['
                 </td>
                 <td className="py-2.5 pr-3 text-right">{linha.enviados}</td>
                 <td className="py-2.5 pr-3 text-right">
-                  {linha.convertidos} <span className="text-xs text-[var(--text-muted)]">({linha.conversao})</span>
+                  {linha.convertidos}
+                  {linha.conversao !== null && (
+                    <>
+                      {' '}
+                      <span className="text-xs text-[var(--text-muted)]">({linha.conversao})</span>
+                    </>
+                  )}
                 </td>
                 <td className="py-2.5 pr-3 text-right">{linha.receita}</td>
                 <td className="py-2.5 pr-3 text-right font-semibold">{linha.roi}</td>

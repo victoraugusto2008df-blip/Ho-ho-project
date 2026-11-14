@@ -28,6 +28,8 @@ const ROTULO_DO_DIA: Record<DiaSemana, string> = {
 /** Indexado por `Date.getUTCDay()`, que começa no domingo. */
 const DIA_DA_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 const DIAS_DO_PERIODO: Record<Periodo, number> = { hoje: 1, '7d': 7, '30d': 30 }
+/** O que a tela mostra no lugar de um número que não existe. */
+const SEM_DADO = '—'
 
 export interface ValorMarcado {
   texto: string
@@ -52,9 +54,15 @@ export function formatarFaturamento(centavos: number): string {
   return `R$${NBSP}${duasCasas.format(centavos / UM_MILHAO_EM_CENTAVOS)}${NBSP}mi`
 }
 
-/** Formato curto que a captura desenha no valor de cada setor: `R$ 421,4 mil`. */
+/**
+ * Formato curto que a captura desenha no valor de cada setor: `R$ 421,4 mil`. Arredonda antes de escolher
+ * a unidade (C27): R$ 999.950,00 vira `R$ 1,00 mi`, e não `R$ 1.000,0 mil`.
+ */
 function formatarMoedaCurta(centavos: number): string {
-  if (centavos >= UM_MILHAO_EM_CENTAVOS) return formatarFaturamento(centavos)
+  const decimosDeMil = Math.round(centavos / (UM_MIL_EM_CENTAVOS / 10))
+  if (centavos >= UM_MILHAO_EM_CENTAVOS || decimosDeMil >= 10_000) {
+    return `R$${NBSP}${duasCasas.format(centavos / UM_MILHAO_EM_CENTAVOS)}${NBSP}mi`
+  }
   if (centavos >= UM_MIL_EM_CENTAVOS) return `R$${NBSP}${umaCasa.format(centavos / UM_MIL_EM_CENTAVOS)}${NBSP}mil`
   return formatarMoeda(centavos)
 }
@@ -105,13 +113,17 @@ export function adesaoAoEstacionamento(emitidos: number, saidasVeiculos: number)
   return formatarPercentual(saidasVeiculos > 0 ? (emitidos / saidasVeiculos) * 100 : 0)
 }
 
-/** Critério 8: valor absoluto e participação sobre os emitidos. */
+/**
+ * Critério 8: valor absoluto e participação sobre os emitidos. A `proporcao` é a largura na barra
+ * empilhada: sobre `emitidos`, ou sobre a soma dos status quando ela passa de `emitidos` (C29).
+ */
 export function statusDosVouchers(vouchers: {
   emitidos: number
   utilizados: number
   expirados: number
   pendentes: number
 }) {
+  const baseDaBarra = Math.max(vouchers.emitidos, vouchers.utilizados + vouchers.expirados + vouchers.pendentes)
   const itens = [
     ['Utilizados', vouchers.utilizados],
     ['Expirados', vouchers.expirados],
@@ -121,7 +133,7 @@ export function statusDosVouchers(vouchers: {
     nome,
     valor: formatarInteiro(valor),
     percentual: formatarPercentual(vouchers.emitidos > 0 ? (valor / vouchers.emitidos) * 100 : 0),
-    proporcao: vouchers.emitidos > 0 ? valor / vouchers.emitidos : 0,
+    proporcao: baseDaBarra > 0 ? valor / baseDaBarra : 0,
   }))
 }
 
@@ -194,10 +206,12 @@ function montarVolume(dto: ShoppingDashboardDto) {
       : { rotulo: `${ponto.hora}h`, dica: `Hoje, ${ponto.hora}h–${ponto.hora + 1}h`, notas: ponto.notas },
   )
   // Quatro faixas no eixo, com o passo arredondado à ordem de grandeza: 2.879 notas dá 0 a 3.200, de 800 em 800.
-  const maior = Math.max(4, ...pontos.map((ponto) => ponto.notas))
+  // A escala tem no mínimo 4; o pico é o maior ponto real, mesmo com menos de 4 notas (C28).
+  const maiorNota = Math.max(0, ...pontos.map((ponto) => ponto.notas))
+  const maior = Math.max(4, maiorNota)
   const ordem = 10 ** Math.floor(Math.log10(maior / 4))
   const passo = Math.ceil(maior / 4 / ordem) * ordem
-  const pico = pontos.findIndex((ponto) => ponto.notas === maior)
+  const pico = maiorNota > 0 ? pontos.findIndex((ponto) => ponto.notas === maiorNota) : -1
   return {
     subtitulo: dto.periodo === 'hoje' ? 'Notas por faixa horária · hoje' : `Notas por dia · últimos ${DIAS_DO_PERIODO[dto.periodo]} dias`,
     colunaDaTabela: dto.periodo === 'hoje' ? 'Horário' : 'Dia',
@@ -235,34 +249,49 @@ export function mapearDashboard(dto: ShoppingDashboardDto, complemento: Compleme
     ficticio: saidas.ficticio,
   }
 
+  // Sem os campos no payload, as métricas vêm da fixture e são fictícias (critério 12). Sem entrada na
+  // fixture, a campanha não tem métrica: mostra `—` e fica fora do total (C26).
   const metricas = dto.campanhas.map((campanha) => {
     const { enviados, convertidos, receitaCentavos, taxaShoppingCentavos } = campanha
     const doPayload =
       enviados !== undefined && convertidos !== undefined && receitaCentavos !== undefined && taxaShoppingCentavos !== undefined
-    return {
-      ...campanha,
-      ...(doPayload
-        ? { enviados, convertidos, receitaCentavos, taxaShoppingCentavos }
-        : complemento.campanhas[campanha.id]),
-      ficticio: !doPayload,
-    }
+    const daFixture: ComplementoFicticio['campanhas'][string] | undefined = complemento.campanhas[campanha.id]
+    const valores = doPayload ? { enviados, convertidos, receitaCentavos, taxaShoppingCentavos } : (daFixture ?? null)
+    return { ...campanha, valores, ficticio: !doPayload && valores !== null }
   })
   const linhasDeCampanha = metricas
     .filter((campanha) => campanha.ativa)
-    .map((campanha) => ({
-      id: campanha.id,
-      nome: campanha.nome,
-      lojaSegmento: `${campanha.loja} · ${campanha.segmento}`,
-      enviados: formatarInteiro(campanha.enviados),
-      convertidos: formatarInteiro(campanha.convertidos),
-      conversao: formatarPercentual(campanha.enviados > 0 ? (campanha.convertidos / campanha.enviados) * 100 : 0),
-      receita: formatarMoeda(campanha.receitaCentavos),
-      roi:
-        campanha.convertidos > 0
-          ? retornoDaCampanha(campanha.receitaCentavos, campanha.taxaShoppingCentavos, campanha.descontoPercentual)
-          : '—',
-      taxaShopping: formatarMoeda(campanha.taxaShoppingCentavos),
-    }))
+    .map((campanha) => {
+      const identificacao = {
+        id: campanha.id,
+        nome: campanha.nome,
+        lojaSegmento: `${campanha.loja} · ${campanha.segmento}`,
+      }
+      const v = campanha.valores
+      if (v === null) {
+        return {
+          ...identificacao,
+          enviados: SEM_DADO,
+          convertidos: SEM_DADO,
+          conversao: null,
+          receita: SEM_DADO,
+          roi: SEM_DADO,
+          taxaShopping: SEM_DADO,
+        }
+      }
+      return {
+        ...identificacao,
+        enviados: formatarInteiro(v.enviados),
+        convertidos: formatarInteiro(v.convertidos),
+        conversao: formatarPercentual(v.enviados > 0 ? (v.convertidos / v.enviados) * 100 : 0),
+        receita: formatarMoeda(v.receitaCentavos),
+        roi:
+          v.convertidos > 0
+            ? retornoDaCampanha(v.receitaCentavos, v.taxaShoppingCentavos, campanha.descontoPercentual)
+            : SEM_DADO,
+        taxaShopping: formatarMoeda(v.taxaShoppingCentavos),
+      }
+    })
 
   const rotuloDoPeriodo =
     dto.periodo === 'hoje'
@@ -301,7 +330,9 @@ export function mapearDashboard(dto: ShoppingDashboardDto, complemento: Compleme
     },
     campanhas: {
       linhas: linhasDeCampanha,
-      total: totalDasCampanhas(metricas),
+      total: totalDasCampanhas(
+        metricas.flatMap((campanha) => (campanha.valores === null ? [] : [{ ativa: campanha.ativa, ...campanha.valores }])),
+      ),
       ficticio: metricas.some((campanha) => campanha.ativa && campanha.ficticio),
     },
   }

@@ -3,7 +3,10 @@
  *
  * O endpoint `GET /api/v1/analytics/shopping/dashboard` é do ORD-10 (issue #10). Este formato é a
  * proposta registrada em `.specs/features/ord-12-portal-shopping/plan.md` (`## Landing`) e ainda não
- * foi acordado com o dono do endpoint. Os campos opcionais são os que o DER atual não sustenta.
+ * foi acordado com o dono do endpoint. Os campos opcionais são os que o ORD-10 ainda não confirmou
+ * entregar: sem eles, a tela usa a fixture local e marca o valor como fictício (critério 12). O DER
+ * sustenta a quebra de vouchers por status e os CPFs distintos, mas não as saídas de veículos nem as
+ * métricas por campanha; a decisão do que o ORD-10 entrega está com o Lucas.
  */
 
 export type Periodo = 'hoje' | '7d' | '30d'
@@ -33,7 +36,8 @@ export interface ShoppingDashboardDto {
     cpfsDistintos?: number
   }
   campanhas: {
-    id: number
+    /** `uuid`, como `CAMPANHAS.id` no DER (decisão D10 do usuário; pendente de confirmação com o ORD-10). */
+    id: string
     nome: string
     loja: string
     segmento: string
@@ -46,7 +50,7 @@ export interface ShoppingDashboardDto {
   }[]
 }
 
-/** Valores que o DER atual não sustenta: vêm da fixture local e a tela os marca como fictícios (critério 12). */
+/** Valores que o payload ainda não traz: vêm da fixture local e a tela os marca como fictícios (critério 12). */
 export interface ComplementoFicticio {
   vouchers: {
     utilizados: number
@@ -55,8 +59,9 @@ export interface ComplementoFicticio {
     saidasVeiculos: number
     cpfsDistintos: number
   }
+  /** Indexado pelo `uuid` da campanha. */
   campanhas: Record<
-    number,
+    string,
     { enviados: number; convertidos: number; receitaCentavos: number; taxaShoppingCentavos: number }
   >
 }

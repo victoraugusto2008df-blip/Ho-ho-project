@@ -4,8 +4,9 @@ import type { ComplementoFicticio, DiaSemana, Periodo, ShoppingDashboardDto } fr
  * Fixture local da Tela 3 (ORD-12) - TODOS OS VALORES SÃO FICTÍCIOS.
  *
  * `payloadSimulado` faz o papel do endpoint do ORD-10 (issue #10) enquanto ele não existe, e traz só
- * o que o DER atual sustenta. `complementoFicticio` traz o que o DER não sustenta; a tela o exibe
- * marcado como fictício (critério 12). Os dois saem quando o endpoint real estiver ligado.
+ * os campos obrigatórios do contrato provisório. `complementoFicticio` traz os campos opcionais, que o
+ * ORD-10 ainda não confirmou entregar; a tela os exibe marcados como fictícios (critério 12). Os ids
+ * de campanha seguem o formato `uuid` do DER. Os dois saem quando o endpoint real estiver ligado.
  *
  * No período `7d`, os números reproduzem os visíveis na captura vinculante
  * `.specs/features/ord-12-portal-shopping/captures/portal-shopping.png`, para que a comparação de
@@ -57,10 +58,10 @@ export const payloadSimulado: Record<Periodo, ShoppingDashboardDto> = {
     }),
     vouchers: { emitidos: 214 },
     campanhas: [
-      { id: 1, nome: 'Volta às compras 15%', loja: 'Passo Firme Calçados', segmento: 'Calçados', ativa: true, descontoPercentual: 15 },
-      { id: 2, nome: 'Café + bolo 10%', loja: 'Sabor da Serra Café', segmento: 'Alimentação', ativa: true, descontoPercentual: 10 },
-      { id: 3, nome: 'Coleção verão 20%', loja: 'Moda Cerrado', segmento: 'Vestuário', ativa: true, descontoPercentual: 20 },
-      { id: 4, nome: 'Acessórios 12%', loja: 'TecnoPonto Eletrônicos', segmento: 'Eletrônicos', ativa: true, descontoPercentual: 12 },
+      { id: '00000000-0000-4000-8000-000000000001', nome: 'Volta às compras 15%', loja: 'Passo Firme Calçados', segmento: 'Calçados', ativa: true, descontoPercentual: 15 },
+      { id: '00000000-0000-4000-8000-000000000002', nome: 'Café + bolo 10%', loja: 'Sabor da Serra Café', segmento: 'Alimentação', ativa: true, descontoPercentual: 10 },
+      { id: '00000000-0000-4000-8000-000000000003', nome: 'Coleção verão 20%', loja: 'Moda Cerrado', segmento: 'Vestuário', ativa: true, descontoPercentual: 20 },
+      { id: '00000000-0000-4000-8000-000000000004', nome: 'Acessórios 12%', loja: 'TecnoPonto Eletrônicos', segmento: 'Eletrônicos', ativa: true, descontoPercentual: 12 },
     ],
   },
   '7d': {
@@ -99,10 +100,10 @@ export const payloadSimulado: Record<Periodo, ShoppingDashboardDto> = {
     }),
     vouchers: { emitidos: 1612 },
     campanhas: [
-      { id: 1, nome: 'Volta às compras 15%', loja: 'Passo Firme Calçados', segmento: 'Calçados', ativa: true, descontoPercentual: 15 },
-      { id: 2, nome: 'Café + bolo 10%', loja: 'Sabor da Serra Café', segmento: 'Alimentação', ativa: true, descontoPercentual: 10 },
-      { id: 3, nome: 'Coleção verão 20%', loja: 'Moda Cerrado', segmento: 'Vestuário', ativa: true, descontoPercentual: 20 },
-      { id: 4, nome: 'Acessórios 12%', loja: 'TecnoPonto Eletrônicos', segmento: 'Eletrônicos', ativa: true, descontoPercentual: 12 },
+      { id: '00000000-0000-4000-8000-000000000001', nome: 'Volta às compras 15%', loja: 'Passo Firme Calçados', segmento: 'Calçados', ativa: true, descontoPercentual: 15 },
+      { id: '00000000-0000-4000-8000-000000000002', nome: 'Café + bolo 10%', loja: 'Sabor da Serra Café', segmento: 'Alimentação', ativa: true, descontoPercentual: 10 },
+      { id: '00000000-0000-4000-8000-000000000003', nome: 'Coleção verão 20%', loja: 'Moda Cerrado', segmento: 'Vestuário', ativa: true, descontoPercentual: 20 },
+      { id: '00000000-0000-4000-8000-000000000004', nome: 'Acessórios 12%', loja: 'TecnoPonto Eletrônicos', segmento: 'Eletrônicos', ativa: true, descontoPercentual: 12 },
     ],
   },
   '30d': {
@@ -164,10 +165,10 @@ export const payloadSimulado: Record<Periodo, ShoppingDashboardDto> = {
     }),
     vouchers: { emitidos: 6540 },
     campanhas: [
-      { id: 1, nome: 'Volta às compras 15%', loja: 'Passo Firme Calçados', segmento: 'Calçados', ativa: true, descontoPercentual: 15 },
-      { id: 2, nome: 'Café + bolo 10%', loja: 'Sabor da Serra Café', segmento: 'Alimentação', ativa: true, descontoPercentual: 10 },
-      { id: 3, nome: 'Coleção verão 20%', loja: 'Moda Cerrado', segmento: 'Vestuário', ativa: true, descontoPercentual: 20 },
-      { id: 4, nome: 'Acessórios 12%', loja: 'TecnoPonto Eletrônicos', segmento: 'Eletrônicos', ativa: true, descontoPercentual: 12 },
+      { id: '00000000-0000-4000-8000-000000000001', nome: 'Volta às compras 15%', loja: 'Passo Firme Calçados', segmento: 'Calçados', ativa: true, descontoPercentual: 15 },
+      { id: '00000000-0000-4000-8000-000000000002', nome: 'Café + bolo 10%', loja: 'Sabor da Serra Café', segmento: 'Alimentação', ativa: true, descontoPercentual: 10 },
+      { id: '00000000-0000-4000-8000-000000000003', nome: 'Coleção verão 20%', loja: 'Moda Cerrado', segmento: 'Vestuário', ativa: true, descontoPercentual: 20 },
+      { id: '00000000-0000-4000-8000-000000000004', nome: 'Acessórios 12%', loja: 'TecnoPonto Eletrônicos', segmento: 'Eletrônicos', ativa: true, descontoPercentual: 12 },
     ],
   },
 }
@@ -176,28 +177,28 @@ export const complementoFicticio: Record<Periodo, ComplementoFicticio> = {
   'hoje': {
     vouchers: { utilizados: 162, expirados: 0, pendentes: 52, saidasVeiculos: 2140, cpfsDistintos: 1690 },
     campanhas: {
-      1: { enviados: 47, convertidos: 4, receitaCentavos: 48382, taxaShoppingCentavos: 1000 },
-      2: { enviados: 144, convertidos: 25, receitaCentavos: 73125, taxaShoppingCentavos: 6250 },
-      3: { enviados: 85, convertidos: 8, receitaCentavos: 121536, taxaShoppingCentavos: 2000 },
-      4: { enviados: 39, convertidos: 2, receitaCentavos: 16896, taxaShoppingCentavos: 500 },
+      ['00000000-0000-4000-8000-000000000001']: { enviados: 47, convertidos: 4, receitaCentavos: 48382, taxaShoppingCentavos: 1000 },
+      ['00000000-0000-4000-8000-000000000002']: { enviados: 144, convertidos: 25, receitaCentavos: 73125, taxaShoppingCentavos: 6250 },
+      ['00000000-0000-4000-8000-000000000003']: { enviados: 85, convertidos: 8, receitaCentavos: 121536, taxaShoppingCentavos: 2000 },
+      ['00000000-0000-4000-8000-000000000004']: { enviados: 39, convertidos: 2, receitaCentavos: 16896, taxaShoppingCentavos: 500 },
     },
   },
   '7d': {
     vouchers: { utilizados: 1336, expirados: 224, pendentes: 52, saidasVeiculos: 14980, cpfsDistintos: 9870 },
     campanhas: {
-      1: { enviados: 253, convertidos: 24, receitaCentavos: 290292, taxaShoppingCentavos: 6000 },
-      2: { enviados: 768, convertidos: 131, receitaCentavos: 383175, taxaShoppingCentavos: 32750 },
-      3: { enviados: 454, convertidos: 41, receitaCentavos: 622872, taxaShoppingCentavos: 10250 },
-      4: { enviados: 208, convertidos: 13, receitaCentavos: 109824, taxaShoppingCentavos: 3250 },
+      ['00000000-0000-4000-8000-000000000001']: { enviados: 253, convertidos: 24, receitaCentavos: 290292, taxaShoppingCentavos: 6000 },
+      ['00000000-0000-4000-8000-000000000002']: { enviados: 768, convertidos: 131, receitaCentavos: 383175, taxaShoppingCentavos: 32750 },
+      ['00000000-0000-4000-8000-000000000003']: { enviados: 454, convertidos: 41, receitaCentavos: 622872, taxaShoppingCentavos: 10250 },
+      ['00000000-0000-4000-8000-000000000004']: { enviados: 208, convertidos: 13, receitaCentavos: 109824, taxaShoppingCentavos: 3250 },
     },
   },
   '30d': {
     vouchers: { utilizados: 5701, expirados: 787, pendentes: 52, saidasVeiculos: 61200, cpfsDistintos: 31450 },
     campanhas: {
-      1: { enviados: 790, convertidos: 74, receitaCentavos: 895067, taxaShoppingCentavos: 18500 },
-      2: { enviados: 2400, convertidos: 410, receitaCentavos: 1199250, taxaShoppingCentavos: 102500 },
-      3: { enviados: 1420, convertidos: 128, receitaCentavos: 1944576, taxaShoppingCentavos: 32000 },
-      4: { enviados: 650, convertidos: 41, receitaCentavos: 346368, taxaShoppingCentavos: 10250 },
+      ['00000000-0000-4000-8000-000000000001']: { enviados: 790, convertidos: 74, receitaCentavos: 895067, taxaShoppingCentavos: 18500 },
+      ['00000000-0000-4000-8000-000000000002']: { enviados: 2400, convertidos: 410, receitaCentavos: 1199250, taxaShoppingCentavos: 102500 },
+      ['00000000-0000-4000-8000-000000000003']: { enviados: 1420, convertidos: 128, receitaCentavos: 1944576, taxaShoppingCentavos: 32000 },
+      ['00000000-0000-4000-8000-000000000004']: { enviados: 650, convertidos: 41, receitaCentavos: 346368, taxaShoppingCentavos: 10250 },
     },
   },
 }
