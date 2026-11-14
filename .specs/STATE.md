@@ -15,9 +15,9 @@
 ## Handoff
 
 **Feature**: ORD-09-campanhas  
-**Where**: Build da ORD-09 completo (`Campanha`, `CampanhaRepository`, `CampanhaRequest`, `CampanhaResponse`, `CampanhaService`, `CampanhaController`, `CampanhaIntegrationTest` e `NotaFiscalRepository`)  
-**In progress**: Commit local e verificação independente (`verification.md`) conforme `tlc-spec-lean` (`profile: light`)  
-**Next step**: Após PASS do Verifier, revisar e subir `feat/ORD-09-campanhas`  
+**Where**: Build e Verificação da ORD-09 concluídos com **PASS** (`C1`–`C5`, 68/68 testes passando)  
+**In progress**: Aguardando revisão do Lucas e autorização para `git push` da branch `feat/ORD-09-campanhas`  
+**Next step**: Push da branch, PR contra `develop` e avançar para `ORD-10` / `ORD-11`  
 **Blockers**: none  
 **Uncommitted**: .specs/features/ORD-09-campanhas/plan.md, .specs/features/ORD-09-campanhas/checks.md, .specs/STATE.md  
 **Branch**: feat/ORD-09-campanhas  
