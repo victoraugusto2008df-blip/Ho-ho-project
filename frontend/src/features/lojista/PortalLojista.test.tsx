@@ -1,8 +1,6 @@
 import { createElement } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import App from '@/App'
 import { CHART_PALETTE, COR_PICO } from './chartPalette'
 import { adiada, apiFalsa, campanha, dashboard, fixarTamanhoDosGraficos, renderPortal } from './testUtils'
 import { formatarGap, gapDoTicket } from './regras'
@@ -64,27 +62,6 @@ afterEach(() => {
 })
 
 describe('Montagem', () => {
-  it('C2 App escolhe a Tela 2 só com tela=lojista', async () => {
-    const casos: [string, boolean][] = [
-      ['/', false],
-      ['/?tela=lojista', true],
-      ['/?tela=shopping', false],
-    ]
-    for (const [url, lojista] of casos) {
-      window.history.pushState({}, '', url)
-      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      const { unmount } = render(createElement(QueryClientProvider, { client: queryClient }, createElement(App)))
-      if (lojista) {
-        expect(screen.getByRole('heading', { name: 'Portal do Lojista' }), url).toBeTruthy()
-        expect(screen.queryByText('Cadastrar nota fiscal (NFC-e)'), url).toBeNull()
-      } else {
-        expect(screen.getByText('Cadastrar nota fiscal (NFC-e)'), url).toBeTruthy()
-        expect(screen.queryByRole('heading', { name: 'Portal do Lojista' }), url).toBeNull()
-      }
-      unmount()
-    }
-  })
-
   it('C23 cabeçalho mostra título e selos', async () => {
     renderPortal(apiFalsa())
     expect(screen.getByRole('heading', { level: 1, name: 'Portal do Lojista' })).toBeTruthy()

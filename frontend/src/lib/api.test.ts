@@ -53,7 +53,7 @@ describe('apiFetch', () => {
     expect(sessionStorage.getItem('hoho.session')).toBe(JSON.stringify({ token }))
     expect(listener).not.toHaveBeenCalled()
     expect(currentPath(router)).toBe('/lojista')
-    expect(await screen.findByText('ORD-11')).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: 'Portal do Lojista' })).toBeTruthy()
     expect(currentPath(router)).toBe('/lojista')
   })
 

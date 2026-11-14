@@ -36,6 +36,13 @@ globalThis.Request = class extends NodeRequest {
   }
 }
 
+/** O jsdom não tem `ResizeObserver`, que o Recharts da Tela 2 usa ao montar. */
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 beforeEach(() => {
   Object.defineProperty(globalThis, 'localStorage', {
     value: createMemoryStorage(),

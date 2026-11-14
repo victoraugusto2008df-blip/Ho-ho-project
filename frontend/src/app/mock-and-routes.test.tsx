@@ -59,7 +59,7 @@ describe('rotas por perfil', () => {
     }
 
     const { router } = renderApp({ path: '/lojista', token: makeToken({ exp: nowSeconds() + 60 }) })
-    await waitFor(() => expect(screen.getByText('ORD-11')).toBeTruthy())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Portal do Lojista' })).toBeTruthy())
     expect(currentPath(router)).toBe('/lojista')
   })
 
@@ -112,10 +112,10 @@ describe('rotas por perfil', () => {
     expect(await screen.findByText(AVISO)).toBeTruthy()
   })
 
-  it('C32 cada portal mostra o placeholder do seu card', async () => {
+  it('C32 cada portal mostra só a sua tela', async () => {
     const esperado: Record<Role, string> = {
-      CONSUMIDOR: 'ORD-07',
-      LOJISTA: 'ORD-11',
+      CONSUMIDOR: 'Cadastrar nota fiscal (NFC-e)',
+      LOJISTA: 'Nova campanha em 1 clique',
       ADMIN_SHOPPING: 'ORD-12',
     }
     for (const role of ROLES) {

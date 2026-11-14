@@ -63,11 +63,12 @@ describe('troca de perfil no shell', () => {
     vi.stubEnv('VITE_AUTH_MOCK', 'true')
     const { router, queryClient, user } = renderApp({ path: '/lojista', token: valid('LOJISTA') })
     queryClient.setQueryData(['dashboard'], { ticket: 142.3 })
-    expect(queryClient.getQueryCache().getAll()).toHaveLength(1)
+    expect(queryClient.getQueryData(['dashboard'])).toEqual({ ticket: 142.3 })
 
     await user.click(screen.getByRole('button', { name: aba('CONSUMIDOR') }))
     await waitFor(() => expect(currentPath(router)).toBe('/consumidor'))
-    expect(queryClient.getQueryCache().getAll()).toHaveLength(0)
+    expect(queryClient.getQueryData(['dashboard'])).toBeUndefined()
+    expect(queryClient.getQueryCache().findAll({ queryKey: ['lojista'] })).toHaveLength(0)
 
     queryClient.setQueryData(['voucher'], { codigo: 'EST-1' })
     await user.click(screen.getByRole('button', { name: 'Sair' }))

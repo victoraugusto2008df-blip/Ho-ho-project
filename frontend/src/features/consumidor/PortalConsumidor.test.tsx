@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import App from '@/App'
+import { ConsumidorPage } from '@/pages/ConsumidorPage'
 import { CHAVES_DEMO, mockNotasApi } from './mockNotasApi'
 import { criarRealNotasApi } from './realNotasApi'
 import type { Fetcher } from './notasApi'
@@ -504,10 +504,10 @@ describe('S5 - painel do protótipo', () => {
 })
 
 describe('montagem', () => {
-  it('C40 App renderiza a Tela 1 no lugar da vitrine', () => {
+  it('C40 a página do consumidor renderiza a Tela 1 no lugar da vitrine', () => {
     render(
       <QueryClientProvider client={new QueryClient()}>
-        <App />
+        <ConsumidorPage />
       </QueryClientProvider>,
     )
     expect(screen.getByText('Estacionamento grátis')).toBeTruthy()
