@@ -1,9 +1,13 @@
 import { META_ESTACIONAMENTO, type CodigoNegocio, type NotaHoje } from './types'
 
-/** Percentual da meta, de 0 a 100, sem passar de 100. Zero para valores negativos. */
+/**
+ * Percentual da meta, de 0 a 100. Só chega a 100 com a meta atingida: abaixo dela o valor é
+ * truncado (R$ 149,99 → 99), para a tela nunca dizer "Meta atingida!" com valor faltando.
+ */
 export function percentualDaMeta(valorAcumulado: number, meta: number = META_ESTACIONAMENTO): number {
   if (meta <= 0 || valorAcumulado <= 0) return 0
-  return Math.min(100, Math.round((valorAcumulado / meta) * 100))
+  if (valorAcumulado >= meta) return 100
+  return Math.floor((valorAcumulado / meta) * 100)
 }
 
 /** Limita um percentual vindo da API ao intervalo 0-100. */

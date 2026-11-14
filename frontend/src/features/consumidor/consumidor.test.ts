@@ -33,6 +33,13 @@ describe('regras da Tela 1', () => {
     expect(faltanteDaMeta(208.33)).toBe(0)
   })
 
+  it('C42 abaixo da meta o percentual nunca chega a 100', async () => {
+    expect(percentualDaMeta(149.25)).toBe(99)
+    expect(percentualDaMeta(149.99)).toBe(99)
+    expect(percentualDaMeta(150)).toBe(100)
+    expect(percentualDaMeta(150.01)).toBe(100)
+  })
+
   it('C34 chaves de demonstração têm 44 dígitos e são distintas', () => {
     const chaves = [
       CHAVES_DEMO.VALIDA_60,
