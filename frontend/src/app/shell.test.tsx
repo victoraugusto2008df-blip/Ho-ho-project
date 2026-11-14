@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import type { RouteObject } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { RequireRole } from '@/features/auth/RequireRole'
@@ -178,6 +178,32 @@ describe('shell B2B', () => {
 })
 
 describe('sair', () => {
+  it('C42 sair e expiração limpam o erro de troca de perfil', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({}, 401)))
+    const sair = renderApp({ path: '/lojista', token: valid('LOJISTA') })
+    await sair.user.click(screen.getByRole('button', { name: aba('CONSUMIDOR') }))
+    expect((await screen.findByRole('alert')).textContent).toBe('Credenciais de demonstração inválidas.')
+
+    await sair.user.click(screen.getByRole('button', { name: 'Sair' }))
+
+    await waitFor(() => expect(currentPath(sair.router)).toBe('/acesso'))
+    expect(await screen.findByRole('button', { name: 'Entrar como Lojista' })).toBeTruthy()
+    expect(screen.queryByRole('alert')).toBeNull()
+    sair.unmount()
+
+    const expira = renderApp({ path: '/lojista', token: valid('LOJISTA') })
+    await expira.user.click(screen.getByRole('button', { name: aba('CONSUMIDOR') }))
+    expect(await screen.findByRole('alert')).toBeTruthy()
+
+    act(() => {
+      window.dispatchEvent(new Event('hoho:unauthorized'))
+    })
+
+    await waitFor(() => expect(currentPath(expira.router)).toBe('/acesso?motivo=expirado'))
+    expect(await screen.findByText('Sua sessão expirou. Entre novamente.')).toBeTruthy()
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
   it('C31 sair encerra a sessão e abre o acesso sem aviso', async () => {
     for (const role of ['CONSUMIDOR', 'LOJISTA'] as const) {
       const { router, queryClient, user, unmount } = renderApp({

@@ -30,20 +30,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   })
 
+  const { reset: resetLogin } = loginMutation
+
   const logout = useCallback(() => {
     clearToken()
     setToken(null)
     setEnded(null)
+    resetLogin()
     queryClient.removeQueries()
     navigate(ACESSO_PATH, { replace: true })
-  }, [navigate, queryClient])
+  }, [navigate, queryClient, resetLogin])
 
   const invalidate = useCallback(() => {
     clearToken()
     setToken(null)
     setEnded('expired')
+    resetLogin()
     queryClient.removeQueries()
-  }, [queryClient])
+  }, [queryClient, resetLogin])
 
   const clearEnded = useCallback(() => setEnded(null), [])
 

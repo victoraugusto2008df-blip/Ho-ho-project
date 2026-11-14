@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { useAuthStatus } from '@/features/auth/useAuth'
 import { PERFIS } from '@/features/auth/types'
 import { cn } from '@/lib/utils'
+import { AppFooter } from './AppFooter'
 import { BrandMark } from './BrandMark'
 import { LoginAlert } from './LoginAlert'
 import { LogoutButton } from './LogoutButton'
@@ -87,9 +88,8 @@ export function B2BShell() {
           open ? 'translate-x-0' : '-translate-x-full max-md:invisible',
         )}
       >
-        <div className="px-4 py-4 border-b border-[var(--border-hairline)] space-y-3">
+        <div className="px-4 py-4 border-b border-[var(--border-hairline)]">
           <BrandMark />
-          <Badge tone="warning">Protótipo · dados fictícios</Badge>
         </div>
 
         <div className="flex-1 overflow-y-auto px-2 py-4 space-y-6">
@@ -128,17 +128,25 @@ export function B2BShell() {
               {initials(displayName)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-[var(--text-primary)] truncate">{displayName}</p>
-              <p className="text-xs text-[var(--text-muted)] truncate">{`Perfil: ${session.role}`}</p>
+              <p className="text-sm font-medium text-[var(--text-primary)] leading-snug break-words">
+                {displayName}
+              </p>
+              <p className="text-xs text-[var(--text-muted)] break-all">{`Perfil: ${session.role}`}</p>
             </div>
             <LogoutButton />
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 min-w-0">
-        <Outlet />
-      </main>
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
+        <div className="flex justify-end px-4 sm:px-6 pt-4">
+          <Badge tone="warning">Protótipo · dados fictícios</Badge>
+        </div>
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <AppFooter />
+      </div>
     </div>
   )
 }

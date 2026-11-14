@@ -1,4 +1,6 @@
+import { act, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import { currentPath, renderApp } from '@/test/renderApp'
 import { ApiError, apiFetch } from '@/lib/api'
 import { decodeSession } from '@/lib/jwt'
 import { jsonResponse, makeToken, nowSeconds } from '@/test/helpers'
@@ -34,19 +36,25 @@ describe('apiFetch', () => {
   })
 
   it('C20 403 mantém a sessão e a rota', async () => {
-    const token = makeToken()
-    sessionStorage.setItem('hoho.session', JSON.stringify({ token }))
+    const token = makeToken({ role: 'LOJISTA', exp: nowSeconds() + 600 })
     const listener = vi.fn()
     window.addEventListener('hoho:unauthorized', listener)
     stubFetch(jsonResponse({ erro: 'proibido' }, 403))
+    const { router } = renderApp({ path: '/lojista', token })
 
-    const error = await apiFetch('/analytics/shopping/dashboard').catch((e: unknown) => e)
+    let error: unknown
+    await act(async () => {
+      error = await apiFetch('/analytics/shopping/dashboard').catch((e: unknown) => e)
+    })
 
     window.removeEventListener('hoho:unauthorized', listener)
     expect(error).toBeInstanceOf(ApiError)
     expect((error as ApiError).status).toBe(403)
     expect(sessionStorage.getItem('hoho.session')).toBe(JSON.stringify({ token }))
     expect(listener).not.toHaveBeenCalled()
+    expect(currentPath(router)).toBe('/lojista')
+    expect(await screen.findByText('ORD-11')).toBeTruthy()
+    expect(currentPath(router)).toBe('/lojista')
   })
 
   it('C21 apiFetch expõe status e body no ApiError', async () => {

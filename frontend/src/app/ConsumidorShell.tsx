@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Badge } from '@/components/ui/Badge'
+import { AppFooter } from './AppFooter'
 import { BrandMark } from './BrandMark'
 import { LoginAlert } from './LoginAlert'
 import { LogoutButton } from './LogoutButton'
@@ -25,6 +26,7 @@ export function ConsumidorShell() {
       <main className="flex-1">
         <Outlet />
       </main>
+      <AppFooter />
     </div>
   )
 }

@@ -40,7 +40,9 @@ export function ProfileSwitcher({
             className={cn(
               orientation === 'vertical' && 'justify-start',
               isActive &&
-                'bg-[var(--color-brand-soft)] text-[var(--color-brand)] hover:bg-[var(--color-brand-soft)] hover:text-[var(--color-brand)]',
+                (orientation === 'vertical'
+                  ? 'font-semibold text-[var(--text-primary)]'
+                  : 'bg-[var(--color-brand-soft)] text-[var(--color-brand)] hover:bg-[var(--color-brand-soft)] hover:text-[var(--color-brand)]'),
             )}
             onClick={() => {
               onPick?.()
