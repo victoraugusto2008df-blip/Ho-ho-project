@@ -16,6 +16,8 @@ export function usarBackendReal(): boolean {
  * Escolhe a implementação da Tela 1: o mock enquanto o backend (ORD-05 e ORD-06) não existe,
  * ou a real sobre o `fetcher` dado. No merge do ORD-03, passar o `apiFetch`.
  */
-export function criarNotasApi(fetcher: Fetcher = fetchSemSessao): NotasApi {
-  return usarBackendReal() ? criarRealNotasApi(fetcher) : mockNotasApi
+export function criarNotasApi(fetcher?: Fetcher): NotasApi {
+  // O cliente padrão só é citado dentro do ramo da flag: no build `demo` o ramo é constante
+  // falsa e o código do backend real sai do pacote.
+  return usarBackendReal() ? criarRealNotasApi(fetcher ?? fetchSemSessao) : mockNotasApi
 }
