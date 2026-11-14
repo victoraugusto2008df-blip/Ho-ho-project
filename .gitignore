@@ -12,6 +12,7 @@ docker-compose.override.yml
 # Configurações de IA e Assistentes Locais
 # ==========================================
 .agents/
+.specs/**/issue.md
 .skills-guide/
 skills-lock.json
 .gemini/
