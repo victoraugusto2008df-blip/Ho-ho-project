@@ -127,6 +127,39 @@ class EstacionamentoIntegrationTest {
     }
 
     @Test
+    void receiptsOfTomorrowOrOfAnotherClientAreNotSummed() throws Exception {
+        UUID outroCliente = UUID.fromString("33333333-3333-3333-3333-333333333302");
+        String insert = """
+                INSERT INTO notas_fiscais (chave_acesso, cliente_id, loja_id, valor_total, data_emissao, status)
+                VALUES (?, ?, ?, ?, ?, 'APROVADA')
+                """;
+        jdbcTemplate.update(
+                insert,
+                "35268811111111000101650010000008090000000809",
+                CLIENTE_ID,
+                LOJA_ID,
+                new BigDecimal("300.00"),
+                Timestamp.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        jdbcTemplate.update(
+                insert,
+                "35268811111111000101650010000008100000000810",
+                outroCliente,
+                LOJA_ID,
+                new BigDecimal("400.00"),
+                Timestamp.from(Instant.now()));
+
+        registrarNotaAprovada("35268811111111000101650010000008110000000811", new BigDecimal("50.00"), Instant.now());
+
+        mockMvc.perform(get("/api/v1/beneficios/estacionamento/hoje")
+                        .header("Authorization", "Bearer " + tokenFor("CONSUMIDOR", CLIENTE_ID, null)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.valorAcumulado").value(50.00))
+                .andExpect(jsonPath("$.voucherLiberado").value(false));
+        assertThat(voucherRepository.existsByClienteIdAndDataReferencia(CLIENTE_ID, java.time.LocalDate.now()))
+                .isFalse();
+    }
+
+    @Test
     void duplicateVoucherSameDayIsRejectedByDatabaseConstraint() {
         LocalDate hoje = LocalDate.now();
         jdbcTemplate.update(
