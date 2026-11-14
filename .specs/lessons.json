@@ -3,10 +3,226 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 10,
+  "next_id": 22,
   "lessons": [
     {
       "id": "L-001",
+      "key": "ac_gap::complemento de fixture indexado por id trata id ausente como valor vazio marcado e fora das somas sem propagar undefined para a formatacao",
+      "text": "Complemento de fixture indexado por id trata id ausente como valor vazio marcado e fora das somas, sem propagar undefined para a formatação",
+      "signal": "ac_gap",
+      "scope": "analytics",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "frontend/src/lib/analytics/shoppingDashboardMapper.ts:246 (C26) (analytics)"
+      ],
+      "created": "2026-11-14T09:22:44Z",
+      "last_seen": "2026-11-14T09:22:44Z"
+    },
+    {
+      "id": "L-002",
+      "key": "spec_deviation::antes de declarar um valor sem respaldo no der conferir se colunas existentes o derivam como status enumerado ou contagem distinta por chave estrangeira",
+      "text": "Antes de declarar um valor sem respaldo no DER, conferir se colunas existentes o derivam, como status enumerado ou contagem distinta por chave estrangeira",
+      "signal": "spec_deviation",
+      "scope": "analytics",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".docs/architecture/architecture-and-domain.md:70,84 (plan.md Assumptions) (analytics)"
+      ],
+      "created": "2026-11-14T09:22:46Z",
+      "last_seen": "2026-11-14T09:22:46Z"
+    },
+    {
+      "id": "L-003",
+      "key": "weak_test::marca de dado ficticio precisa ser alcancavel por ponteiro toque e teclado title nativo e texto sr only nao a identificam",
+      "text": "Marca de dado fictício precisa ser alcançável por ponteiro, toque e teclado; title nativo e texto sr-only não a identificam",
+      "signal": "weak_test",
+      "scope": "shopping-dashboard",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C14 (Ficticio.tsx) (shopping-dashboard)"
+      ],
+      "created": "2026-11-14T09:22:50Z",
+      "last_seen": "2026-11-14T09:22:50Z"
+    },
+    {
+      "id": "L-004",
+      "key": "weak_test::teste de percentual sobre um total usa partes que nao somam o total para distinguir o total da soma das partes",
+      "text": "Teste de percentual sobre um total usa partes que não somam o total, para distinguir o total da soma das partes",
+      "signal": "weak_test",
+      "scope": "analytics",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C8 (shoppingDashboardMapper.test.ts) (analytics)"
+      ],
+      "created": "2026-11-14T09:22:53Z",
+      "last_seen": "2026-11-14T09:22:53Z"
+    },
+    {
+      "id": "L-005",
+      "key": "weak_test::provar arredondamento ao centavo com um caso que arredonda para cima exemplos que truncam deixam math floor passar",
+      "text": "Provar arredondamento ao centavo com um caso que arredonda para cima; exemplos que truncam deixam Math.floor passar",
+      "signal": "weak_test",
+      "scope": "analytics",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C23 (shoppingDashboardMapper.ts:154) (analytics)"
+      ],
+      "created": "2026-11-14T09:22:57Z",
+      "last_seen": "2026-11-14T09:22:57Z"
+    },
+    {
+      "id": "L-006",
+      "key": "weak_test::provar arredondamento ao inteiro com uma divisao fracionaria divisoes exatas deixam floor ceil e nenhum arredondamento passarem",
+      "text": "Provar arredondamento ao inteiro com uma divisão fracionária; divisões exatas deixam floor, ceil e nenhum arredondamento passarem",
+      "signal": "weak_test",
+      "scope": "analytics",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C25 (shoppingDashboardMapper.ts:160) (analytics)"
+      ],
+      "created": "2026-11-14T09:22:59Z",
+      "last_seen": "2026-11-14T09:22:59Z"
+    },
+    {
+      "id": "L-007",
+      "key": "weak_test::check de navegacao cobre so itens com destino nesta feature rotas de outra issue ficam registradas como dependencia nao como prova",
+      "text": "Check de navegação cobre só itens com destino nesta feature; rotas de outra issue ficam registradas como dependência, não como prova",
+      "signal": "weak_test",
+      "scope": "shopping-dashboard",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C21 (Sidebar.tsx:84-97) (shopping-dashboard)"
+      ],
+      "created": "2026-11-14T09:23:01Z",
+      "last_seen": "2026-11-14T09:23:01Z"
+    },
+    {
+      "id": "L-008",
+      "key": "weak_test::check de tempo esgotado precisa de um cenario que nunca responde com o fetch simulado honrando o abortsignal",
+      "text": "Check de tempo esgotado precisa de um cenário que nunca responde, com o fetch simulado honrando o AbortSignal",
+      "signal": "weak_test",
+      "scope": "shopping-dashboard",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C17 (preview.tsx:36, analyticsClient.ts:34) (shopping-dashboard)"
+      ],
+      "created": "2026-11-14T09:23:03Z",
+      "last_seen": "2026-11-14T09:23:03Z"
+    },
+    {
+      "id": "L-009",
+      "key": "spec_precision_gap::fixar o denominador do percentual no mapeamento nao em helper com o total a mao e dizer no criterio o que vale quando as partes nao fecham o total",
+      "text": "Fixar o denominador do percentual no mapeamento, não em helper com o total à mão, e dizer no critério o que vale quando as partes não fecham o total",
+      "signal": "spec_precision_gap",
+      "scope": "analytics",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C5 (shoppingDashboardMapper.ts:217) (analytics)"
+      ],
+      "created": "2026-11-14T09:23:05Z",
+      "last_seen": "2026-11-14T09:23:05Z"
+    },
+    {
+      "id": "L-010",
+      "key": "spec_deviation::comparar grafia contorno e cor de cada elemento com a captura vinculante e listar cada diferenca em differences antes de declarar none",
+      "text": "Comparar grafia, contorno e cor de cada elemento com a captura vinculante e listar cada diferença em Differences antes de declarar None",
+      "signal": "spec_deviation",
+      "scope": "shopping-dashboard",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C1 (plan.md Differences from the source) (shopping-dashboard)"
+      ],
+      "created": "2026-11-14T09:23:08Z",
+      "last_seen": "2026-11-14T09:23:08Z"
+    },
+    {
+      "id": "L-011",
+      "key": "ac_gap::escolher a unidade de exibicao pelo valor ja arredondado e marcar o pico pelo maior valor real da serie nao pelo piso do eixo",
+      "text": "Escolher a unidade de exibição pelo valor já arredondado e marcar o pico pelo maior valor real da série, não pelo piso do eixo",
+      "signal": "ac_gap",
+      "scope": "analytics",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C27, C28 (shoppingDashboardMapper.ts:57-58,197-200) (analytics)"
+      ],
+      "created": "2026-11-14T09:23:10Z",
+      "last_seen": "2026-11-14T09:23:10Z"
+    },
+    {
+      "id": "L-012",
+      "key": "gate_fail::testes de unidade do frontend precisam de script test e de um passo no ci ou uma regressao passa com o ci verde",
+      "text": "Testes de unidade do frontend precisam de script test e de um passo no CI, ou uma regressão passa com o CI verde",
+      "signal": "gate_fail",
+      "scope": "ci",
+      "status": "candidate",
+      "features": [
+        "ord-12-portal-shopping"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        ".github/workflows/ci.yml (frontend/package.json sem script test) (ci)"
+      ],
+      "created": "2026-11-14T09:23:13Z",
+      "last_seen": "2026-11-14T09:23:13Z"
+    },
+    {
+      "id": "L-013",
       "key": "weak_test::a text assertion over react output must read each element s own text not raw text nodes jsx like n 44 renders as 3 separate nodes",
       "text": "A text assertion over React output must read each element's own text, not raw text nodes: JSX like {n}/{44} renders as 3 separate nodes",
       "signal": "weak_test",
@@ -24,7 +240,7 @@
       "last_seen": "2026-11-14T07:46:44Z"
     },
     {
-      "id": "L-002",
+      "id": "L-014",
       "key": "weak_test::after a mutation that invalidates queries wait for queryclient isfetching and ismutating to reach 0 before asserting the list did not change",
       "text": "After a mutation that invalidates queries, wait for queryClient.isFetching() and isMutating() to reach 0 before asserting the list did not change",
       "signal": "weak_test",
@@ -42,7 +258,7 @@
       "last_seen": "2026-11-14T07:46:44Z"
     },
     {
-      "id": "L-003",
+      "id": "L-015",
       "key": "weak_test::an only from library rule is proven by an allowlist of import sources over every file the card touches never by a blocklist of rival libraries",
       "text": "An only-from-library rule is proven by an allowlist of import sources over every file the card touches, never by a blocklist of rival libraries",
       "signal": "weak_test",
@@ -60,7 +276,7 @@
       "last_seen": "2026-11-14T07:46:44Z"
     },
     {
-      "id": "L-004",
+      "id": "L-016",
       "key": "spec_precision_gap::a percentage that unlocks a goal must reach 100 only when the value reaches the goal truncate below it and test the value one cent under the boundary",
       "text": "A percentage that unlocks a goal must reach 100 only when the value reaches the goal: truncate below it, and test the value one cent under the boundary",
       "signal": "spec_precision_gap",
@@ -78,7 +294,7 @@
       "last_seen": "2026-11-14T07:46:44Z"
     },
     {
-      "id": "L-005",
+      "id": "L-017",
       "key": "spec_deviation::every default the plan sets differently from a binding capture a checkbox state a prefilled value is asked in the plan phase and listed in differences from the source not left as an unconfirmed assumption",
       "text": "Every default the plan sets differently from a binding capture (a checkbox state, a prefilled value) is asked in the plan phase and listed in Differences from the source, not left as an unconfirmed Assumption",
       "signal": "spec_deviation",
@@ -96,7 +312,7 @@
       "last_seen": "2026-11-14T07:46:44Z"
     },
     {
-      "id": "L-006",
+      "id": "L-018",
       "key": "gate_fail::take the running picture at the capture s exact pixel size window height included from the first round a full page screenshot of a taller page fails the gate after the last screens round",
       "text": "Take the running picture at the capture's exact pixel size (window height included) from the first round: a full-page screenshot of a taller page fails the gate after the last screens round",
       "signal": "gate_fail",
@@ -114,7 +330,7 @@
       "last_seen": "2026-11-14T07:46:45Z"
     },
     {
-      "id": "L-007",
+      "id": "L-019",
       "key": "gate_fail::antes de salvar a imagem de uma tela com recharts esperar as barras recharts bar rectangle existirem e abrir a imagem salva o responsivecontainer desenha depois do primeiro layout",
       "text": "Antes de salvar a imagem de uma tela com Recharts, esperar as barras (.recharts-bar-rectangle) existirem e abrir a imagem salva: o ResponsiveContainer desenha depois do primeiro layout.",
       "signal": "gate_fail",
@@ -132,7 +348,7 @@
       "last_seen": "2026-11-14T14:51:45Z"
     },
     {
-      "id": "L-008",
+      "id": "L-020",
       "key": "ac_gap::percentual com sinal arredondar a magnitude e reaplicar o sinal e testar o meio exato x x5 nos dois sinais math round arredonda meio para infinito",
       "text": "Percentual com sinal: arredondar a magnitude e reaplicar o sinal, e testar o meio exato (x,x5) nos dois sinais; Math.round arredonda meio para +infinito.",
       "signal": "ac_gap",
@@ -150,7 +366,7 @@
       "last_seen": "2026-11-14T14:51:46Z"
     },
     {
-      "id": "L-009",
+      "id": "L-021",
       "key": "weak_test::teste de destaque em grafico afirma a contagem exata de rotulos e o valor literal da cor nao existe algum nem e diferente da cor padrao",
       "text": "Teste de destaque em grafico afirma a contagem exata de rotulos e o valor literal da cor, nao 'existe algum' nem 'e diferente da cor padrao'.",
       "signal": "weak_test",

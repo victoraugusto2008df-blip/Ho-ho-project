@@ -1,7 +1,6 @@
 package com.hoho.shoppinghub.analytics.controller;
 
 import com.hoho.shoppinghub.analytics.dto.DashboardResponse;
-import com.hoho.shoppinghub.analytics.dto.ShoppingDashboardResponse;
 import com.hoho.shoppinghub.analytics.service.AnalyticsService;
 import com.hoho.shoppinghub.auth.security.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,12 +27,5 @@ public class AnalyticsController {
     @PreAuthorize("hasRole('LOJISTA')")
     public DashboardResponse dashboard(@AuthenticationPrincipal AuthenticatedUser user) {
         return analyticsService.montarDashboard(user.getLojaId());
-    }
-
-    @GetMapping("/shopping/dashboard")
-    @PreAuthorize("hasRole('ADMIN_SHOPPING')")
-    @Operation(summary = "Visão do shopping: faturamento, vouchers, campanhas e faturamento por categoria")
-    public ShoppingDashboardResponse dashboardShopping() {
-        return analyticsService.montarDashboardShopping();
     }
 }

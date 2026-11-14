@@ -1,9 +1,9 @@
-import { fileURLToPath, URL } from 'node:url'
+﻿import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-/** O front sempre fala com o backend: em desenvolvimento, o Vite encaminha `/api` para ele. */
+/** O front sempre fala com o backend: em desenvolvimento, o Vite encaminha /api para ele. */
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
