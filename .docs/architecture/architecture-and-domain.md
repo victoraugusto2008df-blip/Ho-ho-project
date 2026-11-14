@@ -167,6 +167,8 @@ A camada web é uma SPA em **React 18 + TypeScript (`strict`) + Vite + Tailwind 
   * `src/lib/utils.ts`: Helper `cn()` (`clsx` + `tailwind-merge`) para composição segura de classes Tailwind.
   * `src/lib/queryClient.ts`: Instância base do TanStack `QueryClient`.
   * `src/components/ui/`: Primitivas acessíveis (`Button`, `Card`, `Badge`) com foco visível e consumo exclusivo de tokens semânticos.
-  * `src/App.tsx`: Placeholder da fundação exibindo os slots reservados do Kanban (`ORD-03`, `ORD-07`, `ORD-11`, `ORD-12`).
+  * `src/lib/api.ts`: `apiFetch`, o cliente HTTP único (prefixa `/api/v1`, injeta o `Authorization: Bearer` da sessão e, num `401`, encerra a sessão e dispara o evento `hoho:unauthorized`). As telas chamam a API só por ele, dentro dos hooks do TanStack Query.
+  * `src/features/auth/`: sessão em `sessionStorage` (`hoho.session`), `AuthProvider`/`useAuth`, o guarda `RequireRole` e o login de Acesso Rápido (`POST /api/v1/auth/login` com os usuários seedados; `VITE_AUTH_MOCK=true` gera um JWT local enquanto o backend não está pronto).
+  * `src/app/router.tsx` e `src/app/routes.tsx`: rotas `/acesso`, `/consumidor`, `/lojista` e `/shopping`, cada uma protegida pelo `role` do token. `ConsumidorShell` (barra no topo) e `B2BShell` (sidebar, que vira gaveta abaixo de 768px) trazem a troca de perfil em 1 clique; as telas dos cards `ORD-07`, `ORD-11` e `ORD-12` entram na área de conteúdo, e o ORD-11/12 declaram os itens do menu do portal em `handle.nav` da rota.
 * **Integração Local:** `vite.config.ts` expõe o alias `@/*` -> `./src/*` e faz proxy das chamadas `/api/*` para `http://localhost:8080`.
 

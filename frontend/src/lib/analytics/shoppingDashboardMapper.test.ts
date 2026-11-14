@@ -3,7 +3,7 @@
 // que as provas leem: não renomeie nem reordene sem atualizar o checks.md no mesmo commit.
 // Rodar: node --test --test-reporter=tap frontend/src/lib/analytics/
 
-import { test } from 'node:test'
+import { test } from 'vitest'
 import assert from 'node:assert/strict'
 import type { ComplementoFicticio, DiaSemana, ShoppingDashboardDto } from './tipos.ts'
 import {
