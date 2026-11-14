@@ -5,7 +5,7 @@ Run back: `cd backend && ./mvnw -B test -DargLine=-Dnet.bytebuddy.experimental=t
 Run front: `cd frontend && npx vitest run --reporter=verbose`
 Plan: `.specs/features/integracao-front-back/plan.md`
 
-37 checks in 4 slices · 5 one-way doors · 0 open, of which 0 block
+39 checks in 4 slices · 5 one-way doors · 0 open, of which 0 block
 
 ## Checks
 
@@ -111,6 +111,12 @@ Proof: run front | ✓ INT-27 disparar campanha chama o backend e mostra o públ
 **C28** - `/consumidor` mostra a Tela 1 e `/lojista` mostra a Tela 2 dentro do shell, sem os textos "ORD-07" e "ORD-11" (AC 22)
 Proof: run front | ✓ C32 cada portal mostra só a sua tela
 
+**C38** - `descontoPercentual` que não é um número inteiro do JSON (`15.5`, `15.0`, `"15"`, `true`, `null`) responde `400` sem gravar (AC 18; achado do Verificador)
+Proof: run back | nonIntegerDiscountReturns400AndSavesNothing -- Time elapsed
+
+**C39** - Um token de LOJISTA sem `lojaId` recebe `403` em `POST /api/v1/campanhas`, sem gravar (AC 19; achado do Verificador)
+Proof: run back | lojistaWithoutAStoreInTheTokenGets403 -- Time elapsed
+
 ### S4 - Swagger
 
 **C29** - `GET /v3/api-docs` sem token responde `200` com `info.title` "Shopping Analytics & Loyalty Hub API", o esquema `bearerAuth` (`http`, `bearer`, `JWT`) e os 6 caminhos do critério 23 (AC 23)
@@ -137,6 +143,7 @@ Proof: `cd frontend && npx vitest run`
 | `GET /api/v1/notas/hoje` statuses (3) | 200 C7 · 401 C8 · 403 C8 | - |
 | `GET /api/v1/beneficios/estacionamento/hoje` statuses (3) | 200 C15 · 401 C37 · 403 C37 | - |
 | `POST /api/v1/campanhas` statuses (4) | 201 C21 · 400 C23 · 401 C24 · 403 C24 | - |
+| quem recebe 403 em campanhas (3) | CONSUMIDOR C24 · ADMIN_SHOPPING C24 · LOJISTA sem loja C39 | - |
 | `GET /v3/api-docs` statuses (1) | 200 C29 | - |
 | door 1: campos aditivos (4) | `estabelecimento` C6 · `categoria` C6 · `cpfMascarado` C15 · `voucher.criadoEm` C15 | - |
 | door 2: contrato de campanhas (2) | corpo e resposta C21 · loja do token C21 | - |
@@ -146,7 +153,7 @@ Proof: `cd frontend && npx vitest run`
 | AC 6, notas de hoje (5 exemplos) | vazio C7 · ontem C7 · outro cliente C7 · rejeitada C7 · ordem C7 | - |
 | AC 7, duplicidade (3 exemplos) | seed fora do catálogo C9 · catálogo duas vezes C9 · inédita fora do catálogo C9 | - |
 | AC 17, público (6 exemplos) | 61 dias C22 · 59 dias C22 · 90 e 5 dias C22 · outra loja C22 · rejeitada C22 · loja sem notas C22 | - |
-| AC 18, corpo inválido (6 exemplos) | título vazio C23 · 0 C23 · 101 C23 · 1 C23 · 100 C23 · critério desconhecido C23 | - |
+| AC 18, corpo inválido (8 exemplos) | título vazio C23 · 0 C23 · 101 C23 · 1 C23 · 100 C23 · critério desconhecido C23 · fracionário C38 · texto C38 | - |
 | entidades gravadas (2) | `NotaFiscal` C6, C7 · `Campanha` C21 | - |
 | perfis do login (3) | CONSUMIDOR C1 · LOJISTA C1 · ADMIN_SHOPPING C1 | - |
 | controles da Tela 1 que mudam (5) | "Simular leitura de QR Code" C17 · "Nota duplicada" C18 · "Nota com mais de 72h" C18 · "CNPJ fora do shopping" C18 · "Reiniciar demonstração" (removido) C19 | - |
@@ -168,7 +175,7 @@ Proof: `cd frontend && npx vitest run`
 ## Handoff
 
 - **Settled mid-build:** none
-- **Dispatched:** none
-- **Boundary:** none
+- **Dispatched:** Verifier at `a2dfdf0` - returned
+- **Boundary:** todos os checks fechados em `a2dfdf0`
 - **Abandoned:** none
 - **Walked:** app real no navegador (Edge, 1373px): Postgres descartável recém-migrado, backend em `:8080`, Vite em `:5174` com o proxy de `/api`. "Entrar como Consumidor" abriu `/consumidor`; com a LGPD marcada, "Nota com mais de 72h" mostrou "ReN02 Esta nota foi emitida há mais de 72 horas e não pode ser usada."; "Simular leitura de QR Code" + "Enviar nota" duas vezes mostraram "Nota de R$ 65,00 validada." e "Nota de R$ 85,00 validada.", o progresso "CPF ***.456.789-** R$ 150,00 de R$ 150,00 Meta atingida!" e o voucher `HOHO-PARK-...` "Válido até Hoje, 22:00 (fechamento)"; a aba "2 · Lojista" abriu `/lojista` com "Ticket médio R$ 167,06" e "Disparar Cupom 15% OFF" mostrou "Campanha disparada! Cupom de 15% OFF enviado a 2 clientes."; nenhum erro de página. Visto e não corrigido: o selo "Protótipo · dados fictícios" aparece duas vezes em `/lojista` (o do shell e o do cabeçalho da Tela 2 do ORD-11).

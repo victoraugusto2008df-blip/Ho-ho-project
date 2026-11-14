@@ -161,7 +161,11 @@ O roteiro da banca roda inteiro, duas vezes, a partir de banco limpo.
 | legenda "10,8% das saídas de veículos" no indicador de vouchers | nada | y - AD-027 |
 | destaque "Vestuário lidera com 30,3% do faturamento…" | nada | y - AD-027 |
 | cards "Volume de notas cadastradas", "Notas por dia da semana e horário", "Adesão ao estacionamento grátis" e "ROI das campanhas ativas" | nada | y - AD-027 |
-| itens "Faturamento por segmento", "Volume de notas", "Estacionamento" e "ROI de campanhas" no menu lateral | o menu lateral do ORD-03, sem mudança | y - AD-027 |
+| seção "PORTAL DO SHOPPING" do menu lateral, com "Visão executiva", "Faturamento por segmento", "Volume de notas", "Estacionamento" e "ROI de campanhas" | o menu lateral do ORD-03, sem mudança: só "TELAS DO PROTÓTIPO" | y - AD-027 |
+| card "Faturamento consolidado por segmento" na coluna esquerda, com cerca de 2/5 da largura | o card na largura toda do conteúdo | y - AD-033 |
+| rodapé do menu lateral com o avatar "CD" e o nome "Administração Capim Dourado" | as iniciais e o e-mail do usuário (`admin@shopping.com`), em uma linha | y - AD-034 |
+| nenhum controle ao lado do rodapé do usuário | o botão "Sair" do shell (ORD-03) | y - AD-035 |
+| valores compactos ("R$ 1,39 mi", "R$ 421,4 mil") | valores completos ("R$ 3.544,90", "R$ 2.028,20") | y - AD-035 |
 
 ## Sources
 

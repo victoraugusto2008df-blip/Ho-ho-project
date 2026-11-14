@@ -5,7 +5,7 @@ Run back: `cd backend && ./mvnw -B test -DargLine=-Dnet.bytebuddy.experimental=t
 Run front: `cd frontend && npx vitest run --reporter=verbose`
 Plan: `.specs/features/ORD-14-ensaio-demo/plan.md`
 
-18 checks in 3 slices · 2 one-way doors · 0 open, of which 0 block
+21 checks in 3 slices · 2 one-way doors · 0 open, of which 0 block
 
 ## Checks
 
@@ -25,6 +25,9 @@ Proof: run back | faturamentoPorCategoriaIsSortedAndAddsUpToTheTotal -- Time ela
 
 **C5** - `GET /api/v1/analytics/shopping/dashboard` responde `200` para ADMIN_SHOPPING, `403` para CONSUMIDOR e LOJISTA e `401` sem token (AC 4)
 Proof: run back | onlyAdminShoppingMaySeeTheDashboard -- Time elapsed
+
+**C21** - Fora dos testes, o relógio da aplicação é o do sistema, no fuso padrão (`ClockConfig`) (door 2; achado do Verificador)
+Proof: run back | applicationClockIsTheSystemClock -- Time elapsed
 
 ### S2 - Tela 3
 
@@ -49,6 +52,9 @@ Proof: run front | ✓ SHOP-11 indicadores e card mostram carregando
 **C12** - Com o dashboard em falha, a Tela 3 mostra o alerta "Não foi possível carregar os dados do shopping." e "Tentar novamente", que refaz a chamada e mostra os dados quando ela responde (AC 10)
 Proof: run front | ✓ SHOP-12 erro do dashboard mostra tentar novamente e recupera
 
+**C20** - Ao trocar de perfil ou sair, nenhum dado de consulta do perfil anterior fica no cache: o dado gravado antes some e nenhuma entrada restante tem dado, mesmo com a Tela 3 e as demais telas montadas pelas rotas (achado do Verificador)
+Proof: run front | ✓ C28 troca de perfil e sair esvaziam o cache
+
 ### S3 - o roteiro
 
 **C13** - Passo 1, banco recém-migrado: a chave de 96h responde `422`, `code` `NOTA_EXPIRADA_72H`, `message` "Nota emitida há mais de 72 horas.", e nenhuma nota é gravada (AC 11)
@@ -69,6 +75,9 @@ Proof: run back | roteiroDaBancaRodaDuasVezesAPartirDeBancoLimpo -- Time elapsed
 **C18** - `.docs/qa/roteiro-demo.md` traz a subida do zero, os 4 passos com perfil, controle e chave, o resultado esperado, um plano B por passo, as limitações conhecidas e o campo do responsável (AC 16)
 Proof: `f=.docs/qa/roteiro-demo.md; for t in "docker compose down -v" "docker compose up -d postgres" "spring-boot:run" "npm run dev" 35261111111111000101650010000001050000000105 35261111111111000101650010000001010000000101 35261122222222000102650010000001020000000102 "Passo 1" "Passo 2" "Passo 3" "Passo 4" "Plano B" "Limitações conhecidas" "Responsável pela condução"; do grep -qF -- "$t" "$f" || { echo "falta: $t"; exit 1; }; done; test "$(grep -c 'Plano B' "$f")" -ge 4`
 
+**C19** - Cada um dos 4 passos de `.docs/qa/roteiro-demo.md` traz, na sua própria seção, o perfil, o que fazer, o resultado esperado e um plano B (AC 16; achado do Verificador)
+Proof: `python -c "import io,re,sys; t=io.open('.docs/qa/roteiro-demo.md',encoding='utf-8').read(); s=re.split(r'(?m)^## ',t); p=[x for x in s if x.startswith('Passo ')]; campos=['**Perfil:**','**O que fazer:**','**Resultado esperado:**','**Plano B:**']; faltas=[(x.splitlines()[0],c) for x in p for c in campos if c not in x]; print(faltas or 'ok'); sys.exit(1 if faltas or len(p)!=4 else 0)"`
+
 ## Coverage
 
 | Set (size) | Member -> proof | Unproven |
@@ -76,6 +85,7 @@ Proof: `f=.docs/qa/roteiro-demo.md; for t in "docker compose down -v" "docker co
 | `GET /api/v1/analytics/shopping/dashboard` statuses (3) | 200 C5 · 401 C5 · 403 C5 | - |
 | door 1: campos do dashboard (4) | `faturamentoTotal` C1 · `vouchersLiberados` C3 · `campanhasAtivas` C3 · `faturamentoPorCategoria` C4 | - |
 | door 2: relógio único (3 serviços) | `MockSefazGateway` C17 · `FiscalService` C17 · `EstacionamentoService` C17 | - |
+| AC 16, campos de cada passo (4 passos × 4 campos) | C19, sobre os 16 | - |
 | AC 1, faturamento (3 exemplos) | sem notas C2 · rejeitada C1 · +150,00 C1 | - |
 | AC 2, contagens (2 exemplos) | recém-migrado 0 e 0 C17 · +1 e +1 C3 | - |
 | AC 3, categorias (2 exemplos) | soma igual ao total C4 · categoria sem nota ausente C4 | - |
@@ -83,7 +93,7 @@ Proof: `f=.docs/qa/roteiro-demo.md; for t in "docker compose down -v" "docker co
 | usuários de demonstração no roteiro (3) | consumidor C17 · lojista C17 · admin C17 | - |
 | source controls: Tela 3 (1) | "Tentar novamente" C12 | - |
 | estados da Tela 3 (4) | dados C8 · vazio C10 · carregando C11 · erro C12 | - |
-| startup config: relógio (2 montagens) | aplicação (`ClockConfig`) C17 · teste E2E (relógio fixo) C17 | - |
+| startup config: relógio (2 montagens) | aplicação (`ClockConfig`) C21 · teste E2E (relógio fixo) C17 | - |
 
 ## Swept
 
@@ -99,8 +109,8 @@ Proof: `f=.docs/qa/roteiro-demo.md; for t in "docker compose down -v" "docker co
 
 ## Handoff
 
-- **Settled mid-build:** none
-- **Dispatched:** none
-- **Boundary:** none
+- **Settled mid-build:** card do segmento: "Largura toda" (AD-033); rodapé do menu: "E-mail em uma linha" (AD-034); valores da Tela 3: "Valor completo" (AD-035)
+- **Dispatched:** Verifier at `a2dfdf0` - returned; screens round 1 at `a2dfdf0` - returned
+- **Boundary:** todos os checks fechados em `a2dfdf0`
 - **Abandoned:** none
 - **Walked:** no mesmo app real, depois dos passos 1 a 3 pela tela, "3 · Shopping" abriu `/shopping` com "Faturamento identificado R$ 3.544,90 soma das NFC-e validadas", "Vouchers de estacionamento 1", "Campanhas ativas 1" e "Faturamento consolidado por segmento" com Vestuário R$ 2.028,20, Eletrônicos R$ 1.349,00 e Alimentação R$ 167,70; a imagem `captures/figura4-portal-shopping.running.png` foi salva a 1373px, entrando por "Entrar como Admin Shopping". A primeira imagem mostrou o selo do protótipo duplicado e altura sobrando; corrigido antes da imagem final.
