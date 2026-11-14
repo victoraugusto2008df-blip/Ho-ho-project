@@ -35,8 +35,6 @@ describe('primitivos do design system', () => {
           }),
         ),
       listarNotasHoje: vi.fn<() => Promise<ReturnType<typeof nota>[]>>().mockRejectedValueOnce(new Error('x')).mockResolvedValue([nota()]),
-      // "Reiniciar demonstração" só aparece com uma implementação que sabe reiniciar (o mock).
-      reiniciar: vi.fn(),
     })
     const { user } = renderPortal(api)
     await screen.findByText('Voucher de estacionamento grátis')
@@ -51,7 +49,6 @@ describe('primitivos do design system', () => {
       /^Nota duplicada/,
       /^Nota com mais de 72h/,
       /^CNPJ fora do shopping/,
-      'Reiniciar demonstração',
     ]) {
       expect(screen.getByRole('button', { name: nome }).getAttribute('data-primitivo'), String(nome)).toBe('Button')
     }
@@ -69,7 +66,7 @@ describe('primitivos do design system', () => {
       'Cadastrar nota fiscal (NFC-e)',
       'Notas de hoje',
       'Painel do protótipo',
-      'Ordem de validação (mock do backend)',
+      'Ordem de validação',
     ]) {
       expect(screen.getByText(titulo).closest('[data-primitivo="Card"]'), titulo).not.toBeNull()
     }

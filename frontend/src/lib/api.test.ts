@@ -6,7 +6,8 @@ import { decodeSession } from '@/lib/jwt'
 import { jsonResponse, makeToken, nowSeconds } from '@/test/helpers'
 
 function stubFetch(response: Response) {
-  const fetchMock = vi.fn().mockResolvedValue(response)
+  // Cada chamada recebe a sua cópia: as telas montadas também chamam o `fetch`.
+  const fetchMock = vi.fn(async (..._args: unknown[]) => response.clone())
   vi.stubGlobal('fetch', fetchMock)
   return fetchMock
 }

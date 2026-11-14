@@ -5,7 +5,7 @@ import { RequireRole } from '@/features/auth/RequireRole'
 import { PERFIS, ROLES, type Role } from '@/features/auth/types'
 import { decodeSession } from '@/lib/jwt'
 import { currentPath, renderApp } from '@/test/renderApp'
-import { jsonResponse, makeToken, nowSeconds } from '@/test/helpers'
+import { jsonResponse, loginCalls, makeToken, nowSeconds, stubBackend, stubLoginOnly } from '@/test/helpers'
 import { B2BShell } from './B2BShell'
 import { AuthLayout, routes } from './routes'
 
@@ -22,7 +22,7 @@ const menu = () => document.getElementById('menu-portal') as HTMLElement
 
 describe('troca de perfil no shell', () => {
   it('C26 aba de perfil troca de perfil em 1 clique', async () => {
-    vi.stubEnv('VITE_AUTH_MOCK', 'true')
+    stubBackend()
     for (const origem of ROLES) {
       for (const destino of ROLES.filter((r) => r !== origem)) {
         const { router, user, unmount } = renderApp({
@@ -52,7 +52,7 @@ describe('troca de perfil no shell', () => {
 
       await user.click(screen.getByRole('button', { name: aba(role) }))
 
-      expect(fetchMock).not.toHaveBeenCalled()
+      expect(loginCalls(fetchMock)).toHaveLength(0)
       expect(currentPath(router)).toBe(PERFIS[role].rota)
       expect(sessionStorage.getItem('hoho.session')).toBe(JSON.stringify({ token }))
       unmount()
@@ -60,7 +60,7 @@ describe('troca de perfil no shell', () => {
   })
 
   it('C28 troca de perfil e sair esvaziam o cache', async () => {
-    vi.stubEnv('VITE_AUTH_MOCK', 'true')
+    stubBackend()
     const { router, queryClient, user } = renderApp({ path: '/lojista', token: valid('LOJISTA') })
     queryClient.setQueryData(['dashboard'], { ticket: 142.3 })
     expect(queryClient.getQueryData(['dashboard'])).toEqual({ ticket: 142.3 })
@@ -89,12 +89,12 @@ describe('troca de perfil no shell', () => {
 
       await user.click(screen.getByRole('button', { name: aba(primeiro) }))
 
-      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(loginCalls(fetchMock)).toHaveLength(1))
       for (const role of ROLES) {
         expect((screen.getByRole('button', { name: aba(role) }) as HTMLButtonElement).disabled).toBe(true)
       }
       await user.click(screen.getByRole('button', { name: aba(segundo) }))
-      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(loginCalls(fetchMock)).toHaveLength(1)
 
       release(jsonResponse({ token: valid(primeiro) }))
       unmount()
@@ -107,14 +107,14 @@ describe('shell B2B', () => {
   it('C29 rodapé mostra nome ou sub e o perfil', () => {
     const comNome = renderApp({
       path: '/lojista',
-      token: valid('LOJISTA', { nome: 'Passo Firme Calçados', sub: 'lojista@hoho.demo' }),
+      token: valid('LOJISTA', { nome: 'Passo Firme Calçados', sub: 'lojista@shopping.com' }),
     })
     expect(screen.getByText('Passo Firme Calçados')).toBeTruthy()
     expect(screen.getByText('Perfil: LOJISTA')).toBeTruthy()
     comNome.unmount()
 
-    const semNome = renderApp({ path: '/lojista', token: valid('LOJISTA', { sub: 'lojista@hoho.demo' }) })
-    expect(screen.getByText('lojista@hoho.demo')).toBeTruthy()
+    const semNome = renderApp({ path: '/lojista', token: valid('LOJISTA', { sub: 'lojista@shopping.com' }) })
+    expect(screen.getByText('lojista@shopping.com')).toBeTruthy()
     semNome.unmount()
 
     renderApp({ path: '/shopping', token: valid('ADMIN_SHOPPING', { nome: 'Administração Capim Dourado' }) })
@@ -180,7 +180,7 @@ describe('shell B2B', () => {
 
 describe('sair', () => {
   it('C42 sair e expiração limpam o erro de troca de perfil', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({}, 401)))
+    stubLoginOnly(() => jsonResponse({}, 401))
     const sair = renderApp({ path: '/lojista', token: valid('LOJISTA') })
     await sair.user.click(screen.getByRole('button', { name: aba('CONSUMIDOR') }))
     expect((await screen.findByRole('alert')).textContent).toBe('Credenciais de demonstração inválidas.')

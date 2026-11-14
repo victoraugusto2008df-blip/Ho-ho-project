@@ -62,15 +62,16 @@ export function mascararCpf(entrada: string): string {
 /** Mensagem exibida ao consumidor para cada erro de negócio (ReN01, ReN02, RF03, RF01). */
 export const MENSAGEM_NEGOCIO: Record<CodigoNegocio, string> = {
   NOTA_DUPLICADA: 'Esta nota já foi cadastrada. Cada nota vale apenas uma vez.',
-  NOTA_ANTIGA: 'Esta nota foi emitida há mais de 72 horas e não pode ser usada.',
+  NOTA_EXPIRADA_72H: 'Esta nota foi emitida há mais de 72 horas e não pode ser usada.',
   LOJA_NAO_CREDENCIADA: 'A loja emissora não participa do programa do shopping.',
   CHAVE_INVALIDA: 'A chave precisa ter 44 dígitos numéricos.',
+  CHAVE_NAO_ENCONTRADA: 'Chave não localizada na SEFAZ.',
 }
 
 /** Regra do documento de requisitos que cada código prova, exibida como pílula. */
-export const REGRA_NEGOCIO: Record<CodigoNegocio, string> = {
+export const REGRA_NEGOCIO: Partial<Record<CodigoNegocio, string>> = {
   NOTA_DUPLICADA: 'ReN01',
-  NOTA_ANTIGA: 'ReN02',
+  NOTA_EXPIRADA_72H: 'ReN02',
   LOJA_NAO_CREDENCIADA: 'RF03',
   CHAVE_INVALIDA: 'RF01',
 }
@@ -94,6 +95,13 @@ function doisDigitos(n: number): string {
 export function formatarHora(iso: string): string {
   const d = new Date(iso)
   return `${doisDigitos(d.getHours())}:${doisDigitos(d.getMinutes())}`
+}
+
+/** Fechamento do shopping no dia de `agora`: 22h de segunda a sábado, 20h no domingo. */
+export function fechamentoDeHoje(agora: Date = new Date()): Date {
+  const fechamento = new Date(agora)
+  fechamento.setHours(agora.getDay() === 0 ? 20 : 22, 0, 0, 0)
+  return fechamento
 }
 
 /** "Hoje, 22:00 (fechamento)" no mesmo dia; "15/11, 20:00 (fechamento)" em outro dia. */

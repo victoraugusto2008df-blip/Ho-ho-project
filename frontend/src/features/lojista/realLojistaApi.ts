@@ -1,8 +1,9 @@
+import { apiFetch } from '@/lib/api'
 import type { Fetcher } from '@/features/consumidor/notasApi'
 import type { LojistaApi } from './lojistaApi'
 import type { Campanha, DashboardLojista } from './types'
 
-/** Implementação de `LojistaApi` sobre o ORD-08 e o contrato da door 1 do plano (ORD-09). */
+/** Implementação de `LojistaApi` sobre o backend, com o cliente HTTP dado. */
 export function criarRealLojistaApi(fetcher: Fetcher): LojistaApi {
   return {
     async dashboard() {
@@ -13,9 +14,11 @@ export function criarRealLojistaApi(fetcher: Fetcher): LojistaApi {
       const { titulo, descontoPercentual, criterioAlvo } = pedido
       return fetcher<Campanha>('/campanhas', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ titulo, descontoPercentual, criterioAlvo }),
       })
     },
   }
 }
+
+/** A `LojistaApi` do app: o backend, pelo `apiFetch` (Bearer da sessão). */
+export const lojistaApi: LojistaApi = criarRealLojistaApi(apiFetch)

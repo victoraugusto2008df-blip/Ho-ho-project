@@ -1,6 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { CHAVES_DEMO, mockNotasApi } from './mockNotasApi'
-import { criarNotasApi } from './createNotasApi'
+import { describe, expect, it, vi } from 'vitest'
+import { CHAVES_DEMO } from './chavesDemo'
 import { criarRealNotasApi } from './realNotasApi'
 import type { Fetcher } from './notasApi'
 import { faltanteDaMeta, formatarReais, formatarValidoAte, percentualDaMeta } from './regras'
@@ -42,9 +41,9 @@ describe('regras da Tela 1', () => {
 
   it('C34 chaves de demonstração têm 44 dígitos e são distintas', () => {
     const chaves = [
-      CHAVES_DEMO.VALIDA_60,
-      CHAVES_DEMO.VALIDA_90,
-      CHAVES_DEMO.VALIDA_40,
+      CHAVES_DEMO.VALIDA_65,
+      CHAVES_DEMO.VALIDA_85,
+      CHAVES_DEMO.VALIDA_55,
       CHAVES_DEMO.DUPLICADA,
       CHAVES_DEMO.ANTIGA,
       CHAVES_DEMO.LOJA_NAO_CREDENCIADA,
@@ -61,118 +60,116 @@ describe('regras da Tela 1', () => {
   })
 })
 
-describe('mock da demonstração', () => {
-  beforeEach(() => mockNotasApi.reiniciar())
-
-  it('C35 mock recusa cada caso de negócio sem tocar no acumulado', async () => {
-    await mockNotasApi.enviarNota(CHAVES_DEMO.VALIDA_60)
-    expect(await codigoDoErro(mockNotasApi.enviarNota(CHAVES_DEMO.VALIDA_60))).toBe('NOTA_DUPLICADA')
-    expect(await codigoDoErro(mockNotasApi.enviarNota(CHAVES_DEMO.DUPLICADA))).toBe('NOTA_DUPLICADA')
-    expect(await codigoDoErro(mockNotasApi.enviarNota(CHAVES_DEMO.ANTIGA))).toBe('NOTA_ANTIGA')
-    expect(await codigoDoErro(mockNotasApi.enviarNota(CHAVES_DEMO.LOJA_NAO_CREDENCIADA))).toBe('LOJA_NAO_CREDENCIADA')
-    expect(await codigoDoErro(mockNotasApi.enviarNota('1'.repeat(43)))).toBe('CHAVE_INVALIDA')
-
-    const notas = await mockNotasApi.listarNotasHoje()
-    expect(notas.map((n) => n.chave)).toEqual([CHAVES_DEMO.VALIDA_60])
-    expect((await mockNotasApi.beneficioHoje()).valorAcumulado).toBe(60)
-  })
-
-  it('C36 mock libera um único voucher ao atingir a meta', async () => {
-    await mockNotasApi.enviarNota(CHAVES_DEMO.VALIDA_60)
-    expect((await mockNotasApi.beneficioHoje()).voucher).toBeNull()
-
-    await mockNotasApi.enviarNota(CHAVES_DEMO.VALIDA_90)
-    const naMeta = await mockNotasApi.beneficioHoje()
-    expect(naMeta.valorAcumulado).toBe(150)
-    expect(naMeta.percentual).toBe(100)
-    expect(naMeta.voucher?.status).toBe('LIBERADO')
-    const codigo = naMeta.voucher?.codigo
-
-    await mockNotasApi.enviarNota(CHAVES_DEMO.VALIDA_40)
-    const depois = await mockNotasApi.beneficioHoje()
-    expect(depois.valorAcumulado).toBe(190)
-    expect(depois.voucher?.codigo).toBe(codigo)
-  })
-
-  it('C37 mock devolve notas e benefício na forma do contrato', async () => {
-    const nota = await mockNotasApi.enviarNota(CHAVES_DEMO.VALIDA_60)
-    const hoje = new Date()
-    const emissao = new Date(nota.dataEmissao)
-    expect(nota.status).toBe('APROVADA')
-    expect(nota.dataEmissao).toBe(emissao.toISOString())
-    expect(emissao.toDateString()).toBe(hoje.toDateString())
-    expect(nota.estabelecimento.trim()).not.toBe('')
-    expect(nota.categoria.trim()).not.toBe('')
-    expect((await mockNotasApi.beneficioHoje()).cpfMascarado).toBe('***.982.247-**')
-  })
-})
-
 describe('backend real', () => {
-  it('C30 backend real chama as 3 rotas do contrato pelo fetcher', async () => {
-    const nota = {
-      chave: CHAVES_DEMO.VALIDA_60,
-      estabelecimento: 'Renner Shopping Hub',
-      categoria: 'Vestuário',
-      dataEmissao: '2026-11-14T15:00:00.000Z',
-      valor: 60,
-      status: 'APROVADA',
-    }
-    const beneficio = {
-      valorAcumulado: 60,
-      meta: 150,
-      percentual: 40,
-      faltante: 90,
-      cpfMascarado: '***.982.247-**',
-      voucher: null,
-    }
-    const fetcher = vi.fn(async (path: string) => {
-      if (path === '/notas') return nota
-      if (path === '/notas/hoje') return [nota]
-      if (path === '/beneficios/estacionamento/hoje') return beneficio
-      throw new Error(`rota inesperada ${path}`)
-    })
+  const notaBackend = {
+    chaveAcesso: CHAVES_DEMO.VALIDA_65,
+    valorTotal: 65,
+    dataEmissao: '2026-11-14T15:00:00Z',
+    status: 'APROVADA',
+    clienteId: '33333333-3333-3333-3333-333333333301',
+    lojaId: '22222222-2222-2222-2222-222222222201',
+    estabelecimento: 'Zara Shopping Hub',
+    categoria: 'Vestuário',
+  }
+  const notaDaTela = {
+    chave: CHAVES_DEMO.VALIDA_65,
+    estabelecimento: 'Zara Shopping Hub',
+    categoria: 'Vestuário',
+    dataEmissao: '2026-11-14T15:00:00Z',
+    valor: 65,
+    status: 'APROVADA',
+  }
+
+  it('INT-13 traduz a nota do backend para a forma da tela', async () => {
+    const fetcher = vi.fn(async (path: string) => (path === '/notas' ? notaBackend : [notaBackend]))
     const api = criarRealNotasApi(fetcher as unknown as Fetcher)
 
-    expect(await api.enviarNota(CHAVES_DEMO.VALIDA_60)).toEqual(nota)
+    expect(await api.enviarNota(CHAVES_DEMO.VALIDA_65)).toEqual(notaDaTela)
     const [path, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit]
     expect(path).toBe('/notas')
     expect(init.method).toBe('POST')
-    expect(JSON.parse(String(init.body))).toEqual({ chaveAcesso: CHAVES_DEMO.VALIDA_60 })
+    expect(JSON.parse(String(init.body))).toEqual({ chaveAcesso: CHAVES_DEMO.VALIDA_65 })
 
-    expect(await api.listarNotasHoje()).toEqual([nota])
-    expect(fetcher.mock.calls[1][0]).toBe('/notas/hoje')
-    expect(await api.beneficioHoje()).toEqual(beneficio)
-    expect(fetcher.mock.calls[2][0]).toBe('/beneficios/estacionamento/hoje')
+    expect(await api.listarNotasHoje()).toEqual([notaDaTela])
+    expect(fetcher.mock.calls[1]).toEqual(['/notas/hoje'])
   })
 
-  it('C31 backend real converte 409 e 422 em erro de negócio e o resto em genérico', async () => {
+  it('INT-16 traduz o benefício e o voucher do backend', async () => {
+    const semVoucher = {
+      valorAcumulado: 65,
+      meta: 150,
+      percentual: 43,
+      valorFaltante: 85,
+      voucherLiberado: false,
+      cpfMascarado: '***.456.789-**',
+      voucher: null,
+    }
+    const comVoucher = {
+      ...semVoucher,
+      valorAcumulado: 150,
+      percentual: 100,
+      valorFaltante: 0,
+      voucherLiberado: true,
+      voucher: {
+        id: '7d1c2f3a-0000-4000-8000-000000000001',
+        codigoQr: 'HOHO-PARK-2026-11-14-ABCD1234',
+        status: 'LIBERADO',
+        dataReferencia: '2026-11-14',
+        criadoEm: '2026-11-14T17:19:00Z',
+      },
+    }
+    let resposta: unknown = semVoucher
+    const fetcher = vi.fn(async () => resposta)
+    const api = criarRealNotasApi(fetcher as unknown as Fetcher)
+
+    expect(await api.beneficioHoje()).toEqual({
+      valorAcumulado: 65,
+      meta: 150,
+      percentual: 43,
+      faltante: 85,
+      cpfMascarado: '***.456.789-**',
+      voucher: null,
+    })
+    expect(fetcher).toHaveBeenLastCalledWith('/beneficios/estacionamento/hoje')
+
+    resposta = comVoucher
+    // Sábado 14/11/2026 fecha às 22h; domingo 15/11/2026, às 20h (hora local).
+    for (const [agora, fechamento] of [
+      [new Date(2026, 10, 14, 15, 0), new Date(2026, 10, 14, 22, 0)],
+      [new Date(2026, 10, 15, 15, 0), new Date(2026, 10, 15, 20, 0)],
+    ]) {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(agora)
+      const beneficio = await api.beneficioHoje()
+      vi.useRealTimers()
+      expect(beneficio.faltante).toBe(0)
+      expect(beneficio.voucher).toEqual({
+        codigo: 'HOHO-PARK-2026-11-14-ABCD1234',
+        status: 'LIBERADO',
+        emitidoEm: '2026-11-14T17:19:00Z',
+        validoAte: fechamento.toISOString(),
+        qrPayload: 'HOHO-PARK-2026-11-14-ABCD1234',
+      })
+    }
+  })
+
+  it('INT-11 converte cada code do backend em erro de negócio e o resto em genérico', async () => {
     const casos: Array<[unknown, CodigoNegocio | 'generico']> = [
-      [{ status: 409, body: { codigo: 'NOTA_DUPLICADA', mensagem: 'x' } }, 'NOTA_DUPLICADA'],
-      [{ status: 422, body: { codigo: 'NOTA_ANTIGA', mensagem: 'x' } }, 'NOTA_ANTIGA'],
-      [{ status: 422, body: { codigo: 'LOJA_NAO_CREDENCIADA', mensagem: 'x' } }, 'LOJA_NAO_CREDENCIADA'],
-      [{ status: 422, body: { codigo: 'CHAVE_INVALIDA', mensagem: 'x' } }, 'CHAVE_INVALIDA'],
-      [{ status: 422, body: { codigo: 'OUTRO', mensagem: 'x' } }, 'generico'],
+      [{ status: 409, body: { code: 'NOTA_DUPLICADA', message: 'x' } }, 'NOTA_DUPLICADA'],
+      [{ status: 422, body: { code: 'NOTA_EXPIRADA_72H', message: 'x' } }, 'NOTA_EXPIRADA_72H'],
+      [{ status: 422, body: { code: 'LOJA_NAO_CREDENCIADA', message: 'x' } }, 'LOJA_NAO_CREDENCIADA'],
+      [{ status: 400, body: { code: 'CHAVE_INVALIDA', message: 'x' } }, 'CHAVE_INVALIDA'],
+      [{ status: 404, body: { code: 'CHAVE_NAO_ENCONTRADA', message: 'x' } }, 'CHAVE_NAO_ENCONTRADA'],
+      [{ status: 409, body: { code: 'OUTRO', message: 'x' } }, 'generico'],
+      [{ status: 422, body: { codigo: 'NOTA_DUPLICADA', mensagem: 'x' } }, 'generico'],
       [{ status: 500, body: null }, 'generico'],
+      [new TypeError('Failed to fetch'), 'generico'],
     ]
     for (const [rejeicao, esperado] of casos) {
       const fetcher = (async () => {
         throw rejeicao
       }) as Fetcher
-      expect(await codigoDoErro(criarRealNotasApi(fetcher).enviarNota(CHAVES_DEMO.VALIDA_60))).toBe(esperado)
+      expect(await codigoDoErro(criarRealNotasApi(fetcher).enviarNota(CHAVES_DEMO.VALIDA_65))).toBe(esperado)
     }
-  })
-
-  it('C32 só a flag exata true liga o backend real', async () => {
-    const fetcher = vi.fn(async () => [])
-    for (const valor of [undefined, 'false', 'TRUE']) {
-      vi.unstubAllEnvs()
-      if (valor !== undefined) vi.stubEnv('VITE_BACKEND_CONSUMIDOR', valor)
-      expect(criarNotasApi(fetcher as unknown as Fetcher)).toBe(mockNotasApi)
-    }
-    vi.stubEnv('VITE_BACKEND_CONSUMIDOR', 'true')
-    const real = criarNotasApi(fetcher as unknown as Fetcher)
-    expect(real).not.toBe(mockNotasApi)
-    await real.listarNotasHoje()
-    expect(fetcher).toHaveBeenCalledWith('/notas/hoje')
   })
 })
