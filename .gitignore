@@ -123,3 +123,8 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ==========================================
+# Pasta privada local (notas e contexto, nao versionar)
+# ==========================================
+.private/
