@@ -14,11 +14,11 @@
 
 ## Handoff
 
-**Feature**: ORD-01-migrations-seeds  
-**Where**: Build e Verificação Round 2 concluídos com **PASS** (`C1`–`C10`, 11/11 testes passando)  
-**In progress**: Aguardando revisão do Lucas e autorização para `git push` da branch `feat/ORD-01-migrations-seeds`  
-**Next step**: Push da branch, PR contra `develop` e início da `ORD-02`  
+**Feature**: ORD-04-sefaz-gateway  
+**Where**: Build e Verificação da ORD-04 concluídos com **PASS** (`C1`–`C7`, 7/7 testes unitários passando)  
+**In progress**: Aguardando revisão do Lucas e autorização para `git push` da branch `feat/ORD-04-sefaz-gateway`  
+**Next step**: Push da branch, PR contra `develop` e início da `ORD-05`  
 **Blockers**: none  
-**Uncommitted**: none  
-**Branch**: feat/ORD-01-migrations-seeds  
+**Uncommitted**: .gitignore (`.local-tasks/`), .specs/features/ORD-04-sefaz-gateway/plan.md, .specs/STATE.md  
+**Branch**: feat/ORD-04-sefaz-gateway  
 
