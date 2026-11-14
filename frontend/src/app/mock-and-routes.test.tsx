@@ -54,7 +54,7 @@ describe('rotas por perfil', () => {
       const { router, unmount } = renderApp({ path: '/lojista', token })
       await waitFor(() => expect(currentPath(router)).toBe('/acesso?motivo=expirado'))
       expect(sessionStorage.getItem('hoho.session')).toBeNull()
-      expect(screen.getByText(AVISO)).toBeTruthy()
+      expect(await screen.findByText(AVISO)).toBeTruthy()
       unmount()
     }
 
@@ -109,7 +109,7 @@ describe('rotas por perfil', () => {
     expect(unauthorized).toHaveBeenCalledTimes(1)
     expect(sessionStorage.getItem('hoho.session')).toBeNull()
     await waitFor(() => expect(currentPath(router)).toBe('/acesso?motivo=expirado'))
-    expect(screen.getByText(AVISO)).toBeTruthy()
+    expect(await screen.findByText(AVISO)).toBeTruthy()
   })
 
   it('C32 cada portal mostra o placeholder do seu card', async () => {

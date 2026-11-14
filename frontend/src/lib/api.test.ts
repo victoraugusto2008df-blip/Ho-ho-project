@@ -14,7 +14,7 @@ function sentHeaders(fetchMock: ReturnType<typeof vi.fn>): Headers {
 }
 
 describe('apiFetch', () => {
-  it('C16 injeta Bearer só com sessão', async () => {
+  it('C16 apiFetch injeta Bearer só com sessão', async () => {
     const token = makeToken()
     sessionStorage.setItem('hoho.session', JSON.stringify({ token }))
     const comSessao = stubFetch(jsonResponse({ ok: true }))
@@ -27,7 +27,7 @@ describe('apiFetch', () => {
     expect(sentHeaders(semSessao).has('Authorization')).toBe(false)
   })
 
-  it('C17 prefixa /api/v1', async () => {
+  it('C17 apiFetch prefixa /api/v1', async () => {
     const fetchMock = stubFetch(jsonResponse({}))
     await apiFetch('/notas')
     expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/notas')

@@ -34,8 +34,8 @@ describe('troca de perfil no shell', () => {
 
         await waitFor(() => expect(currentPath(router)).toBe(PERFIS[destino].rota))
         expect(storedRole()).toBe(destino)
-        const ativa = screen.getByRole('button', { name: aba(destino) })
-        expect(ativa.getAttribute('aria-current')).toBe('page')
+        const ativa = await screen.findByRole('button', { name: aba(destino) })
+        await waitFor(() => expect(ativa.getAttribute('aria-current')).toBe('page'))
         expect(screen.getByRole('button', { name: aba(origem) }).getAttribute('aria-current')).toBeNull()
         unmount()
         sessionStorage.clear()
