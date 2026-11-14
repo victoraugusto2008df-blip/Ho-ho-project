@@ -131,7 +131,7 @@ export function B2BShell() {
               <p className="text-sm font-medium text-[var(--text-primary)] leading-snug break-words">
                 {displayName}
               </p>
-              <p className="text-xs text-[var(--text-muted)] break-all">{`Perfil: ${session.role}`}</p>
+              <p className="text-xs text-[var(--text-muted)] whitespace-nowrap">{`Perfil: ${session.role}`}</p>
             </div>
             <LogoutButton />
           </div>

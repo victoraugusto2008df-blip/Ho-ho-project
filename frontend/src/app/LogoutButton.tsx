@@ -5,7 +5,14 @@ import { useAuth } from '@/features/auth/useAuth'
 export function LogoutButton({ showLabel = false }: { showLabel?: boolean }) {
   const { logout } = useAuth()
   return (
-    <Button variant="ghost" size="sm" aria-label="Sair" title="Sair" onClick={logout}>
+    <Button
+      variant="ghost"
+      size="sm"
+      className={showLabel ? undefined : 'px-2 shrink-0'}
+      aria-label="Sair"
+      title="Sair"
+      onClick={logout}
+    >
       <LogOut className="w-4 h-4" aria-hidden="true" />
       {showLabel && <span>Sair</span>}
     </Button>
