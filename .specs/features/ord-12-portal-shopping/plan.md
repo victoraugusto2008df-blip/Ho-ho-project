@@ -160,6 +160,7 @@ Toda espera, ausência, falha e negativa tem desenho próprio.
 | Ensaio ponta a ponta da demonstração | é o ORD-14 (issue #14), onda 4, depende de #1 a #12 |
 | Exportação de CSV ou PDF dos painéis | nada no mockup desenha esse controle; capacidade nova exige decisão própria |
 | Trava de K-Anonymity (ReN05) | é trava da visão do lojista (ORD-11); a visão corporativa agrega o shopping inteiro |
+| Rodar os testes do mapper (`node --test src/lib/analytics/`) no CI, com um script `test` em `frontend/package.json` e um passo em `.github/workflows/ci.yml` | o CI é compartilhado pela equipe. Decisão do usuário (D9): "manter testes no CI fora da ORD-12". Até outra feature ligar esse passo, C4 a C13 e C23 a C29 rodam só no `check_proofs.py`, e o CI do frontend continua só com `npm ci` e `npm run build` - uma mudança que quebre esses testes passa com o CI verde |
 
 ## Assumptions
 
@@ -195,6 +196,7 @@ Toda espera, ausência, falha e negativa tem desenho próprio.
 | azul médio nas barras de setor e na série de volume, rampa azul no mapa horário, fundo cinza neutro e `Expirados` em laranja | as cores dos tokens: `--color-analytics` nas barras e na série, rampa por `color-mix` dos tokens azuis puxando para o índigo, fundo `--bg-canvas` (cinza-azulado) e `Expirados` em `--color-warning` (âmbar), porque o design system não tem token laranja | y - AD-102 |
 | ladrilho `SA` achatado, 27 x 34 px | ladrilho `SA` quadrado, 34 x 34 px | y - AD-103 |
 | coluna `21h` do mapa horário cortada na borda do conteúdo | coluna `21h` inteira | y - AD-103 |
+| `saídas de veiculos`, sem acento, no rodapé do KPI de vouchers e no painel de estacionamento | `saídas de veículos`, com acento - corrige um erro de grafia da própria figura4 | y - AD-104 |
 
 Fora dessas linhas, a estrutura visual da figura4 é preservada: os 4 KPIs, os cinco painéis, a barra
 lateral, o seletor de período, o selo de protótipo e o rodapé. Onde o payload não traz um número, o
