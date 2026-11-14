@@ -15,9 +15,9 @@
 ## Handoff
 
 **Feature**: ORD-04-sefaz-gateway  
-**Where**: Build da ORD-04 completo (`ConsultaNotaFiscalGateway`, `DadosNotaFiscalSefaz`, `MockSefazGateway`, `MockSefazGatewayTest` 7/7 passando e `demo-keys.md`)  
-**In progress**: Commit local e verificação independente (`verification.md`) conforme `tlc-spec-lean` (`profile: light`)  
-**Next step**: Após PASS do Verifier, revisar e subir `feat/ORD-04-sefaz-gateway`  
+**Where**: Build e Verificação da ORD-04 concluídos com **PASS** (`C1`–`C7`, 7/7 testes unitários passando)  
+**In progress**: Aguardando revisão do Lucas e autorização para `git push` da branch `feat/ORD-04-sefaz-gateway`  
+**Next step**: Push da branch, PR contra `develop` e início da `ORD-05`  
 **Blockers**: none  
 **Uncommitted**: .gitignore (`.local-tasks/`), .specs/features/ORD-04-sefaz-gateway/plan.md, .specs/STATE.md  
 **Branch**: feat/ORD-04-sefaz-gateway  
