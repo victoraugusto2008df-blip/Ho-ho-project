@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { BatteryFull, Signal } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { FormularioNota } from './FormularioNota'
 import { NotasHojeCard } from './NotasHojeCard'
@@ -27,9 +26,13 @@ function Cabecalho() {
       <div aria-hidden="true" className="flex items-center justify-between text-[11px] font-medium tabular-nums mb-3">
         <span>{hora}</span>
         <span className="flex items-center gap-1">
-          <Signal className="w-3.5 h-3.5" />
+          <span className="flex items-center gap-0.5">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className="w-1.5 h-1.5 rounded-[var(--radius-pill)] bg-current" />
+            ))}
+          </span>
           4G
-          <BatteryFull className="w-4 h-4" />
+          <span className="w-1.5 h-2.5 rounded-[1px] bg-current" />
         </span>
       </div>
       <div className="flex items-start justify-between gap-3">
@@ -57,7 +60,7 @@ export function PortalConsumidor() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-canvas)] lg:py-8">
-      <div className="mx-auto lg:flex lg:items-start lg:justify-center lg:gap-8">
+      <div className="mx-auto px-4 pt-4 lg:p-0 lg:flex lg:items-start lg:justify-center lg:gap-8">
         <div className="w-full lg:w-[356px] lg:shrink-0 lg:rounded-[2.75rem] lg:border-[9px] lg:border-[var(--text-primary)] lg:overflow-hidden lg:shadow-xl bg-[var(--bg-canvas)]">
           <Cabecalho />
           <main className="px-3.5 py-4 space-y-4">
@@ -73,7 +76,7 @@ export function PortalConsumidor() {
           </main>
         </div>
 
-        <aside aria-label="Painel do protótipo" className="px-3.5 pb-6 lg:px-0 lg:pb-0 lg:w-[284px] lg:shrink-0">
+        <aside aria-label="Painel do protótipo" className="pt-4 pb-6 lg:p-0 lg:w-[284px] lg:shrink-0">
           <PainelPrototipo cadastro={cadastro} mostrarReiniciar={!backendReal && cadastro.podeReiniciar} />
         </aside>
       </div>

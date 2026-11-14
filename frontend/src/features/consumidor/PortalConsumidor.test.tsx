@@ -64,14 +64,19 @@ describe('S1 - a tela dos mockups', () => {
     await screen.findByText('Voucher de estacionamento grátis')
     await screen.findByText('2 notas · R$ 208,33')
 
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT)
+    // O texto próprio de cada elemento junta os nós de texto filhos: o React divide
+    // "{n}/{44}" em 3 nós, que só formam "0/44" juntos.
     const numericos: string[] = []
-    for (let no = walker.nextNode(); no; no = walker.nextNode()) {
-      const texto = no.textContent ?? ''
-      if (!/R\$\s?\d|\d+\s?%|\d+\/44/.test(texto)) continue
-      numericos.push(texto)
-      expect(no.parentElement?.closest('.tabular-nums'), `sem tabular-nums: "${texto}"`).not.toBeNull()
+    for (const el of [container, ...Array.from(container.querySelectorAll('*'))]) {
+      const proprio = Array.from(el.childNodes)
+        .filter((no) => no.nodeType === Node.TEXT_NODE)
+        .map((no) => no.textContent)
+        .join('')
+      if (!/R\$\s?\d|\d+\s?%|\d+\/44/.test(proprio)) continue
+      numericos.push(proprio)
+      expect(el.closest('.tabular-nums'), `sem tabular-nums: "${proprio}"`).not.toBeNull()
     }
+    expect(numericos).toContain('0/44')
     expect(numericos.length).toBeGreaterThanOrEqual(8)
   })
 })
@@ -289,12 +294,13 @@ describe('S3 - cadastrar nota', () => {
     beforeEach(() => mockNotasApi.reiniciar())
 
     it('C20 cada recusa de negócio mostra a regra e a mensagem própria', async () => {
-      const { user } = renderPortal(mockNotasApi)
+      const { user, queryClient } = renderPortal(mockNotasApi)
       await user.click(consentimento())
       await user.click(screen.getByRole('button', { name: 'Simular leitura de QR Code' }))
       await user.click(botaoEnviar())
       await screen.findByRole('status')
       await within(cardDe('Seu progresso hoje')).findByText('R$ 60,00')
+      const semBuscaPendente = () => waitFor(() => expect(queryClient.isFetching() + queryClient.isMutating()).toBe(0))
 
       const casos: Array<[string, string, string]> = [
         [CHAVES_DEMO.DUPLICADA, 'ReN01', 'Esta nota já foi cadastrada. Cada nota vale apenas uma vez.'],
@@ -310,7 +316,9 @@ describe('S3 - cadastrar nota', () => {
         expect(within(alerta).getByText(regra)).toBeTruthy()
         expect(within(alerta).getByText(mensagem)).toBeTruthy()
         expect(digitos(campoChave().value)).toBe(chave)
-        await waitFor(() => expect(within(cardDe('Notas de hoje')).getAllByRole('listitem')).toHaveLength(1))
+        // A recusa também invalida as queries: só depois do refetch a lista e o acumulado valem.
+        await semBuscaPendente()
+        expect(within(cardDe('Notas de hoje')).getAllByRole('listitem')).toHaveLength(1)
         expect(within(cardDe('Seu progresso hoje')).getByText('R$ 60,00')).toBeTruthy()
       }
     })
