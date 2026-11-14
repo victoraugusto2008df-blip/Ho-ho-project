@@ -16,7 +16,7 @@ export function VoucherCard() {
       aria-labelledby="voucher-titulo"
       className="border-2 border-dashed border-[var(--color-success-bar)]"
     >
-      <CardContent className="pt-4 space-y-3">
+      <CardContent className="pt-4 space-y-2.5">
         <div>
           <h2 id="voucher-titulo" className="text-sm font-semibold text-[var(--text-primary)]">
             Voucher de estacionamento grátis

@@ -9,7 +9,7 @@ import { TAMANHO_CHAVE, agruparChave } from './regras'
 const PLACEHOLDER_CHAVE = agruparChave('0'.repeat(TAMANHO_CHAVE))
 
 const campoClasses =
-  'w-full px-3 py-2.5 text-sm bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-[var(--radius-control)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] transition'
+  'w-full px-3 py-2 text-sm bg-[var(--bg-surface)] border border-[var(--border-hairline)] rounded-[var(--radius-control)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] transition'
 
 export function FormularioNota({ cadastro }: { cadastro: CadastroNota }) {
   const { mensagem } = cadastro
@@ -22,11 +22,11 @@ export function FormularioNota({ cadastro }: { cadastro: CadastroNota }) {
   return (
     <Card aria-labelledby="cadastro-titulo">
       <CardContent className="pt-4">
-        <h2 id="cadastro-titulo" className="text-sm font-semibold text-[var(--text-primary)] mb-4">
+        <h2 id="cadastro-titulo" className="text-sm font-semibold text-[var(--text-primary)] mb-3">
           Cadastrar nota fiscal (NFC-e)
         </h2>
 
-        <form noValidate onSubmit={onSubmit} className="space-y-4">
+        <form noValidate onSubmit={onSubmit} className="space-y-3">
           <div>
             <label htmlFor="cpf" className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
               CPF

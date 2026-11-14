@@ -9,7 +9,7 @@ export function ProgressoCard() {
 
   return (
     <Card aria-labelledby="progresso-titulo" aria-busy={beneficio.isPending}>
-      <CardContent className="pt-4 space-y-3">
+      <CardContent className="pt-4 space-y-2.5">
         <div className="flex items-baseline justify-between gap-3">
           <h2 id="progresso-titulo" className="text-sm font-semibold text-[var(--text-primary)] whitespace-nowrap">
             Seu progresso hoje

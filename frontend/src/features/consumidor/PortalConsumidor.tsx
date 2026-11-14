@@ -22,8 +22,8 @@ function useHoraAtual(): string {
 function Cabecalho() {
   const hora = useHoraAtual()
   return (
-    <header className="bg-[var(--color-brand)] text-white px-4 pt-3 pb-5 lg:px-5">
-      <div aria-hidden="true" className="flex items-center justify-between text-[11px] font-medium tabular-nums mb-3">
+    <header className="bg-[var(--color-brand)] text-white px-4 pt-3 pb-4 lg:px-5">
+      <div aria-hidden="true" className="flex items-center justify-between text-[11px] font-medium tabular-nums mb-2">
         <span>{hora}</span>
         <span className="flex items-center gap-1">
           <span className="flex items-center gap-0.5">
@@ -59,11 +59,11 @@ export function PortalConsumidor() {
   const backendReal = usarBackendReal()
 
   return (
-    <div className="min-h-screen bg-[var(--bg-canvas)] lg:py-8">
+    <div className="min-h-screen bg-[var(--bg-canvas)] lg:py-6">
       <div className="mx-auto px-4 pt-4 lg:p-0 lg:flex lg:items-start lg:justify-center lg:gap-8">
         <div className="w-full lg:w-[356px] lg:shrink-0 lg:rounded-[2.75rem] lg:border-[9px] lg:border-[var(--text-primary)] lg:overflow-hidden lg:shadow-xl bg-[var(--bg-canvas)]">
           <Cabecalho />
-          <main className="px-3.5 py-4 space-y-4">
+          <main className="px-3.5 py-3 space-y-3">
             <ProgressoCard />
             <VoucherCard />
             <FormularioNota cadastro={cadastro} />
