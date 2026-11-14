@@ -11,11 +11,13 @@ export function ProgressoCard() {
     <Card aria-labelledby="progresso-titulo" aria-busy={beneficio.isPending}>
       <CardContent className="pt-4 space-y-3">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 id="progresso-titulo" className="text-sm font-semibold text-[var(--text-primary)]">
+          <h2 id="progresso-titulo" className="text-sm font-semibold text-[var(--text-primary)] whitespace-nowrap">
             Seu progresso hoje
           </h2>
           {beneficio.data && (
-            <span className="text-xs text-[var(--text-muted)] tabular-nums">CPF {beneficio.data.cpfMascarado}</span>
+            <span className="text-[11px] text-[var(--text-muted)] tabular-nums whitespace-nowrap">
+              CPF {beneficio.data.cpfMascarado}
+            </span>
           )}
         </div>
 

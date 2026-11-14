@@ -71,7 +71,7 @@ export function FormularioNota({ cadastro }: { cadastro: CadastroNota }) {
               value={agruparChave(cadastro.chave)}
               onChange={(e) => cadastro.setChave(e.target.value)}
               aria-describedby="chave-dica"
-              className={`${campoClasses} resize-none font-[family-name:var(--font-mono)] tabular-nums leading-relaxed`}
+              className={`${campoClasses} resize-none font-[family-name:var(--font-mono)] text-xs tabular-nums leading-relaxed`}
             />
             <p id="chave-dica" className="mt-1.5 text-xs text-[var(--text-muted)]">
               Fica impressa abaixo do QR Code do cupom fiscal.
