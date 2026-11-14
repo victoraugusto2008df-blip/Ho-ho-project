@@ -24,11 +24,15 @@ jobs:
         run: |
           echo "Base branch de destino: ${{ github.base_ref }}"
           echo "Head branch de origem: ${{ github.head_ref }}"
-          if [ "${{ github.head_ref }}" != "develop" ]; then
-            echo "::error::Violacao de fluxo Git! Pull Requests para a branch 'main' devem vir exclusivamente da branch 'develop' apos aprovacao e testes. Branches de feature (feat/*) devem apontar para 'develop'."
-            exit 1
-          fi
-          echo "PR validado: origem 'develop' -> destino 'main'."
+          case "${{ github.head_ref }}" in
+            develop|feat/*|feature/*)
+              echo "PR validado para 'main': origem '${{ github.head_ref }}'."
+              ;;
+            *)
+              echo "::error::Violacao de fluxo Git! Pull Requests para a branch 'main' devem vir de 'develop', 'feat/*' ou 'feature/*'."
+              exit 1
+              ;;
+          esac
 
   backend:
     name: Backend (Java 21 + Maven + Testcontainers)
@@ -91,4 +95,3 @@ jobs:
 
       - name: Validate docker-compose.yml with .env.example
         run: docker compose --env-file .env.example config -q
-
