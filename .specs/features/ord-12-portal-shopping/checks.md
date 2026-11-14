@@ -6,28 +6,26 @@ Plan: `.specs/features/ord-12-portal-shopping/plan.md`
 
 25 checks em 3 slices · 2 portas de mão única · 4 questões abertas, das quais 3 bloqueiam go-live
 
-> **Estado de execução: nenhum dos 25 checks foi executado até agora.** O BUILD não foi autorizado,
-> e os testes que as provas `run` selecionam ainda não existem. Em 2026-11-14 o comando da linha
-> `Run analytics:` foi rodado uma vez, como evidência deste estado, e terminou com
-> `Could not find 'frontend/src/lib/analytics/'`, exit code 1 e 0 testes executados.
+> **Estado de execução (2026-11-14, durante o BUILD).** Os 13 testes automatizados (`run analytics`:
+> C4 a C13, C23, C24 e C25) foram escritos a partir de cada check em
+> `frontend/src/lib/analytics/shoppingDashboardMapper.test.ts`. Antes do mapper existir, o comando da
+> linha `Run analytics:` terminou vermelho (`ERR_MODULE_NOT_FOUND`, exit code 1); com o mapper, a
+> execução real imprimiu `# tests 13`, `# pass 13`, `# fail 0` e terminou com exit code 0. As linhas
+> após `|` nas provas `run` foram conferidas, uma a uma, contra as linhas `ok N - ...` dessa execução
+> e são idênticas.
 >
-> Os 25 checks se dividem em três tipos de prova, e nenhum deles tem execução registrada:
+> Os 25 checks se dividem em três tipos de prova:
 >
-> - **13 testes automatizados planejados** (`run analytics`): C4 a C13, C23, C24 e C25. Serão
->   escritos durante o BUILD, a partir de cada check, e executados durante e após o BUILD.
-> - **11 verificações manuais** (`walk`): C2, C3 e C14 a C22.
-> - **1 comparação por imagem** (`browser`): C1, julgada pelo sub-agente de screens.
-
-> As linhas após `|` nas provas `run` são o formato TAP esperado e precisam ser substituídas pela
-> linha que a execução real imprimir, no primeiro commit que criar cada teste. A skill exige a linha
-> copiada de uma execução de verdade (`references/checks.md`), e nenhum teste existe ainda.
+> - **13 testes automatizados** (`run analytics`): C4 a C13, C23, C24 e C25 - executados, verdes.
+> - **11 verificações manuais** (`walk`): C2, C3 e C14 a C22 - pendentes até a linha `**Walked:**`.
+> - **1 comparação por imagem** (`browser`): C1, julgada pelo sub-agente de screens - pendente.
 
 > **Os 11 checks com prova `walk` são verificação MANUAL, não teste automatizado** - C2, C3, C14,
 > C15, C16, C17, C18, C19, C20, C21 e C22. A evidência é o atestado do autor na linha `**Walked:**`
 > do `## Handoff`: ele executa o gesto no navegador e registra o que a tela mostrou. `check_proofs.py`
 > apenas verifica que essa linha existe, e não visita por visita. Nenhum relatório desta feature deve
 > apresentá-los como execução automatizada. Somente os 13 checks com prova `run analytics` terão
-> execução por máquina, e só depois que o BUILD criar os testes.
+> execução por máquina.
 
 ## Checks
 
