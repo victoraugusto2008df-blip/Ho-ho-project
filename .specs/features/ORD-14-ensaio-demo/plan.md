@@ -155,7 +155,7 @@ O roteiro da banca roda inteiro, duas vezes, a partir de banco limpo.
 
 | Source shows | Product shows | Confirmed |
 | --- | --- | --- |
-| cabeçalho "Capim Dourado Shopping", trilha "Portal do Shopping · Visão executiva · Palmas – TO" e "Exibindo: Últimos 7 dias" | título "Portal do Shopping" e o selo "Protótipo · dados fictícios" | y - AD-027 |
+| cabeçalho "Capim Dourado Shopping", trilha "Portal do Shopping · Visão executiva · Palmas – TO" e "Exibindo: Últimos 7 dias" | título "Portal do Shopping"; o selo "Protótipo · dados fictícios" é o do shell | y - AD-027 |
 | abas "Hoje", "7 dias", "30 dias" | nada | y - AD-027 |
 | indicadores "Notas cadastradas" e "Ticket médio do shopping" | indicador "Campanhas ativas" | y - AD-027 |
 | legenda "10,8% das saídas de veículos" no indicador de vouchers | nada | y - AD-027 |

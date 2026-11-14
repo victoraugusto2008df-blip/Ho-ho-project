@@ -103,4 +103,4 @@ Proof: `f=.docs/qa/roteiro-demo.md; for t in "docker compose down -v" "docker co
 - **Dispatched:** none
 - **Boundary:** none
 - **Abandoned:** none
-- **Walked:** none
+- **Walked:** no mesmo app real, depois dos passos 1 a 3 pela tela, "3 · Shopping" abriu `/shopping` com "Faturamento identificado R$ 3.544,90 soma das NFC-e validadas", "Vouchers de estacionamento 1", "Campanhas ativas 1" e "Faturamento consolidado por segmento" com Vestuário R$ 2.028,20, Eletrônicos R$ 1.349,00 e Alimentação R$ 167,70; a imagem `captures/figura4-portal-shopping.running.png` foi salva a 1373px, entrando por "Entrar como Admin Shopping". A primeira imagem mostrou o selo do protótipo duplicado e altura sobrando; corrigido antes da imagem final.

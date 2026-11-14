@@ -73,7 +73,9 @@ describe('troca de perfil no shell', () => {
     queryClient.setQueryData(['voucher'], { codigo: 'EST-1' })
     await user.click(screen.getByRole('button', { name: 'Sair' }))
     await waitFor(() => expect(currentPath(router)).toBe('/acesso'))
-    expect(queryClient.getQueryCache().getAll()).toHaveLength(0)
+    expect(queryClient.getQueryData(['voucher'])).toBeUndefined()
+    // Uma tela ainda montada no instante da saída pode recriar a sua entrada, mas sem dado nenhum.
+    expect(queryClient.getQueryCache().getAll().filter((query) => query.state.data !== undefined)).toHaveLength(0)
   })
 
   it('C40 itens de perfil do shell ficam desabilitados durante a troca', async () => {

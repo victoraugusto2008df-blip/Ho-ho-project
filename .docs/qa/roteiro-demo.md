@@ -118,5 +118,8 @@ preenchem essas chaves.
 - **O backend não está no `docker compose`**: ele roda com `./mvnw spring-boot:run`. Com JDK mais
   novo que o 21, os testes com Mockito precisam de
   `-DargLine=-Dnet.bytebuddy.experimental=true`.
+- **O CPF digitado na Tela 1 não vai para o backend** (AD-013): o campo abre com um CPF fictício, e o
+  CPF mascarado do card de progresso (`***.456.789-**`) é o do consumidor de demonstração do banco.
+- **O rodapé do menu lateral mostra o e-mail do usuário**, porque o token do backend não traz nome.
 - **A consulta à SEFAZ é simulada** (`MockSefazGateway`): só as chaves da tabela acima existem;
   qualquer outra chave de 44 dígitos responde "Chave não localizada na SEFAZ."

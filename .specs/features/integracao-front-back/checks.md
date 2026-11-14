@@ -171,4 +171,4 @@ Proof: `cd frontend && npx vitest run`
 - **Dispatched:** none
 - **Boundary:** none
 - **Abandoned:** none
-- **Walked:** none
+- **Walked:** app real no navegador (Edge, 1373px): Postgres descartável recém-migrado, backend em `:8080`, Vite em `:5174` com o proxy de `/api`. "Entrar como Consumidor" abriu `/consumidor`; com a LGPD marcada, "Nota com mais de 72h" mostrou "ReN02 Esta nota foi emitida há mais de 72 horas e não pode ser usada."; "Simular leitura de QR Code" + "Enviar nota" duas vezes mostraram "Nota de R$ 65,00 validada." e "Nota de R$ 85,00 validada.", o progresso "CPF ***.456.789-** R$ 150,00 de R$ 150,00 Meta atingida!" e o voucher `HOHO-PARK-...` "Válido até Hoje, 22:00 (fechamento)"; a aba "2 · Lojista" abriu `/lojista` com "Ticket médio R$ 167,06" e "Disparar Cupom 15% OFF" mostrou "Campanha disparada! Cupom de 15% OFF enviado a 2 clientes."; nenhum erro de página. Visto e não corrigido: o selo "Protótipo · dados fictícios" aparece duas vezes em `/lojista` (o do shell e o do cabeçalho da Tela 2 do ORD-11).

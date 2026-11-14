@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { formatarReais } from '@/features/consumidor/regras'
@@ -99,15 +98,12 @@ export function PortalShopping() {
   const dados = useDashboardShopping().data
 
   return (
-    <div className="min-h-screen bg-[var(--bg-canvas)]">
+    <div className="bg-[var(--bg-canvas)]">
       <header className="bg-[var(--bg-surface)] border-b border-[var(--border-hairline)]">
-        <div className="mx-auto max-w-[1200px] px-4 py-5 sm:px-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto max-w-[1200px] px-4 py-5 sm:px-6">
           <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] font-[family-name:var(--font-display)]">
             Portal do Shopping
           </h1>
-          <Badge tone="warning" className="border-[var(--color-warning)]/40">
-            Protótipo · dados fictícios
-          </Badge>
         </div>
       </header>
 
