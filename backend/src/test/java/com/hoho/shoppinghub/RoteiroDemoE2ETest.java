@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hoho.shoppinghub.fiscal.gateway.MockSefazGateway;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Clock;
@@ -43,6 +42,10 @@ class RoteiroDemoE2ETest {
 
     private static final UUID LOJA_ZARA = UUID.fromString("22222222-2222-2222-2222-222222222201");
     private static final String SENHA = "demo123";
+    /** As chaves do roteiro escrito (`.docs/qa/roteiro-demo.md`), por extenso. */
+    private static final String CHAVE_96H = "35261111111111000101650010000001050000000105";
+    private static final String CHAVE_65 = "35261111111111000101650010000001010000000101";
+    private static final String CHAVE_85 = "35261122222222000102650010000001020000000102";
 
     @TestConfiguration(proxyBeanMethods = false)
     static class RelogioFixo {
@@ -101,7 +104,7 @@ class RoteiroDemoE2ETest {
                 "SELECT COUNT(*) FROM notas_fiscais WHERE loja_id = ? AND status = 'APROVADA'", Long.class, LOJA_ZARA);
 
         // Passo 1: consumidor envia a nota emitida há 96h e é bloqueado.
-        MockHttpServletResponse bloqueio = postNota(MockSefazGateway.CHAVE_EXPIRADA_96H, consumidor);
+        MockHttpServletResponse bloqueio = postNota(CHAVE_96H, consumidor);
         assertThat(bloqueio.getStatus()).isEqualTo(422);
         JsonNode erro = json.readTree(bloqueio.getContentAsString(java.nio.charset.StandardCharsets.UTF_8));
         assertThat(erro.path("code").asText()).isEqualTo("NOTA_EXPIRADA_72H");
@@ -109,8 +112,8 @@ class RoteiroDemoE2ETest {
         assertThat(contar("notas_fiscais")).isEqualTo(17);
 
         // Passo 2: duas notas válidas somam R$ 150,00 e liberam o voucher.
-        assertThat(postNota(MockSefazGateway.CHAVE_ZARA_65, consumidor).getStatus()).isEqualTo(201);
-        assertThat(postNota(MockSefazGateway.CHAVE_RENNER_85, consumidor).getStatus()).isEqualTo(201);
+        assertThat(postNota(CHAVE_65, consumidor).getStatus()).isEqualTo(201);
+        assertThat(postNota(CHAVE_85, consumidor).getStatus()).isEqualTo(201);
         JsonNode beneficio = getOk("/api/v1/beneficios/estacionamento/hoje", consumidor);
         assertThat(beneficio.path("valorAcumulado").decimalValue()).isEqualByComparingTo("150.00");
         assertThat(beneficio.path("percentual").asInt(-1)).isEqualTo(100);

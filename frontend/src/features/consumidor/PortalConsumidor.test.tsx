@@ -342,6 +342,24 @@ describe('S3 - cadastrar nota', () => {
       expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_65)
       unmount()
     }
+
+    // O que não é regra conhecida cai na mensagem genérica de falha de envio.
+    const genericos: unknown[] = [
+      { status: 500, body: null },
+      { status: 409, body: { code: 'OUTRO', message: 'x' } },
+    ]
+    for (const rejeicao of genericos) {
+      const fetcher = (async (path: string, init?: RequestInit) => {
+        if (init?.method === 'POST') throw rejeicao
+        return path === '/notas/hoje' ? [] : beneficioBackend()
+      }) as Fetcher
+      const { user, unmount } = renderPortal(criarRealNotasApi(fetcher))
+      await user.click(consentimento())
+      await user.click(screen.getByRole('button', { name: 'Simular leitura de QR Code' }))
+      await user.click(botaoEnviar())
+      expect((await screen.findByRole('alert')).textContent).toBe('Não foi possível enviar a nota. Tente novamente.')
+      unmount()
+    }
   })
 
   it('INT-14 nota aprovada pelo backend aparece na mensagem e na lista', async () => {

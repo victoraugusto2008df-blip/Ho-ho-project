@@ -10,6 +10,8 @@ import com.hoho.shoppinghub.auth.security.AuthenticatedUser;
 import com.hoho.shoppinghub.auth.service.JwtService;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -49,6 +51,9 @@ class ShoppingDashboardIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private Clock clock;
+
     @BeforeEach
     @AfterEach
     void limparDadosDoTeste() {
@@ -69,7 +74,15 @@ class ShoppingDashboardIntegrationTest {
 
         inserirNota(2, LOJA_ZARA, "65.00", "APROVADA");
         inserirNota(3, LOJA_BURGER_KING, "85.00", "APROVADA");
-        assertThat(decimal(dashboard(), "faturamentoTotal")).isEqualByComparingTo(antes.add(new BigDecimal("150.00")));
+        BigDecimal depois = antes.add(new BigDecimal("150.00"));
+        assertThat(decimal(dashboard(), "faturamentoTotal")).isEqualByComparingTo(depois);
+        // Sempre com 2 casas no corpo, mesmo quando a soma termina em zero.
+        assertThat(depois.scale()).isEqualTo(2);
+        assertThat(corpoDoDashboard()).contains("\"faturamentoTotal\":" + depois.toPlainString() + ",");
+
+        inserirNota(6, LOJA_ZARA, String.valueOf(new BigDecimal("1000.00").subtract(depois.remainder(BigDecimal.ONE))), "APROVADA");
+        String redondo = corpoDoDashboard();
+        assertThat(redondo).containsPattern("\"faturamentoTotal\":\\d+\\.00,");
     }
 
     @Test
@@ -130,6 +143,16 @@ class ShoppingDashboardIntegrationTest {
         });
 
         assertThat(nomes).containsExactlyInAnyOrder("Vestuário", "Alimentação", "Eletrônicos");
+
+        // Empate: Alimentação e Eletrônicos com a mesma soma saem em ordem de nome.
+        BigDecimal alimentacao = valores.get(nomes.indexOf("Alimentação"));
+        BigDecimal eletronicos = valores.get(nomes.indexOf("Eletrônicos"));
+        assertThat(eletronicos).isGreaterThan(alimentacao);
+        inserirNota(7, LOJA_BURGER_KING, eletronicos.subtract(alimentacao).toPlainString(), "APROVADA");
+        List<String> comEmpate = new ArrayList<>();
+        dashboard().path("faturamentoPorCategoria").forEach(linha -> comEmpate.add(linha.path("categoria").asText()));
+        assertThat(comEmpate.indexOf("Alimentação")).isEqualTo(comEmpate.indexOf("Eletrônicos") - 1);
+        jdbcTemplate.update("DELETE FROM notas_fiscais WHERE chave_acesso = ?", String.format("352699%038d", 7));
         assertThat(nomes).doesNotContain("Farmácia & Beleza");
         assertThat(valores).isSortedAccordingTo((a, b) -> b.compareTo(a));
         assertThat(valores.stream().reduce(BigDecimal.ZERO, BigDecimal::add))
@@ -147,6 +170,12 @@ class ShoppingDashboardIntegrationTest {
                     nomes.get(i));
             assertThat(valores.get(i)).as(nomes.get(i)).isEqualByComparingTo(esperado);
         }
+    }
+
+    @Test
+    void applicationClockIsTheSystemClock() {
+        assertThat(clock).isEqualTo(Clock.systemDefaultZone());
+        assertThat(Duration.between(clock.instant(), Instant.now()).abs()).isLessThan(Duration.ofSeconds(5));
     }
 
     @Test

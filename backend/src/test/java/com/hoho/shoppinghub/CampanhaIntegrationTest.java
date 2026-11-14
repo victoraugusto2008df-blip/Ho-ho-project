@@ -134,6 +134,26 @@ class CampanhaIntegrationTest {
     }
 
     @Test
+    void nonIntegerDiscountReturns400AndSavesNothing() throws Exception {
+        for (String desconto : new String[] {"15.5", "\"15\"", "15.0", "true", "null"}) {
+            mockMvc.perform(postCampanha(
+                            "{\"titulo\":\"Cupom\",\"descontoPercentual\":" + desconto
+                                    + ",\"criterioAlvo\":\"INATIVOS_60_DIAS\"}",
+                            lojista(LOJA)))
+                    .andExpect(status().isBadRequest());
+        }
+        assertThat(totalDeCampanhas()).isZero();
+    }
+
+    @Test
+    void lojistaWithoutAStoreInTheTokenGets403() throws Exception {
+        mockMvc.perform(postCampanha(CORPO_VALIDO, bearer("LOJISTA", null, null)))
+                .andExpect(status().isForbidden());
+
+        assertThat(totalDeCampanhas()).isZero();
+    }
+
+    @Test
     void onlyLojistaMayDispatchACampaign() throws Exception {
         mockMvc.perform(post("/api/v1/campanhas").contentType(MediaType.APPLICATION_JSON).content(CORPO_VALIDO))
                 .andExpect(status().isUnauthorized());

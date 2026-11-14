@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,14 @@ class OpenApiDocsTest {
         assertThat(login.path("security")).isEmpty();
 
         assertThat(doc.path("security").get(0).has("bearerAuth")).isTrue();
-        for (String rota : ROTAS_PROTEGIDAS) {
+        List<String> rotas = new ArrayList<>();
+        doc.path("paths").fieldNames().forEachRemaining(rota -> {
+            if (rota.startsWith("/api/v1") && !rota.equals("/api/v1/auth/login")) {
+                rotas.add(rota);
+            }
+        });
+        assertThat(rotas).containsAll(ROTAS_PROTEGIDAS);
+        for (String rota : rotas) {
             JsonNode operacoes = doc.path("paths").path(rota);
             assertThat(operacoes.size()).as(rota).isPositive();
             operacoes.forEach(operacao -> {

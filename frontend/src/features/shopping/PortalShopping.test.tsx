@@ -75,23 +75,34 @@ describe('Tela 3 - Portal do Shopping', () => {
   })
 
   it('SHOP-09 faturamento por segmento lista as categorias com barra proporcional', async () => {
-    renderTela(() => jsonResponse(dashboard()))
+    // Fora da ordem de valor: a tela mostra na ordem em que o backend mandou, sem reordenar.
+    renderTela(() =>
+      jsonResponse(
+        dashboard({
+          faturamentoPorCategoria: [
+            { categoria: 'Eletrônicos', valor: 500 },
+            { categoria: 'Vestuário', valor: 2000 },
+            { categoria: 'Alimentação', valor: 650.4 },
+          ],
+        }),
+      ),
+    )
     const card = cardDe('Faturamento consolidado por segmento')
     expect(within(card).getByText('Valor das NFC-e cadastradas no programa')).toBeTruthy()
 
     const linhas = await within(card).findAllByRole('listitem')
     expect(linhas.map((li) => normalizar(li.textContent))).toEqual([
+      'EletrônicosR$ 500,00',
       'VestuárioR$ 2.000,00',
       'AlimentaçãoR$ 650,40',
-      'EletrônicosR$ 500,00',
     ])
     const larguras = within(card)
       .getAllByTestId('barra-segmento')
       .map((barra) => parseFloat(barra.style.width))
-    expect(larguras[0]).toBe(100)
+    expect(larguras[0]).toBe(25)
+    expect(larguras[1]).toBe(100)
     // 650,40 / 2.000,00 = 32,52%, que a tela arredonda para porcentagem inteira.
-    expect(larguras[1]).toBe(33)
-    expect(larguras[2]).toBe(25)
+    expect(larguras[2]).toBe(33)
   })
 
   it('SHOP-10 sem categorias mostra o estado vazio', async () => {

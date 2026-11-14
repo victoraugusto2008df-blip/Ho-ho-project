@@ -128,7 +128,7 @@ export function B2BShell() {
               {initials(displayName)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-[var(--text-primary)] leading-snug break-words">
+              <p title={displayName} className="text-sm font-medium text-[var(--text-primary)] leading-snug truncate">
                 {displayName}
               </p>
               <p className="text-xs text-[var(--text-muted)] whitespace-nowrap">{`Perfil: ${session.role}`}</p>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/v1/campanhas")
@@ -33,6 +34,10 @@ public class CampanhaController {
     public ResponseEntity<CampanhaResponse> disparar(
             @Valid @RequestBody CampanhaRequest pedido,
             @AuthenticationPrincipal AuthenticatedUser user) {
+        if (user.getLojaId() == null) {
+            // Um lojista sem loja no token não tem em nome de quem disparar.
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(campanhaService.disparar(user.getLojaId(), pedido));
     }
 }

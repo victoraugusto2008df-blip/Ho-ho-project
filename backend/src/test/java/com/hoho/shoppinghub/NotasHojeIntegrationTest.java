@@ -14,6 +14,8 @@ import com.hoho.shoppinghub.fiscal.gateway.MockSefazGateway;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -95,14 +97,19 @@ class NotasHojeIntegrationTest {
         String segunda = "35267700000000000000000000000000000000000002";
         inserirNota(primeira, CLIENTE_ID, LOJA_ZARA, "60.00", agora, agora.minus(10, ChronoUnit.MINUTES), "APROVADA");
         inserirNota(segunda, CLIENTE_ID, LOJA_BURGER_KING, "40.50", agora, agora.minus(5, ChronoUnit.MINUTES), "APROVADA");
+        // O limite é a meia-noite local, não "as últimas 24 horas": 1 segundo antes fica fora,
+        // a meia-noite em ponto entra.
+        Instant meiaNoite = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        String daMeiaNoite = "35267700000000000000000000000000000000000006";
         inserirNota(
                 "35267700000000000000000000000000000000000003",
                 CLIENTE_ID,
                 LOJA_ZARA,
                 "70.00",
-                agora.minus(1, ChronoUnit.DAYS),
+                meiaNoite.minusSeconds(1),
                 agora.minus(1, ChronoUnit.MINUTES),
                 "APROVADA");
+        inserirNota(daMeiaNoite, CLIENTE_ID, LOJA_ZARA, "30.00", meiaNoite, agora.minus(20, ChronoUnit.MINUTES), "APROVADA");
         inserirNota(
                 "35267700000000000000000000000000000000000004", CLIENTE_ID, LOJA_ZARA, "80.00", agora, agora, "REJEITADA");
         inserirNota(
@@ -110,7 +117,8 @@ class NotasHojeIntegrationTest {
 
         mockMvc.perform(get("/api/v1/notas/hoje").header("Authorization", consumidor()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[2].chaveAcesso").value(daMeiaNoite))
                 .andExpect(jsonPath("$[0].chaveAcesso").value(segunda))
                 .andExpect(jsonPath("$[0].valorTotal").value(40.50))
                 .andExpect(jsonPath("$[0].estabelecimento").value("Burger King"))

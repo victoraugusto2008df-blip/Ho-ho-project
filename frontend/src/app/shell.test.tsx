@@ -70,8 +70,9 @@ describe('troca de perfil no shell', () => {
     expect(queryClient.getQueryData(['dashboard'])).toBeUndefined()
     expect(queryClient.getQueryCache().findAll({ queryKey: ['lojista'] })).toHaveLength(0)
 
+    const sair = await screen.findByRole('button', { name: 'Sair' })
     queryClient.setQueryData(['voucher'], { codigo: 'EST-1' })
-    await user.click(screen.getByRole('button', { name: 'Sair' }))
+    await user.click(sair)
     await waitFor(() => expect(currentPath(router)).toBe('/acesso'))
     expect(queryClient.getQueryData(['voucher'])).toBeUndefined()
     // Uma tela ainda montada no instante da saída pode recriar a sua entrada, mas sem dado nenhum.
