@@ -5,7 +5,6 @@ import { NotasHojeCard } from './NotasHojeCard'
 import { PainelPrototipo } from './PainelPrototipo'
 import { ProgressoCard } from './ProgressoCard'
 import { VoucherCard } from './VoucherCard'
-import { usarBackendReal } from './createNotasApi'
 import { useCadastroNota } from './hooks'
 import { formatarHora, formatarReais } from './regras'
 import { META_ESTACIONAMENTO } from './types'
@@ -56,7 +55,6 @@ function Cabecalho() {
  */
 export function PortalConsumidor() {
   const cadastro = useCadastroNota()
-  const backendReal = usarBackendReal()
 
   return (
     <div className="min-h-screen bg-[var(--bg-canvas)] lg:py-6">
@@ -68,16 +66,11 @@ export function PortalConsumidor() {
             <VoucherCard />
             <FormularioNota cadastro={cadastro} />
             <NotasHojeCard />
-            {!backendReal && (
-              <p className="text-center text-[11px] text-[var(--text-muted)]">
-                Consulta fiscal simulada (MockSefazGateway)
-              </p>
-            )}
           </main>
         </div>
 
         <aside aria-label="Painel do protótipo" className="pt-4 pb-6 lg:p-0 lg:w-[284px] lg:shrink-0">
-          <PainelPrototipo cadastro={cadastro} mostrarReiniciar={!backendReal && cadastro.podeReiniciar} />
+          <PainelPrototipo cadastro={cadastro} />
         </aside>
       </div>
     </div>

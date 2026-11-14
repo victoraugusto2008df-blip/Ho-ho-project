@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "promote_threshold": 2,
+  "window_days": 45,
+  "quarantine_threshold": 2,
+  "next_id": 4,
+  "lessons": [
+    {
+      "id": "L-001",
+      "key": "weak_test::a shell proof built on grep must fail on grep errors exit 2 not only on matches test the exit code is 1 and pin lc all c utf 8 for p patterns",
+      "text": "A shell proof built on grep must fail on grep errors (exit 2), not only on matches: test the exit code is 1 and pin LC_ALL=C.UTF-8 for -P patterns",
+      "signal": "weak_test",
+      "scope": "frontend-proofs",
+      "status": "candidate",
+      "features": [
+        "ord-03-shell-login"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "checks.md C35 (frontend-proofs)"
+      ],
+      "created": "2026-11-14T04:25:16Z",
+      "last_seen": "2026-11-14T04:25:16Z"
+    },
+    {
+      "id": "L-002",
+      "key": "weak_test::a claim that a route is kept must mount the router and assert the current path not only call the client function",
+      "text": "A claim that a route is kept must mount the router and assert the current path, not only call the client function",
+      "signal": "weak_test",
+      "scope": "frontend-routes",
+      "status": "candidate",
+      "features": [
+        "ord-03-shell-login"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "frontend/src/lib/api.test.ts C20 (frontend-routes)"
+      ],
+      "created": "2026-11-14T04:25:17Z",
+      "last_seen": "2026-11-14T04:25:17Z"
+    },
+    {
+      "id": "L-003",
+      "key": "ac_gap::logout and session expiry must reset the login mutation so a previous login error never shows on the access screen",
+      "text": "Logout and session expiry must reset the login mutation so a previous login error never shows on the access screen",
+      "signal": "ac_gap",
+      "scope": "frontend-auth",
+      "status": "candidate",
+      "features": [
+        "ord-03-shell-login"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "verification.md finding 3 / C42 (frontend-auth)"
+      ],
+      "created": "2026-11-14T04:25:17Z",
+      "last_seen": "2026-11-14T04:25:17Z"
+    }
+  ]
+}

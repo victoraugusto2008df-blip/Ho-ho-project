@@ -1,11 +1,11 @@
 import { createElement } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import App from '@/App'
 import { CHART_PALETTE, COR_PICO } from './chartPalette'
 import { adiada, apiFalsa, campanha, dashboard, fixarTamanhoDosGraficos, renderPortal } from './testUtils'
 import { formatarGap, gapDoTicket } from './regras'
+import { jsonResponse, makeToken, nowSeconds, stubBackend } from '@/test/helpers'
+import { renderApp } from '@/test/renderApp'
 
 // Espiões nos primitivos do design system (C28): cada um registra o que recebeu e renderiza o original.
 const usados = vi.hoisted(() => ({ button: [] as unknown[], badge: [] as unknown[] }))
@@ -64,27 +64,6 @@ afterEach(() => {
 })
 
 describe('Montagem', () => {
-  it('C2 App escolhe a Tela 2 só com tela=lojista', async () => {
-    const casos: [string, boolean][] = [
-      ['/', false],
-      ['/?tela=lojista', true],
-      ['/?tela=shopping', false],
-    ]
-    for (const [url, lojista] of casos) {
-      window.history.pushState({}, '', url)
-      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      const { unmount } = render(createElement(QueryClientProvider, { client: queryClient }, createElement(App)))
-      if (lojista) {
-        expect(screen.getByRole('heading', { name: 'Portal do Lojista' }), url).toBeTruthy()
-        expect(screen.queryByText('Cadastrar nota fiscal (NFC-e)'), url).toBeNull()
-      } else {
-        expect(screen.getByText('Cadastrar nota fiscal (NFC-e)'), url).toBeTruthy()
-        expect(screen.queryByRole('heading', { name: 'Portal do Lojista' }), url).toBeNull()
-      }
-      unmount()
-    }
-  })
-
   it('C23 cabeçalho mostra título e selos', async () => {
     renderPortal(apiFalsa())
     expect(screen.getByRole('heading', { level: 1, name: 'Portal do Lojista' })).toBeTruthy()
@@ -429,5 +408,50 @@ describe('Design system', () => {
     for (const titulo of [...TITULOS_DOS_DADOS, 'Nova campanha em 1 clique']) {
       expect(screen.getByRole('heading', { name: titulo }).closest('[data-ui="card"]'), titulo).not.toBeNull()
     }
+  })
+})
+
+describe('Sobre o backend', () => {
+  beforeEach(() => fixarTamanhoDosGraficos())
+
+  it('INT-04 a Tela 2 chama o backend com o Bearer da sessão', async () => {
+    const token = makeToken({ role: 'LOJISTA', exp: nowSeconds() + 600 })
+    const fetchMock = stubBackend(() => jsonResponse(dashboard({ ticketMedio: 187.65 })))
+    renderApp({ path: '/lojista', token })
+
+    expect(await screen.findByRole('heading', { name: 'Portal do Lojista' })).toBeTruthy()
+    expect((await screen.findAllByText('R$ 187,65')).length).toBeGreaterThan(0)
+    expect(screen.queryByText('ORD-11')).toBeNull()
+    const chamadas = fetchMock.mock.calls.filter(([url]) => url === '/api/v1/analytics/lojista/dashboard')
+    expect(chamadas.length).toBeGreaterThan(0)
+    for (const [, init] of chamadas) {
+      expect(new Headers(init?.headers).get('Authorization')).toBe(`Bearer ${token}`)
+    }
+  })
+
+  it('INT-27 disparar campanha chama o backend e mostra o público devolvido', async () => {
+    const token = makeToken({ role: 'LOJISTA', exp: nowSeconds() + 600 })
+    const fetchMock = stubBackend((url, init) =>
+      url === '/api/v1/campanhas' && init?.method === 'POST'
+        ? jsonResponse(campanha({ publicoAtingido: 2 }), 201)
+        : jsonResponse(dashboard()),
+    )
+    const { user } = renderApp({ path: '/lojista', token })
+
+    await user.click(await screen.findByRole('button', { name: 'Disparar Cupom 15% OFF' }))
+
+    expect((await screen.findByText('Campanha disparada! Cupom de 15% OFF enviado a 2 clientes.')).getAttribute('role')).toBe(
+      'status',
+    )
+    const disparos = fetchMock.mock.calls.filter(([url]) => url === '/api/v1/campanhas')
+    expect(disparos).toHaveLength(1)
+    const init = disparos[0][1] as RequestInit
+    expect(init.method).toBe('POST')
+    expect(JSON.parse(String(init.body))).toEqual({
+      titulo: 'Cupom 15% OFF',
+      descontoPercentual: 15,
+      criterioAlvo: 'INATIVOS_60_DIAS',
+    })
+    expect(new Headers(init.headers).get('Authorization')).toBe(`Bearer ${token}`)
   })
 })

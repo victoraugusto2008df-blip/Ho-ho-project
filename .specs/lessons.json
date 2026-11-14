@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 13,
+  "next_id": 22,
   "lessons": [
     {
       "id": "L-001",
@@ -220,6 +220,168 @@
       ],
       "created": "2026-11-14T09:23:13Z",
       "last_seen": "2026-11-14T09:23:13Z"
+    },
+    {
+      "id": "L-013",
+      "key": "weak_test::a text assertion over react output must read each element s own text not raw text nodes jsx like n 44 renders as 3 separate nodes",
+      "text": "A text assertion over React output must read each element's own text, not raw text nodes: JSX like {n}/{44} renders as 3 separate nodes",
+      "signal": "weak_test",
+      "scope": "frontend-tests",
+      "status": "candidate",
+      "features": [
+        "ord-07-portal-consumidor"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "verification.rodada1-70cef7a.md C4 (frontend-tests)"
+      ],
+      "created": "2026-11-14T07:46:44Z",
+      "last_seen": "2026-11-14T07:46:44Z"
+    },
+    {
+      "id": "L-014",
+      "key": "weak_test::after a mutation that invalidates queries wait for queryclient isfetching and ismutating to reach 0 before asserting the list did not change",
+      "text": "After a mutation that invalidates queries, wait for queryClient.isFetching() and isMutating() to reach 0 before asserting the list did not change",
+      "signal": "weak_test",
+      "scope": "frontend-tests",
+      "status": "candidate",
+      "features": [
+        "ord-07-portal-consumidor"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "verification.rodada1-70cef7a.md C20 (frontend-tests)"
+      ],
+      "created": "2026-11-14T07:46:44Z",
+      "last_seen": "2026-11-14T07:46:44Z"
+    },
+    {
+      "id": "L-015",
+      "key": "weak_test::an only from library rule is proven by an allowlist of import sources over every file the card touches never by a blocklist of rival libraries",
+      "text": "An only-from-library rule is proven by an allowlist of import sources over every file the card touches, never by a blocklist of rival libraries",
+      "signal": "weak_test",
+      "scope": "frontend-proofs",
+      "status": "candidate",
+      "features": [
+        "ord-07-portal-consumidor"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "verification.rodada1-70cef7a.md C3 (frontend-proofs)"
+      ],
+      "created": "2026-11-14T07:46:44Z",
+      "last_seen": "2026-11-14T07:46:44Z"
+    },
+    {
+      "id": "L-016",
+      "key": "spec_precision_gap::a percentage that unlocks a goal must reach 100 only when the value reaches the goal truncate below it and test the value one cent under the boundary",
+      "text": "A percentage that unlocks a goal must reach 100 only when the value reaches the goal: truncate below it, and test the value one cent under the boundary",
+      "signal": "spec_precision_gap",
+      "scope": "frontend-rules",
+      "status": "candidate",
+      "features": [
+        "ord-07-portal-consumidor"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "verification.md C33/C42 (frontend-rules)"
+      ],
+      "created": "2026-11-14T07:46:44Z",
+      "last_seen": "2026-11-14T07:46:44Z"
+    },
+    {
+      "id": "L-017",
+      "key": "spec_deviation::every default the plan sets differently from a binding capture a checkbox state a prefilled value is asked in the plan phase and listed in differences from the source not left as an unconfirmed assumption",
+      "text": "Every default the plan sets differently from a binding capture (a checkbox state, a prefilled value) is asked in the plan phase and listed in Differences from the source, not left as an unconfirmed Assumption",
+      "signal": "spec_deviation",
+      "scope": "frontend-screens",
+      "status": "candidate",
+      "features": [
+        "ord-07-portal-consumidor"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "verification.md LGPD / AD-015 (frontend-screens)"
+      ],
+      "created": "2026-11-14T07:46:44Z",
+      "last_seen": "2026-11-14T07:46:44Z"
+    },
+    {
+      "id": "L-018",
+      "key": "gate_fail::take the running picture at the capture s exact pixel size window height included from the first round a full page screenshot of a taller page fails the gate after the last screens round",
+      "text": "Take the running picture at the capture's exact pixel size (window height included) from the first round: a full-page screenshot of a taller page fails the gate after the last screens round",
+      "signal": "gate_fail",
+      "scope": "frontend-screens",
+      "status": "candidate",
+      "features": [
+        "ord-07-portal-consumidor"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "screens.rodadas1-2-9ba30d7.md (frontend-screens)"
+      ],
+      "created": "2026-11-14T07:46:45Z",
+      "last_seen": "2026-11-14T07:46:45Z"
+    },
+    {
+      "id": "L-019",
+      "key": "gate_fail::antes de salvar a imagem de uma tela com recharts esperar as barras recharts bar rectangle existirem e abrir a imagem salva o responsivecontainer desenha depois do primeiro layout",
+      "text": "Antes de salvar a imagem de uma tela com Recharts, esperar as barras (.recharts-bar-rectangle) existirem e abrir a imagem salva: o ResponsiveContainer desenha depois do primeiro layout.",
+      "signal": "gate_fail",
+      "scope": "frontend/recharts",
+      "status": "candidate",
+      "features": [
+        "ord-11-portal-lojista"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C1 (frontend/recharts)"
+      ],
+      "created": "2026-11-14T14:51:45Z",
+      "last_seen": "2026-11-14T14:51:45Z"
+    },
+    {
+      "id": "L-020",
+      "key": "ac_gap::percentual com sinal arredondar a magnitude e reaplicar o sinal e testar o meio exato x x5 nos dois sinais math round arredonda meio para infinito",
+      "text": "Percentual com sinal: arredondar a magnitude e reaplicar o sinal, e testar o meio exato (x,x5) nos dois sinais; Math.round arredonda meio para +infinito.",
+      "signal": "ac_gap",
+      "scope": "frontend/regras",
+      "status": "candidate",
+      "features": [
+        "ord-11-portal-lojista"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C31 / regras.ts gapDoTicket (frontend/regras)"
+      ],
+      "created": "2026-11-14T14:51:46Z",
+      "last_seen": "2026-11-14T14:51:46Z"
+    },
+    {
+      "id": "L-021",
+      "key": "weak_test::teste de destaque em grafico afirma a contagem exata de rotulos e o valor literal da cor nao existe algum nem e diferente da cor padrao",
+      "text": "Teste de destaque em grafico afirma a contagem exata de rotulos e o valor literal da cor, nao 'existe algum' nem 'e diferente da cor padrao'.",
+      "signal": "weak_test",
+      "scope": "frontend/tests",
+      "status": "candidate",
+      "features": [
+        "ord-11-portal-lojista"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "C9 (frontend/tests)"
+      ],
+      "created": "2026-11-14T14:51:46Z",
+      "last_seen": "2026-11-14T14:51:46Z"
     }
   ]
 }

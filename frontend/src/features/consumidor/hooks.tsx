@@ -1,8 +1,8 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { NotasApi } from './notasApi'
-import { criarNotasApi } from './createNotasApi'
-import { CICLO_SIMULACAO } from './mockNotasApi'
+import { CICLO_SIMULACAO } from './chavesDemo'
+import { notasApi } from './realNotasApi'
 import {
   MENSAGEM_CPF_INVALIDO,
   MENSAGEM_FALHA_ENVIO,
@@ -19,9 +19,9 @@ import { NegocioError } from './types'
 
 const NotasApiContext = createContext<NotasApi | null>(null)
 
-/** Fornece a implementação de `NotasApi` à Tela 1; sem `api`, escolhe pela flag. */
+/** Fornece a `NotasApi` à Tela 1: o backend, ou a que o teste passar em `api`. */
 export function NotasApiProvider({ api, children }: { api?: NotasApi; children: ReactNode }) {
-  const valor = useMemo(() => api ?? criarNotasApi(), [api])
+  const valor = useMemo(() => api ?? notasApi, [api])
   return <NotasApiContext.Provider value={valor}>{children}</NotasApiContext.Provider>
 }
 
@@ -52,7 +52,7 @@ export type Mensagem =
 
 /**
  * Estado do cadastro de nota, compartilhado pelo formulário e pelo painel do protótipo:
- * o painel preenche e envia chaves, e "Reiniciar demonstração" limpa tudo.
+ * o painel preenche e envia chaves.
  */
 export function useCadastroNota() {
   const api = useNotasApi()
@@ -113,15 +113,6 @@ export function useCadastroNota() {
     enviar(chaveDemo)
   }
 
-  function reiniciar() {
-    api.reiniciar?.()
-    envio.reset()
-    setChaveBruta('')
-    setMensagem(null)
-    setProximaSimulacao(0)
-    void queryClient.invalidateQueries({ queryKey: ['consumidor'] })
-  }
-
   return {
     cpf,
     setCpf,
@@ -134,8 +125,6 @@ export function useCadastroNota() {
     simularLeitura,
     enviar,
     enviarChaveDemo,
-    reiniciar,
-    podeReiniciar: typeof api.reiniciar === 'function',
   }
 }
 

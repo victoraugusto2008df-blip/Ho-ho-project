@@ -4,7 +4,7 @@ export const META_ESTACIONAMENTO = 150
 /** Valor público da diária do estacionamento, exibido como economia no voucher. */
 export const VALOR_DIARIA_ESTACIONAMENTO = 15
 
-/** Nota aprovada do consumidor, como `POST /notas` e `GET /notas/hoje` a devolvem. */
+/** Nota aprovada do consumidor, como a tela a usa; `realNotasApi` a monta da resposta do backend. */
 export interface NotaHoje {
   chave: string
   estabelecimento: string
@@ -28,7 +28,7 @@ export interface VoucherEstacionamento {
   qrPayload: string
 }
 
-/** Resposta de `GET /beneficios/estacionamento/hoje`. */
+/** Progresso e voucher do dia, como a tela os usa; vêm de `GET /beneficios/estacionamento/hoje`. */
 export interface BeneficioHoje {
   valorAcumulado: number
   meta: number
@@ -39,13 +39,20 @@ export interface BeneficioHoje {
   voucher: VoucherEstacionamento | null
 }
 
-export type CodigoNegocio = 'NOTA_DUPLICADA' | 'NOTA_ANTIGA' | 'LOJA_NAO_CREDENCIADA' | 'CHAVE_INVALIDA'
+/** Os `code` que o backend devolve ao rejeitar uma nota (`FiscalError`). */
+export type CodigoNegocio =
+  | 'NOTA_DUPLICADA'
+  | 'NOTA_EXPIRADA_72H'
+  | 'LOJA_NAO_CREDENCIADA'
+  | 'CHAVE_INVALIDA'
+  | 'CHAVE_NAO_ENCONTRADA'
 
 export const CODIGOS_NEGOCIO: readonly CodigoNegocio[] = [
   'NOTA_DUPLICADA',
-  'NOTA_ANTIGA',
+  'NOTA_EXPIRADA_72H',
   'LOJA_NAO_CREDENCIADA',
   'CHAVE_INVALIDA',
+  'CHAVE_NAO_ENCONTRADA',
 ]
 
 /** Erro de regra de negócio, com código estável para a UI escolher a mensagem. */

@@ -304,11 +304,11 @@ class DatabaseMigrationTests {
                 """,
                 Integer.class);
 
-        assertThat(totalReceipts).isEqualTo(15);
-        assertThat(validKeyLengthCount).isEqualTo(15);
+        assertThat(totalReceipts).isEqualTo(17);
+        assertThat(validKeyLengthCount).isEqualTo(17);
         assertThat(distinctStores).isEqualTo(5);
         assertThat(distinctCategories).isEqualTo(3);
-        assertThat(historicalBeforeToday).isEqualTo(15);
+        assertThat(historicalBeforeToday).isEqualTo(17);
     }
 }
 

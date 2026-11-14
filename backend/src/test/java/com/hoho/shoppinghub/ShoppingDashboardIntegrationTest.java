@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.hoho.shoppinghub.auth.security.AuthenticatedUser;
 import com.hoho.shoppinghub.auth.service.JwtService;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,9 @@ class ShoppingDashboardIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private Clock clock;
+
     @BeforeEach
     @AfterEach
     void cleanupCounters() {
@@ -46,12 +50,20 @@ class ShoppingDashboardIntegrationTest {
     }
 
     @Test
+    void applicationClockIsTheSystemClock() {
+        assertThat(clock.getZone()).isEqualTo(Clock.systemDefaultZone().getZone());
+    }
+
+    @Test
     void shoppingDashboardReturns200ForAdmin() throws Exception {
         mockMvc.perform(get("/api/v1/analytics/shopping/dashboard")
                         .header("Authorization", "Bearer " + adminToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.faturamentoTotal").isNumber())
-                .andExpect(jsonPath("$.distribuicaoPorCategoria").isArray());
+                .andExpect(jsonPath("$.distribuicaoPorCategoria").isArray())
+                .andExpect(jsonPath("$.vouchersLiberados").isNumber())
+                .andExpect(jsonPath("$.campanhasAtivas").isNumber())
+                .andExpect(jsonPath("$.faturamentoPorCategoria").isArray());
     }
 
     @Test
@@ -127,7 +139,8 @@ class ShoppingDashboardIntegrationTest {
         mockMvc.perform(get("/api/v1/analytics/shopping/dashboard")
                         .header("Authorization", "Bearer " + adminToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalVouchersLiberados").value(1));
+                .andExpect(jsonPath("$.totalVouchersLiberados").value(1))
+                .andExpect(jsonPath("$.vouchersLiberados").value(1));
     }
 
     @Test
@@ -144,7 +157,8 @@ class ShoppingDashboardIntegrationTest {
         mockMvc.perform(get("/api/v1/analytics/shopping/dashboard")
                         .header("Authorization", "Bearer " + adminToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalCampanhasAtivas").value(2));
+                .andExpect(jsonPath("$.totalCampanhasAtivas").value(2))
+                .andExpect(jsonPath("$.campanhasAtivas").value(2));
     }
 
     private String adminToken() {

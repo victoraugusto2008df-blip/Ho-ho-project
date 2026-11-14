@@ -6,7 +6,8 @@ import { decodeSession } from '@/lib/jwt'
 import { jsonResponse, makeToken, nowSeconds } from '@/test/helpers'
 
 function stubFetch(response: Response) {
-  const fetchMock = vi.fn().mockResolvedValue(response)
+  // Cada chamada recebe a sua cópia: as telas montadas também chamam o `fetch`.
+  const fetchMock = vi.fn(async (..._args: unknown[]) => response.clone())
   vi.stubGlobal('fetch', fetchMock)
   return fetchMock
 }
@@ -53,7 +54,7 @@ describe('apiFetch', () => {
     expect(sessionStorage.getItem('hoho.session')).toBe(JSON.stringify({ token }))
     expect(listener).not.toHaveBeenCalled()
     expect(currentPath(router)).toBe('/lojista')
-    expect(await screen.findByText('ORD-11')).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: 'Portal do Lojista' })).toBeTruthy()
     expect(currentPath(router)).toBe('/lojista')
   })
 

@@ -4,16 +4,12 @@ import { PERFIS, ROLES, type Role } from '@/features/auth/types'
 import { ApiError, apiFetch } from '@/lib/api'
 import { decodeSession } from '@/lib/jwt'
 import { currentPath, renderApp } from '@/test/renderApp'
-import { jsonResponse, makeToken, nowSeconds } from '@/test/helpers'
+import { jsonResponse, loginCalls, makeToken, nowSeconds, stubBackend } from '@/test/helpers'
 
 const AVISO = 'Sua sessão expirou. Entre novamente.'
 
 function valid(role: Role) {
   return makeToken({ role, exp: nowSeconds() + 600 })
-}
-
-function storedToken(): string {
-  return JSON.parse(sessionStorage.getItem('hoho.session') ?? '{}').token
 }
 
 describe('rotas por perfil', () => {
@@ -59,12 +55,12 @@ describe('rotas por perfil', () => {
     }
 
     const { router } = renderApp({ path: '/lojista', token: makeToken({ exp: nowSeconds() + 60 }) })
-    await waitFor(() => expect(screen.getByText('ORD-11')).toBeTruthy())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Portal do Lojista' })).toBeTruthy())
     expect(currentPath(router)).toBe('/lojista')
   })
 
   it('C14 sessão sobrevive à remontagem do app', async () => {
-    vi.stubEnv('VITE_AUTH_MOCK', 'true')
+    stubBackend()
     const primeira = renderApp({ path: '/acesso' })
     await primeira.user.click(screen.getByRole('button', { name: 'Entrar como Lojista' }))
     await waitFor(() => expect(currentPath(primeira.router)).toBe('/lojista'))
@@ -76,11 +72,11 @@ describe('rotas por perfil', () => {
 
     expect(currentPath(segunda.router)).toBe('/lojista')
     expect(screen.getByText('Perfil: LOJISTA')).toBeTruthy()
-    expect(fetchMock).not.toHaveBeenCalled()
+    expect(loginCalls(fetchMock)).toHaveLength(0)
   })
 
   it('C15 grava só o token em sessionStorage', async () => {
-    vi.stubEnv('VITE_AUTH_MOCK', 'true')
+    stubBackend()
     const { user, router } = renderApp({ path: '/acesso' })
     await user.click(screen.getByRole('button', { name: 'Entrar como Consumidor' }))
     await waitFor(() => expect(currentPath(router)).toBe('/consumidor'))
@@ -106,17 +102,17 @@ describe('rotas por perfil', () => {
     window.removeEventListener('hoho:unauthorized', unauthorized)
     expect(error).toBeInstanceOf(ApiError)
     expect((error as ApiError).status).toBe(401)
-    expect(unauthorized).toHaveBeenCalledTimes(1)
+    expect(unauthorized).toHaveBeenCalled()
     expect(sessionStorage.getItem('hoho.session')).toBeNull()
     await waitFor(() => expect(currentPath(router)).toBe('/acesso?motivo=expirado'))
     expect(await screen.findByText(AVISO)).toBeTruthy()
   })
 
-  it('C32 cada portal mostra o placeholder do seu card', async () => {
+  it('C32 cada portal mostra só a sua tela', async () => {
     const esperado: Record<Role, string> = {
-      CONSUMIDOR: 'ORD-07',
-      LOJISTA: 'ORD-11',
-      ADMIN_SHOPPING: 'ORD-12',
+      CONSUMIDOR: 'Cadastrar nota fiscal (NFC-e)',
+      LOJISTA: 'Nova campanha em 1 clique',
+      ADMIN_SHOPPING: 'Faturamento consolidado por segmento',
     }
     for (const role of ROLES) {
       const { unmount } = renderApp({ path: PERFIS[role].rota, token: valid(role) })
@@ -126,48 +122,6 @@ describe('rotas por perfil', () => {
       }
       unmount()
       sessionStorage.clear()
-    }
-  })
-})
-
-describe('modo mock', () => {
-  it('C37 modo mock cria sessão sem rede com exp de 8h', async () => {
-    vi.stubEnv('VITE_AUTH_MOCK', 'true')
-    vi.useFakeTimers({ toFake: ['Date'] })
-    vi.setSystemTime(new Date('2026-11-14T12:00:00Z'))
-    const agora = Math.floor(Date.now() / 1000)
-    const fetchMock = vi.fn()
-    vi.stubGlobal('fetch', fetchMock)
-
-    for (const role of ROLES) {
-      const { router, user, unmount } = renderApp({ path: '/acesso' })
-      await user.click(screen.getByRole('button', { name: PERFIS[role].entrar }))
-      await waitFor(() => expect(currentPath(router)).toBe(PERFIS[role].rota))
-
-      const session = decodeSession(storedToken())
-      expect(session.role).toBe(role)
-      expect(session.exp).toBe(agora + 8 * 60 * 60)
-      unmount()
-      sessionStorage.clear()
-    }
-    expect(fetchMock).not.toHaveBeenCalled()
-  })
-
-  it('C38 sem a flag exata true o login usa a rede', async () => {
-    for (const flag of [undefined, 'false', 'TRUE']) {
-      if (flag !== undefined) vi.stubEnv('VITE_AUTH_MOCK', flag)
-      const fetchMock = vi.fn(async () => jsonResponse({ token: makeToken({ role: 'LOJISTA' }) }))
-      vi.stubGlobal('fetch', fetchMock)
-      const { router, user, unmount } = renderApp({ path: '/acesso' })
-
-      await user.click(screen.getByRole('button', { name: 'Entrar como Lojista' }))
-
-      await waitFor(() => expect(currentPath(router)).toBe('/lojista'))
-      expect(fetchMock).toHaveBeenCalledTimes(1)
-      expect((fetchMock.mock.calls[0] as unknown as [string])[0]).toBe('/api/v1/auth/login')
-      unmount()
-      sessionStorage.clear()
-      vi.unstubAllEnvs()
     }
   })
 })

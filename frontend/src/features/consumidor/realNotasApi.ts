@@ -1,53 +1,95 @@
-import { CODIGOS_NEGOCIO, NegocioError, type BeneficioHoje, type CodigoNegocio, type NotaHoje } from './types'
+import { apiFetch } from '@/lib/api'
 import type { Fetcher, NotasApi } from './notasApi'
+import { fechamentoDeHoje } from './regras'
+import {
+  CODIGOS_NEGOCIO,
+  NegocioError,
+  type BeneficioHoje,
+  type CodigoNegocio,
+  type NotaHoje,
+  type StatusVoucher,
+} from './types'
 
-function codigoNegocio(erro: unknown): CodigoNegocio | null {
-  if (typeof erro !== 'object' || erro === null || !('status' in erro)) return null
-  const { status, body } = erro as { status: unknown; body: unknown }
-  if (status !== 409 && status !== 422) return null
-  const codigo = typeof body === 'object' && body !== null ? (body as { codigo?: unknown }).codigo : undefined
-  return CODIGOS_NEGOCIO.includes(codigo as CodigoNegocio) ? (codigo as CodigoNegocio) : null
+/** `NotaResponse` do backend. */
+interface NotaBackend {
+  chaveAcesso: string
+  valorTotal: number
+  dataEmissao: string
+  status: 'APROVADA'
+  estabelecimento: string
+  categoria: string
 }
 
-/** Troca a rejeição do `fetcher` por `NegocioError` quando é uma regra conhecida. */
-function converterErro(erro: unknown): never {
-  const codigo = codigoNegocio(erro)
-  if (codigo) throw new NegocioError(codigo)
-  if (erro instanceof Error) throw erro
-  throw new Error('Falha ao comunicar com o servidor.')
+/** `EstacionamentoHojeResponse` do backend. */
+interface BeneficioBackend {
+  valorAcumulado: number
+  meta: number
+  percentual: number
+  valorFaltante: number
+  cpfMascarado: string
+  voucher: { codigoQr: string; status: StatusVoucher; criadoEm: string } | null
 }
 
-/** Implementação de `NotasApi` sobre o contrato da door 1 do plano (ORD-05/06). */
-export function criarRealNotasApi(fetcher: Fetcher): NotasApi {
+function paraNota(nota: NotaBackend): NotaHoje {
   return {
-    async enviarNota(chave) {
-      try {
-        return await fetcher<NotaHoje>('/notas', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chaveAcesso: chave }),
-        })
-      } catch (erro) {
-        converterErro(erro)
-      }
-    },
-    async listarNotasHoje() {
-      return fetcher<NotaHoje[]>('/notas/hoje')
-    },
-    async beneficioHoje() {
-      return fetcher<BeneficioHoje>('/beneficios/estacionamento/hoje')
+    chave: nota.chaveAcesso,
+    estabelecimento: nota.estabelecimento,
+    categoria: nota.categoria,
+    dataEmissao: nota.dataEmissao,
+    valor: nota.valorTotal,
+    status: nota.status,
+  }
+}
+
+function paraBeneficio(beneficio: BeneficioBackend): BeneficioHoje {
+  const { voucher } = beneficio
+  return {
+    valorAcumulado: beneficio.valorAcumulado,
+    meta: beneficio.meta,
+    percentual: beneficio.percentual,
+    faltante: beneficio.valorFaltante,
+    cpfMascarado: beneficio.cpfMascarado,
+    voucher: voucher && {
+      codigo: voucher.codigoQr,
+      status: voucher.status,
+      emitidoEm: voucher.criadoEm,
+      // O backend não guarda validade: o voucher vale até o fechamento do shopping no dia.
+      validoAte: fechamentoDeHoje().toISOString(),
+      qrPayload: voucher.codigoQr,
     },
   }
 }
 
-/**
- * `fetcher` mínimo para esta branch, sem o Bearer: até o merge do ORD-03, que traz o
- * `apiFetch`, o backend real responderia 401. No merge, `criarNotasApi(apiFetch)`.
- */
-export const fetchSemSessao: Fetcher = async <T,>(path: string, init?: RequestInit) => {
-  const resposta = await fetch(`/api/v1${path}`, init)
-  const texto = await resposta.text()
-  const body: unknown = texto ? JSON.parse(texto) : null
-  if (!resposta.ok) throw { status: resposta.status, body }
-  return body as T
+/** O `code` do corpo de erro do backend (`{ code, message }`), quando é uma regra conhecida. */
+function codigoNegocio(erro: unknown): CodigoNegocio | null {
+  if (typeof erro !== 'object' || erro === null || !('body' in erro)) return null
+  const { body } = erro as { body: unknown }
+  const code = typeof body === 'object' && body !== null ? (body as { code?: unknown }).code : undefined
+  return CODIGOS_NEGOCIO.includes(code as CodigoNegocio) ? (code as CodigoNegocio) : null
 }
+
+/** Implementação de `NotasApi` sobre o backend, com o cliente HTTP dado. */
+export function criarRealNotasApi(fetcher: Fetcher): NotasApi {
+  return {
+    async enviarNota(chave) {
+      try {
+        return paraNota(
+          await fetcher<NotaBackend>('/notas', { method: 'POST', body: JSON.stringify({ chaveAcesso: chave }) }),
+        )
+      } catch (erro) {
+        const codigo = codigoNegocio(erro)
+        if (codigo) throw new NegocioError(codigo)
+        throw erro
+      }
+    },
+    async listarNotasHoje() {
+      return (await fetcher<NotaBackend[]>('/notas/hoje')).map(paraNota)
+    },
+    async beneficioHoje() {
+      return paraBeneficio(await fetcher<BeneficioBackend>('/beneficios/estacionamento/hoje'))
+    },
+  }
+}
+
+/** A `NotasApi` do app: o backend, pelo `apiFetch` (Bearer da sessão). */
+export const notasApi: NotasApi = criarRealNotasApi(apiFetch)

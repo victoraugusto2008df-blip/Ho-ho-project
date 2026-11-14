@@ -1,0 +1,15 @@
+# Project state
+
+## Decisions
+
+| ID | Decision | Rationale | Status | Date |
+| --- | --- | --- | --- | --- |
+| AD-001 | O ORD-03 entrega os 2 shells dos mockups (barra no topo do Consumidor e sidebar B2B do Lojista/Shopping) com um slot de navegação e uma área de conteúdo; os itens de menu e o conteúdo de cada portal são do ORD-07/11/12 | Pergunta: "Os mockups mostram dois shells [...] Até onde vai o ORD-03?" - opção escolhida: "Os 2 shells + slot" | active | 2026-11-14 |
+| AD-002 | Toda chamada HTTP do frontend passa por `apiFetch` (`frontend/src/lib/api.ts`), um wrapper sobre `fetch` que injeta o Bearer e trata o 401; não há Axios | Pergunta: "Cliente HTTP: o card cita 'Axios/Fetch'. Qual?" - opção escolhida: "fetch + wrapper" | active | 2026-11-14 |
+| AD-003 | A sessão vive em `sessionStorage`, chave `hoho.session`, guardando só o token; os claims são lidos do token a cada leitura | Usuário delegou: "siga os padrões do mercado e as melhores boas práticas". Sem cookie httpOnly no backend, o `sessionStorage` sobrevive ao F5, morre com a aba e não vaza entre abas; o cookie httpOnly fica para a v2 | active | 2026-11-14 |
+| AD-004 | `VITE_AUTH_MOCK=true` faz o login gerar um JWT local sem rede; desligado, chama `POST /api/v1/auth/login` | Pergunta: "O backend de login (ORD-02) ainda não existe. Incluo um modo mock [...]?" - opção escolhida: "Sim, com flag" | active | 2026-11-14 |
+| AD-005 | Abaixo de 768px a sidebar B2B vira gaveta: barra no topo com logo e botão de menu, a sidebar abre por cima do conteúdo e fecha ao escolher um item | Pergunta: "No celular (< 768px), como fica a sidebar B2B?" - opção escolhida: "Vira gaveta" | active | 2026-11-14 |
+| AD-006 | Os shells ganham um botão "Sair" discreto, que não está nos mockups: na barra do Consumidor ele fica no fim da barra; no B2B, ao lado do rodapé do usuário | Pergunta: "Nenhum mockup desenha um botão 'Sair'. Acrescento um?" - opção escolhida: "Sim, discreto" | active | 2026-11-14 |
+| AD-007 | O frontend usa Vitest + Testing Library (jsdom) como runner de testes; `npm test` = `vitest run` | Necessário para que as regras de rota, sessão e cliente HTTP tenham prova por exit code; o projeto não tinha runner | active | 2026-11-14 |
+| AD-008 | No shell B2B, o selo "Protótipo · dados fictícios" fica numa faixa fina no topo da área de conteúdo, alinhado à direita, como nas figuras 3 e 4; o cabeçalho do ORD-11/12 entra abaixo dela | Pergunta: "o selo [...] fica no canto superior direito da área de conteúdo, que o plano atribuiu ao ORD-11/12. Hoje está na sidebar. O que faço?" - opção escolhida: "Faixa no topo do conteúdo" | active | 2026-11-14 |
+| AD-009 | As iniciais do avatar no rodapé B2B são as primeiras letras das 2 primeiras palavras do nome exibido ("Administração Capim Dourado" → "AC", e não o "CD" da figura 4) | Pergunta: "Iniciais do avatar [...] Qual regra?" - resposta: "Faça o que não fere o escopo da issue"; regra genérica, sem caso especial para o dado fictício do mockup | active | 2026-11-14 |

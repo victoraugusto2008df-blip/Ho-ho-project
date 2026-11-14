@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,11 +46,6 @@ public class MockSefazGateway implements ConsultaNotaFiscalGateway {
     );
 
     private final Clock clock;
-
-    @Autowired
-    public MockSefazGateway() {
-        this(Clock.systemDefaultZone());
-    }
 
     public MockSefazGateway(Clock clock) {
         this.clock = Objects.requireNonNull(clock, "clock deve ser informado");

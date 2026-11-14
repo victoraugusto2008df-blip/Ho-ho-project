@@ -1,15 +1,14 @@
 import { screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { DEMO_USERS } from '@/features/auth/demoUsers'
 import { PERFIS, ROLES, type Role } from '@/features/auth/types'
 import { decodeSession } from '@/lib/jwt'
 import { currentPath, renderApp } from '@/test/renderApp'
-import { jsonResponse, makeToken, nowSeconds } from '@/test/helpers'
+import { jsonResponse, loginCalls, makeToken, nowSeconds, stubBackend, stubLoginOnly } from '@/test/helpers'
 
-function stubLogin(role: Role = 'LOJISTA') {
-  const fetchMock = vi.fn(async () => jsonResponse({ token: makeToken({ role }) }))
-  vi.stubGlobal('fetch', fetchMock)
-  return fetchMock
+const USUARIO_DO_SEED: Record<Role, string> = {
+  CONSUMIDOR: 'consumidor@shopping.com',
+  LOJISTA: 'lojista@shopping.com',
+  ADMIN_SHOPPING: 'admin@shopping.com',
 }
 
 function storedToken(): string {
@@ -26,22 +25,24 @@ describe('tela de acesso', () => {
     expect(names).toEqual(['Entrar como Consumidor', 'Entrar como Lojista', 'Entrar como Admin Shopping'])
   })
 
-  it('C2 cada botão autentica o seu perfil e abre a sua rota', async () => {
+  it('INT-01 login real usa o usuário do seed de cada perfil', async () => {
     for (const role of ROLES) {
-      const fetchMock = stubLogin(role)
+      const fetchMock = stubBackend()
       const { router, user, unmount } = renderApp({ path: '/acesso' })
 
       await user.click(screen.getByRole('button', { name: PERFIS[role].entrar }))
 
       await waitFor(() => expect(currentPath(router)).toBe(PERFIS[role].rota))
-      expect(fetchMock).toHaveBeenCalledTimes(1)
-      const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+      const logins = loginCalls(fetchMock)
+      expect(logins).toHaveLength(1)
+      const [url, init] = logins[0]
       expect(url).toBe('/api/v1/auth/login')
       expect(init.method).toBe('POST')
-      expect(JSON.parse(init.body as string)).toEqual({
-        email: DEMO_USERS[role].email,
-        senha: DEMO_USERS[role].senha,
-      })
+      expect(JSON.parse(init.body as string)).toEqual({ email: USUARIO_DO_SEED[role], senha: 'demo123' })
+      expect(new Headers(init.headers).has('Authorization')).toBe(false)
+
+      // O token guardado é o que o login devolveu: o stub o emite com o e-mail enviado em `sub`.
+      expect(decodeSession(storedToken()).sub).toBe(USUARIO_DO_SEED[role])
       expect(decodeSession(storedToken()).role).toBe(role)
 
       unmount()
@@ -133,7 +134,7 @@ describe('tela de acesso', () => {
 
   it('C19 401 do login não dispara o fluxo de sessão expirada', async () => {
     const token = makeToken({ role: 'LOJISTA', exp: nowSeconds() + 600 })
-    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({}, 401)))
+    stubLoginOnly(() => jsonResponse({}, 401))
     const unauthorized = vi.fn()
     window.addEventListener('hoho:unauthorized', unauthorized)
     const { user, router } = renderApp({ path: '/lojista', token })

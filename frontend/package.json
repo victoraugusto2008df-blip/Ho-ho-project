@@ -1,40 +1,40 @@
-{
-  "name": "shopping-hub-frontend",
-  "private": true,
-  "version": "0.0.1",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "build:demo": "tsc -b && vite build --mode demo",
-    "build:integrado": "tsc -b && vite build --mode integrado",
-    "preview": "vite preview",
-    "test": "vitest run"
+﻿{
+  name: shopping-hub-frontend,
+  private: true,
+  version: 0.0.1,
+  type: module,
+  scripts: {
+    dev: vite,
+    build: tsc -b && vite build,
+    build:demo: tsc -b && vite build --mode demo,
+    build:integrado: tsc -b && vite build --mode integrado,
+    preview: vite preview,
+    test: vitest run
   },
-  "dependencies": {
-    "@tanstack/react-query": "^5.66.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.475.0",
-    "qrcode.react": "^4.2.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^7.2.0",
-    "recharts": "^2.15.1",
-    "tailwind-merge": "^3.0.2"
+  dependencies: {
+    @tanstack/react-query: ^5.66.0,
+    clsx: ^2.1.1,
+    lucide-react: ^0.475.0,
+    qrcode.react: ^4.2.0,
+    react: ^18.3.1,
+    react-dom: ^18.3.1,
+    react-router-dom: ^7.2.0,
+    recharts: ^2.15.1,
+    tailwind-merge: ^3.0.2
   },
-  "devDependencies": {
-    "@tailwindcss/vite": "^4.0.9",
-    "@testing-library/dom": "^10.4.2",
-    "@testing-library/react": "^16.3.3",
-    "@testing-library/user-event": "^14.6.10",
-    "@types/node": "^26.6.6",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.4",
-    "jsdom": "^31.0.1",
-    "tailwindcss": "^4.0.9",
-    "typescript": "~5.7.2",
-    "vite": "^6.2.0",
-    "vitest": "^3.2.7"
+  devDependencies: {
+    @tailwindcss/vite: ^4.0.9,
+    @testing-library/dom: ^10.4.2,
+    @testing-library/react: ^16.3.3,
+    @testing-library/user-event: ^14.6.10,
+    @types/node: ^26.6.6,
+    @types/react: ^18.3.18,
+    @types/react-dom: ^18.3.1,
+    @vitejs/plugin-react: ^4.3.4,
+    jsdom: ^31.0.1,
+    tailwindcss: ^4.0.9,
+    typescript: ~5.7.2,
+    vite: ^6.2.0,
+    vitest: ^3.2.7
   }
 }

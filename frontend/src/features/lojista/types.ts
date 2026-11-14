@@ -5,7 +5,7 @@ export interface DashboardLojista {
   /** `null` quando a trava ReN05 (K-Anonymity, k < 3) bloqueia o benchmarking. */
   mediaCategoria: number | null
   horariosPico: HorarioPico[]
-  diasPico: { diaSemana: number; total: number }[]
+  diasPico: { diaSemana: string; total: number }[]
   crossShopping: CrossShopping[]
 }
 
@@ -19,14 +19,14 @@ export interface CrossShopping {
   total: number
 }
 
-/** Corpo proposto de `POST /api/v1/campanhas` (door 1 do plano); nunca leva `lojaId`. */
+/** Corpo de `POST /api/v1/campanhas`; nunca leva `lojaId`. */
 export interface PedidoCampanha {
   titulo: string
   descontoPercentual: number
   criterioAlvo: string
 }
 
-/** Resposta `201` proposta de `POST /api/v1/campanhas` (door 1). */
+/** Resposta `201` de `POST /api/v1/campanhas`. */
 export interface Campanha extends PedidoCampanha {
   id: string
   publicoAtingido: number

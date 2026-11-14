@@ -24,8 +24,10 @@ services:
     container_name: shopping-hub-frontend
     profiles: ["front"]
     environment:
-      # "true" = login simulado, sem backend (ORD-02). Use VITE_AUTH_MOCK=false para o backend real.
-      VITE_AUTH_MOCK: ${VITE_AUTH_MOCK:-true}
+      # O backend roda fora do compose (./mvnw spring-boot:run); o Vite encaminha /api para ele.
+      API_PROXY_TARGET: http://host.docker.internal:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "5173:5173"
     networks:

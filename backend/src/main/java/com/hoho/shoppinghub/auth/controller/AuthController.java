@@ -4,6 +4,9 @@ import com.hoho.shoppinghub.auth.dto.LoginRequest;
 import com.hoho.shoppinghub.auth.dto.LoginResponse;
 import com.hoho.shoppinghub.auth.security.AuthenticatedUser;
 import com.hoho.shoppinghub.auth.service.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Autenticação", description = "Login dos usuários de demonstração")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -28,6 +32,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @SecurityRequirements
+    @Operation(summary = "Autentica por e-mail e senha e devolve o JWT")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         try {
             var authentication = authenticationManager.authenticate(

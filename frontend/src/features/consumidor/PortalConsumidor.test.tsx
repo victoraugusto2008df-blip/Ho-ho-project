@@ -1,14 +1,14 @@
 import { createElement } from 'react'
-import { render, screen, waitFor, within } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import App from '@/App'
-import { CHAVES_DEMO, mockNotasApi } from './mockNotasApi'
+import { screen, within } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { jsonResponse, makeToken, nowSeconds, stubBackend } from '@/test/helpers'
+import { renderApp } from '@/test/renderApp'
+import { CHAVES_DEMO } from './chavesDemo'
 import { criarRealNotasApi } from './realNotasApi'
 import type { Fetcher } from './notasApi'
 import { cpfValido } from './regras'
 import { adiada, apiFalsa, beneficio, nota, renderPortal } from './testUtils'
-import type { NotaHoje } from './types'
+import { NegocioError, type CodigoNegocio, type NotaHoje } from './types'
 
 const qr = vi.hoisted(() => ({ valores: [] as string[] }))
 vi.mock('qrcode.react', async (original) => {
@@ -34,6 +34,27 @@ const consentimento = () => screen.getByRole('checkbox', { name: /Autorizo o uso
 const botaoEnviar = () => screen.getByRole('button', { name: /^(Enviar nota|Enviando…)$/ })
 const digitos = (valor: string) => valor.replace(/\D/g, '')
 const cardDe = (titulo: string) => screen.getByText(titulo).closest('[aria-labelledby]') as HTMLElement
+
+/** Respostas na forma do backend, para exercitar a tela sobre o `realNotasApi`. */
+const notaBackend = (parcial: Record<string, unknown> = {}) => ({
+  chaveAcesso: CHAVES_DEMO.VALIDA_65,
+  valorTotal: 65,
+  dataEmissao: new Date().toISOString(),
+  status: 'APROVADA',
+  estabelecimento: 'Zara Shopping Hub',
+  categoria: 'Vestuário',
+  ...parcial,
+})
+const beneficioBackend = (parcial: Record<string, unknown> = {}) => ({
+  valorAcumulado: 0,
+  meta: 150,
+  percentual: 0,
+  valorFaltante: 150,
+  voucherLiberado: false,
+  cpfMascarado: '***.456.789-**',
+  voucher: null,
+  ...parcial,
+})
 
 function hojeAs(hora: number, minuto: number): string {
   const d = new Date()
@@ -184,23 +205,29 @@ describe('S3 - cadastrar nota', () => {
     expect(screen.getByText('Fica impressa abaixo do QR Code do cupom fiscal.')).toBeTruthy()
 
     await user.click(campoChave())
-    await user.paste(CHAVES_DEMO.VALIDA_60.replace(/(\d{4})(?=\d)/g, '$1 '))
-    expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_60)
+    await user.paste(CHAVES_DEMO.VALIDA_65.replace(/(\d{4})(?=\d)/g, '$1 '))
+    expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_65)
     expect(contador.textContent).toBe('44/44')
-    expect(campoChave().value).toBe(CHAVES_DEMO.VALIDA_60.match(/\d{4}/g)!.join(' '))
+    expect(campoChave().value).toBe(CHAVES_DEMO.VALIDA_65.match(/\d{4}/g)!.join(' '))
 
     await user.type(campoChave(), 'a')
-    expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_60)
+    expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_65)
     await user.type(campoChave(), '9')
-    expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_60)
+    expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_65)
     expect(contador.textContent).toBe('44/44')
   })
 
-  it('C14 simular leitura percorre o ciclo de chaves válidas sem enviar', async () => {
+  it('INT-17 simular leitura percorre as chaves do catálogo do backend', async () => {
     const api = apiFalsa()
     const { user } = renderPortal(api)
     const botao = screen.getByRole('button', { name: 'Simular leitura de QR Code' })
-    for (const esperada of [CHAVES_DEMO.VALIDA_60, CHAVES_DEMO.VALIDA_90, CHAVES_DEMO.VALIDA_40, CHAVES_DEMO.VALIDA_60]) {
+    const ciclo = [
+      '35261111111111000101650010000001010000000101',
+      '35261122222222000102650010000001020000000102',
+      '35261155555555000105650010000001030000000103',
+      '35261111111111000101650010000001010000000101',
+    ]
+    for (const esperada of ciclo) {
       await user.click(botao)
       expect(digitos(campoChave().value)).toBe(esperada)
     }
@@ -253,7 +280,7 @@ describe('S3 - cadastrar nota', () => {
     const { user } = renderPortal(api)
     await user.click(consentimento())
     await user.click(campoChave())
-    await user.paste(CHAVES_DEMO.VALIDA_60.slice(0, 43))
+    await user.paste(CHAVES_DEMO.VALIDA_65.slice(0, 43))
     await user.click(botaoEnviar())
     expect(screen.getByRole('alert').textContent).toBe('A chave precisa ter 44 dígitos numéricos.')
     expect(api.enviarNota).not.toHaveBeenCalled()
@@ -261,7 +288,7 @@ describe('S3 - cadastrar nota', () => {
 
   it('C19 envio aprovado limpa a chave e atualiza lista e progresso', async () => {
     let aprovada = false
-    const notaAprovada = nota({ chave: CHAVES_DEMO.VALIDA_60, valor: 60 })
+    const notaAprovada = nota({ chave: CHAVES_DEMO.VALIDA_65, valor: 60 })
     const envio = adiada<NotaHoje>()
     const api = apiFalsa({
       enviarNota: vi.fn(() => envio.promessa),
@@ -280,7 +307,7 @@ describe('S3 - cadastrar nota', () => {
     expect((botaoEnviar() as HTMLButtonElement).disabled).toBe(true)
     await user.click(botaoEnviar())
     expect(api.enviarNota).toHaveBeenCalledTimes(1)
-    expect(api.enviarNota).toHaveBeenCalledWith(CHAVES_DEMO.VALIDA_60)
+    expect(api.enviarNota).toHaveBeenCalledWith(CHAVES_DEMO.VALIDA_65)
 
     aprovada = true
     envio.resolver(notaAprovada)
@@ -290,57 +317,96 @@ describe('S3 - cadastrar nota', () => {
     expect(await within(cardDe('Seu progresso hoje')).findByText('R$ 60,00')).toBeTruthy()
   })
 
-  describe('com o mock da demonstração', () => {
-    beforeEach(() => mockNotasApi.reiniciar())
-
-    it('C20 cada recusa de negócio mostra a regra e a mensagem própria', async () => {
-      const { user, queryClient } = renderPortal(mockNotasApi)
+  it('INT-12 cada recusa do backend mostra a mensagem própria', async () => {
+    const casos: Array<[number, string, string | null, string]> = [
+      [409, 'NOTA_DUPLICADA', 'ReN01', 'Esta nota já foi cadastrada. Cada nota vale apenas uma vez.'],
+      [422, 'NOTA_EXPIRADA_72H', 'ReN02', 'Esta nota foi emitida há mais de 72 horas e não pode ser usada.'],
+      [422, 'LOJA_NAO_CREDENCIADA', 'RF03', 'A loja emissora não participa do programa do shopping.'],
+      [400, 'CHAVE_INVALIDA', 'RF01', 'A chave precisa ter 44 dígitos numéricos.'],
+      [404, 'CHAVE_NAO_ENCONTRADA', null, 'Chave não localizada na SEFAZ.'],
+    ]
+    for (const [status, code, regra, mensagem] of casos) {
+      const fetcher = (async (path: string, init?: RequestInit) => {
+        if (init?.method === 'POST') throw { status, body: { code, message: 'mensagem do backend' } }
+        return path === '/notas/hoje' ? [] : beneficioBackend()
+      }) as Fetcher
+      const { user, unmount } = renderPortal(criarRealNotasApi(fetcher))
       await user.click(consentimento())
       await user.click(screen.getByRole('button', { name: 'Simular leitura de QR Code' }))
       await user.click(botaoEnviar())
-      await screen.findByRole('status')
-      await within(cardDe('Seu progresso hoje')).findByText('R$ 60,00')
-      const semBuscaPendente = () => waitFor(() => expect(queryClient.isFetching() + queryClient.isMutating()).toBe(0))
 
-      const casos: Array<[string, string, string]> = [
-        [CHAVES_DEMO.DUPLICADA, 'ReN01', 'Esta nota já foi cadastrada. Cada nota vale apenas uma vez.'],
-        [CHAVES_DEMO.ANTIGA, 'ReN02', 'Esta nota foi emitida há mais de 72 horas e não pode ser usada.'],
-        [CHAVES_DEMO.LOJA_NAO_CREDENCIADA, 'RF03', 'A loja emissora não participa do programa do shopping.'],
-      ]
-      for (const [chave, regra, mensagem] of casos) {
-        await user.clear(campoChave())
-        await user.click(campoChave())
-        await user.paste(chave)
-        await user.click(botaoEnviar())
-        const alerta = await screen.findByRole('alert')
-        expect(within(alerta).getByText(regra)).toBeTruthy()
-        expect(within(alerta).getByText(mensagem)).toBeTruthy()
-        expect(digitos(campoChave().value)).toBe(chave)
-        // A recusa também invalida as queries: só depois do refetch a lista e o acumulado valem.
-        await semBuscaPendente()
-        expect(within(cardDe('Notas de hoje')).getAllByRole('listitem')).toHaveLength(1)
-        expect(within(cardDe('Seu progresso hoje')).getByText('R$ 60,00')).toBeTruthy()
-      }
-    })
-  })
+      const alerta = await screen.findByRole('alert')
+      expect(within(alerta).getByText(mensagem), code).toBeTruthy()
+      if (regra) expect(within(alerta).getByText(regra), code).toBeTruthy()
+      else expect(normalizar(alerta.textContent), code).toBe(mensagem)
+      expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_65)
+      unmount()
+    }
 
-  it('C21 falha técnica mostra a mensagem genérica e mantém a chave', async () => {
-    const rejeicoes: unknown[] = [
-      new TypeError('Failed to fetch'),
+    // O que não é regra conhecida cai na mensagem genérica de falha de envio.
+    const genericos: unknown[] = [
       { status: 500, body: null },
-      { status: 422, body: { codigo: 'OUTRO', mensagem: 'x' } },
+      { status: 409, body: { code: 'OUTRO', message: 'x' } },
     ]
-    for (const rejeicao of rejeicoes) {
+    for (const rejeicao of genericos) {
       const fetcher = (async (path: string, init?: RequestInit) => {
         if (init?.method === 'POST') throw rejeicao
-        return path === '/notas/hoje' ? [] : beneficio()
+        return path === '/notas/hoje' ? [] : beneficioBackend()
       }) as Fetcher
       const { user, unmount } = renderPortal(criarRealNotasApi(fetcher))
       await user.click(consentimento())
       await user.click(screen.getByRole('button', { name: 'Simular leitura de QR Code' }))
       await user.click(botaoEnviar())
       expect((await screen.findByRole('alert')).textContent).toBe('Não foi possível enviar a nota. Tente novamente.')
-      expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_60)
+      unmount()
+    }
+  })
+
+  it('INT-14 nota aprovada pelo backend aparece na mensagem e na lista', async () => {
+    let cadastrada = false
+    const fetcher = vi.fn(async (path: string, init?: RequestInit) => {
+      if (init?.method === 'POST') {
+        cadastrada = true
+        return notaBackend()
+      }
+      if (path === '/notas/hoje') return cadastrada ? [notaBackend()] : []
+      return cadastrada
+        ? beneficioBackend({ valorAcumulado: 65, percentual: 43, valorFaltante: 85 })
+        : beneficioBackend()
+    })
+    const { user } = renderPortal(criarRealNotasApi(fetcher as unknown as Fetcher))
+    await screen.findByText('Nenhuma nota enviada hoje. Cadastre a primeira acima.')
+
+    await user.click(consentimento())
+    await user.click(screen.getByRole('button', { name: 'Simular leitura de QR Code' }))
+    await user.click(botaoEnviar())
+
+    expect((await screen.findByRole('status')).textContent).toBe('Nota de R$ 65,00 validada.')
+    const lista = cardDe('Notas de hoje')
+    expect(await within(lista).findByText('Zara Shopping Hub')).toBeTruthy()
+    expect(within(lista).getByText(/^Vestuário ·/)).toBeTruthy()
+    expect(within(lista).getAllByText('R$ 65,00').length).toBeGreaterThan(0)
+    expect(await within(cardDe('Seu progresso hoje')).findByText('R$ 65,00')).toBeTruthy()
+    expect(within(cardDe('Seu progresso hoje')).getByText(/\*\*\*\.456\.789-\*\*/)).toBeTruthy()
+  })
+
+  it('C21 falha técnica mostra a mensagem genérica e mantém a chave', async () => {
+    const rejeicoes: unknown[] = [
+      new TypeError('Failed to fetch'),
+      { status: 500, body: null },
+      { status: 409, body: { code: 'OUTRO', message: 'x' } },
+    ]
+    for (const rejeicao of rejeicoes) {
+      const fetcher = (async (path: string, init?: RequestInit) => {
+        if (init?.method === 'POST') throw rejeicao
+        return path === '/notas/hoje' ? [] : beneficioBackend()
+      }) as Fetcher
+      const { user, unmount } = renderPortal(criarRealNotasApi(fetcher))
+      await user.click(consentimento())
+      await user.click(screen.getByRole('button', { name: 'Simular leitura de QR Code' }))
+      await user.click(botaoEnviar())
+      expect((await screen.findByRole('alert')).textContent).toBe('Não foi possível enviar a nota. Tente novamente.')
+      expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_65)
       unmount()
     }
   })
@@ -418,100 +484,84 @@ describe('S4 - notas de hoje', () => {
 })
 
 describe('S5 - painel do protótipo', () => {
-  beforeEach(() => mockNotasApi.reiniciar())
-
-  it('C26 botões do painel enviam a chave de cada erro', async () => {
-    const enviarNota = vi.spyOn(mockNotasApi, 'enviarNota')
-    try {
-      const { user } = renderPortal(mockNotasApi)
-
-      await user.click(screen.getByRole('button', { name: /^Nota duplicada/ }))
-      expect(screen.getByRole('alert').textContent).toBe(
-        'Marque a autorização de uso dos dados (LGPD) para enviar a nota.',
-      )
-      expect(enviarNota).not.toHaveBeenCalled()
-
-      await user.click(consentimento())
-      const casos: Array<[RegExp, string, string]> = [
-        [/^Nota duplicada/, CHAVES_DEMO.DUPLICADA, 'Esta nota já foi cadastrada. Cada nota vale apenas uma vez.'],
-        [/^Nota com mais de 72h/, CHAVES_DEMO.ANTIGA, 'Esta nota foi emitida há mais de 72 horas e não pode ser usada.'],
-        [/^CNPJ fora do shopping/, CHAVES_DEMO.LOJA_NAO_CREDENCIADA, 'A loja emissora não participa do programa do shopping.'],
-      ]
-      for (const [nome, chave, mensagem] of casos) {
-        await user.click(screen.getByRole('button', { name: nome }))
-        expect(await screen.findByText(mensagem)).toBeTruthy()
-        expect(enviarNota).toHaveBeenLastCalledWith(chave)
-        expect(digitos(campoChave().value)).toBe(chave)
-      }
-    } finally {
-      enviarNota.mockRestore()
+  it('INT-18 botões do painel enviam as chaves do backend', async () => {
+    const recusas: Record<string, CodigoNegocio> = {
+      '35261111111111000101650010000000010000000001': 'NOTA_DUPLICADA',
+      '35261111111111000101650010000001050000000105': 'NOTA_EXPIRADA_72H',
+      '35261199999999000199650010000001060000000106': 'LOJA_NAO_CREDENCIADA',
     }
-  })
+    const api = apiFalsa({
+      enviarNota: vi.fn(async (chave: string) => {
+        throw new NegocioError(recusas[chave])
+      }),
+    })
+    const { user } = renderPortal(api)
 
-  it('C27 reiniciar zera a demonstração e o ciclo de chaves', async () => {
-    const { user } = renderPortal(mockNotasApi)
-    await user.click(consentimento())
-    const simular = screen.getByRole('button', { name: 'Simular leitura de QR Code' })
-    await user.click(simular)
-    await user.click(botaoEnviar())
-    await screen.findByText('Nota de R$ 60,00 validada.')
-    await user.click(simular)
-    await user.click(botaoEnviar())
-    expect(await screen.findByText('Voucher de estacionamento grátis')).toBeTruthy()
     await user.click(screen.getByRole('button', { name: /^Nota duplicada/ }))
-    await screen.findByRole('alert')
+    expect(screen.getByRole('alert').textContent).toBe(
+      'Marque a autorização de uso dos dados (LGPD) para enviar a nota.',
+    )
+    expect(api.enviarNota).not.toHaveBeenCalled()
 
-    await user.click(screen.getByRole('button', { name: 'Reiniciar demonstração' }))
-    expect(campoChave().value).toBe('')
-    expect(screen.queryByRole('alert')).toBeNull()
-    expect(screen.queryByRole('status')).toBeNull()
-    expect(await within(cardDe('Seu progresso hoje')).findByText('R$ 0,00')).toBeTruthy()
-    expect(await screen.findByText('Nenhuma nota enviada hoje. Cadastre a primeira acima.')).toBeTruthy()
-    await waitFor(() => expect(screen.queryByText('Voucher de estacionamento grátis')).toBeNull())
-    await user.click(simular)
-    expect(digitos(campoChave().value)).toBe(CHAVES_DEMO.VALIDA_60)
+    await user.click(consentimento())
+    const casos: Array<[RegExp, string, string]> = [
+      [/^Nota duplicada/, '35261111111111000101650010000000010000000001', 'Esta nota já foi cadastrada. Cada nota vale apenas uma vez.'],
+      [/^Nota com mais de 72h/, '35261111111111000101650010000001050000000105', 'Esta nota foi emitida há mais de 72 horas e não pode ser usada.'],
+      [/^CNPJ fora do shopping/, '35261199999999000199650010000001060000000106', 'A loja emissora não participa do programa do shopping.'],
+    ]
+    for (const [nome, chave, mensagem] of casos) {
+      await user.click(screen.getByRole('button', { name: nome }))
+      expect(await screen.findByText(mensagem)).toBeTruthy()
+      expect(api.enviarNota).toHaveBeenLastCalledWith(chave)
+      expect(digitos(campoChave().value)).toBe(chave)
+    }
+    expect(api.enviarNota).toHaveBeenCalledTimes(3)
   })
 
-  it('C28 ordem de validação mostra os 7 itens da captura', () => {
+  it('INT-19 a Tela 1 não tem reiniciar demonstração', async () => {
+    renderPortal(apiFalsa())
+    await screen.findByText('Nenhuma nota enviada hoje. Cadastre a primeira acima.')
+    expect(screen.getByText('Painel do protótipo')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /Reiniciar/ })).toBeNull()
+    expect(screen.queryByText(/Reiniciar demonstração/)).toBeNull()
+  })
+
+  it('INT-20 ordem de validação mostra a ordem real do backend', () => {
     renderPortal(apiFalsa())
     const itens = within(screen.getByRole('list', { name: 'Ordem de validação' }))
       .getAllByRole('listitem')
       .map((li) => normalizar(li.textContent))
-    expect(screen.getByText('Ordem de validação (mock do backend)')).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'Ordem de validação' }).textContent).toBe('Ordem de validação')
+    expect(screen.queryByText(/mock do backend/)).toBeNull()
     expect(itens).toEqual([
       'CPF válido + consentimento LGPD (RN04)',
-      'Chave com 44 dígitos e dígito verificador (RF01)',
+      'Chave com 44 dígitos (RF01)',
       'Chave nunca cadastrada (ReN01)',
       'Consulta à SEFAZ simulada (RF02)',
-      'CNPJ emissor é lojista ativo (RF03)',
       'Emitida há no máximo 72h (ReN02)',
+      'CNPJ emissor é lojista ativo (RF03)',
       'Soma do dia ≥ R$ 150 → voucher (ReN03/ReN04)',
     ])
-  })
-
-  it('C29 backend real esconde reiniciar e o rodapé do mock', () => {
-    vi.stubEnv('VITE_BACKEND_CONSUMIDOR', 'true')
-    const { unmount } = renderPortal(mockNotasApi)
-    expect(screen.queryByRole('button', { name: 'Reiniciar demonstração' })).toBeNull()
-    expect(screen.queryByText('Consulta fiscal simulada (MockSefazGateway)')).toBeNull()
-    unmount()
-
-    vi.unstubAllEnvs()
-    renderPortal(mockNotasApi)
-    expect(screen.getByRole('button', { name: 'Reiniciar demonstração' })).toBeTruthy()
-    expect(screen.getByText('Consulta fiscal simulada (MockSefazGateway)')).toBeTruthy()
   })
 })
 
 describe('montagem', () => {
-  it('C40 App renderiza a Tela 1 no lugar da vitrine', () => {
-    render(
-      <QueryClientProvider client={new QueryClient()}>
-        <App />
-      </QueryClientProvider>,
+  it('INT-03 a Tela 1 chama o backend com o Bearer da sessão', async () => {
+    const token = makeToken({ role: 'CONSUMIDOR', exp: nowSeconds() + 600 })
+    const fetchMock = stubBackend((url) =>
+      jsonResponse(url === '/api/v1/notas/hoje' ? [notaBackend()] : beneficioBackend({ valorAcumulado: 65 })),
     )
-    expect(screen.getByText('Estacionamento grátis')).toBeTruthy()
+    renderApp({ path: '/consumidor', token })
+
+    expect(await screen.findByText('Zara Shopping Hub')).toBeTruthy()
     expect(screen.getByText('Cadastrar nota fiscal (NFC-e)')).toBeTruthy()
-    expect(screen.queryByText('Aguardando implementação')).toBeNull()
+    expect(screen.queryByText('ORD-07')).toBeNull()
+    for (const rota of ['/api/v1/notas/hoje', '/api/v1/beneficios/estacionamento/hoje']) {
+      const chamadas = fetchMock.mock.calls.filter(([url]) => url === rota)
+      expect(chamadas.length, rota).toBeGreaterThan(0)
+      for (const [, init] of chamadas) {
+        expect(new Headers(init?.headers).get('Authorization'), rota).toBe(`Bearer ${token}`)
+      }
+    }
   })
 })

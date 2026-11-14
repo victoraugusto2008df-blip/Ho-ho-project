@@ -1,5 +1,10 @@
-import { PortalPlaceholder } from './PortalPlaceholder'
+import { PortalConsumidor } from '@/features/consumidor/PortalConsumidor'
+import { NotasApiProvider } from '@/features/consumidor/hooks'
 
 export function ConsumidorPage() {
-  return <PortalPlaceholder card="ORD-07" title="Portal do Consumidor" />
+  return (
+    <NotasApiProvider>
+      <PortalConsumidor />
+    </NotasApiProvider>
+  )
 }

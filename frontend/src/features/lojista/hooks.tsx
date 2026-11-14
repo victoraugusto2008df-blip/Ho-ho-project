@@ -1,14 +1,14 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import type { LojistaApi } from './lojistaApi'
-import { criarLojistaApi } from './createLojistaApi'
+import { lojistaApi } from './realLojistaApi'
 import { CAMPANHA_PADRAO } from './types'
 
 const LojistaApiContext = createContext<LojistaApi | null>(null)
 
-/** Fornece a implementação de `LojistaApi` à Tela 2; sem `api`, escolhe pela flag. */
+/** Fornece a `LojistaApi` à Tela 2: o backend, ou a que o teste passar em `api`. */
 export function LojistaApiProvider({ api, children }: { api?: LojistaApi; children: ReactNode }) {
-  const valor = useMemo(() => api ?? criarLojistaApi(), [api])
+  const valor = useMemo(() => api ?? lojistaApi, [api])
   return <LojistaApiContext.Provider value={valor}>{children}</LojistaApiContext.Provider>
 }
 

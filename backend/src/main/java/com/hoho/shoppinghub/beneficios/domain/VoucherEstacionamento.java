@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -37,6 +38,10 @@ public class VoucherEstacionamento {
 
     @Column(nullable = false, length = 20)
     private String status;
+
+    /** Preenchido pelo banco (`DEFAULT CURRENT_TIMESTAMP`); nulo até a entidade ser relida. */
+    @Column(name = "criado_em", insertable = false, updatable = false)
+    private Instant criadoEm;
 
     protected VoucherEstacionamento() {
     }
@@ -75,5 +80,9 @@ public class VoucherEstacionamento {
 
     public String getStatus() {
         return status;
+    }
+
+    public Instant getCriadoEm() {
+        return criadoEm;
     }
 }

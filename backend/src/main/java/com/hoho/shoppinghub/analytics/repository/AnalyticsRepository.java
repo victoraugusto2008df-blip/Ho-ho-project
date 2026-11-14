@@ -1,6 +1,7 @@
 package com.hoho.shoppinghub.analytics.repository;
 
 import com.hoho.shoppinghub.analytics.dto.CrossShoppingItem;
+import com.hoho.shoppinghub.analytics.dto.FaturamentoCategoria;
 import com.hoho.shoppinghub.analytics.dto.PicoDia;
 import com.hoho.shoppinghub.analytics.dto.PicoHora;
 import java.math.BigDecimal;
@@ -104,5 +105,33 @@ public class AnalyticsRepository {
                 (rs, i) -> new CrossShoppingItem(rs.getString("categoria"), rs.getInt("total")),
                 lojaId,
                 categoriaId);
+    }
+
+    /** Soma das notas aprovadas por categoria, da maior para a menor; categoria sem nota fica fora. */
+    public List<FaturamentoCategoria> faturamentoPorCategoria() {
+        return jdbcTemplate.query(
+                """
+                SELECT c.nome AS categoria, SUM(n.valor_total) AS valor
+                FROM notas_fiscais n
+                JOIN lojas l ON n.loja_id = l.id
+                JOIN categorias c ON l.categoria_id = c.id
+                WHERE n.status = 'APROVADA'
+                GROUP BY c.nome
+                ORDER BY valor DESC, c.nome
+                """,
+                (rs, i) -> new FaturamentoCategoria(rs.getString("categoria"), rs.getBigDecimal("valor")));
+    }
+
+    public long totalVouchers() {
+        return contar("SELECT COUNT(*) FROM vouchers_estacionamento");
+    }
+
+    public long totalCampanhas() {
+        return contar("SELECT COUNT(*) FROM campanhas");
+    }
+
+    private long contar(String sql) {
+        Long total = jdbcTemplate.queryForObject(sql, Long.class);
+        return total != null ? total : 0L;
     }
 }
