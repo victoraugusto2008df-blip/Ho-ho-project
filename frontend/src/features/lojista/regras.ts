@@ -21,8 +21,10 @@ export function benchmarkingLiberado(
 /** `(ticket - média) / média × 100` com uma casa decimal; `null` sem média positiva. */
 export function gapDoTicket(ticketMedio: number, mediaCategoria: number): number | null {
   if (!(mediaCategoria > 0)) return null
-  const gap = Math.round(((ticketMedio - mediaCategoria) / mediaCategoria) * 1000) / 10
-  return gap === 0 ? 0 : gap
+  const bruto = ((ticketMedio - mediaCategoria) / mediaCategoria) * 100
+  // Arredonda a magnitude e reaplica o sinal: meio ponto não depende de ser ganho ou perda.
+  const magnitude = Math.round(Math.abs(bruto) * 10 + 1e-9) / 10
+  return magnitude === 0 ? 0 : bruto < 0 ? -magnitude : magnitude
 }
 
 /** "-32,2%", "+8,3%", "0,0%". */

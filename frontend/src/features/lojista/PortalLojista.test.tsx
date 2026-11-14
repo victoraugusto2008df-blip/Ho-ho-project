@@ -201,10 +201,21 @@ describe('S2 - horários de pico e compras cruzadas', () => {
     expect(preenchimentos[9]).toBe(COR_PICO)
     expect(preenchimentos.filter((_, i) => i !== 9).every((cor) => cor === CHART_PALETTE.primary)).toBe(true)
     expect(COR_PICO).not.toBe(CHART_PALETTE.primary)
-    // O valor do pico aparece acima da barra, uma vez só.
-    const valores = Array.from(grafico.querySelectorAll('svg text')).filter((t) => t.textContent === '175')
-    expect(valores.some((t) => t.classList.contains('tabular-nums'))).toBe(true)
+    // Exatamente um rótulo de valor sobre barra, e é o do pico.
+    const rotulos = Array.from(grafico.querySelectorAll('.recharts-bar svg text, .recharts-label-list text, text.tabular-nums')).filter(
+      (t) => t.classList.contains('fill-[var(--text-primary)]'),
+    )
+    expect(rotulos).toHaveLength(1)
+    expect(rotulos[0].textContent).toBe('175')
+    expect(COR_PICO).toBe(['#', '1E40AF'].join(''))
     expect(screen.getByText('Pico às 19h–20h com 175 vendas (13,6% do total de 1.284).')).toBeTruthy()
+  })
+
+  it('C31 gap arredonda a magnitude igual nos dois sinais', async () => {
+    expect(gapDoTicket(183.5, 200)).toBe(-8.3)
+    expect(gapDoTicket(216.5, 200)).toBe(8.3)
+    renderPortal(apiFalsa({ dashboard: vi.fn(async () => dashboard({ ticketMedio: 183.5, mediaCategoria: 200 })) }))
+    expect(await screen.findByText('-8,3%')).toBeTruthy()
   })
 
   it('C10 ver dados em tabela abre a tabela de horários e vendas', async () => {
