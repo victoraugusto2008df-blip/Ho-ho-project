@@ -19,6 +19,18 @@ services:
     networks:
       - shopping-network
 
+  frontend:
+    build: ./frontend
+    container_name: shopping-hub-frontend
+    profiles: ["front"]
+    environment:
+      # "true" = login simulado, sem backend (ORD-02). Use VITE_AUTH_MOCK=false para o backend real.
+      VITE_AUTH_MOCK: ${VITE_AUTH_MOCK:-true}
+    ports:
+      - "5173:5173"
+    networks:
+      - shopping-network
+
 volumes:
   postgres_data:
 
