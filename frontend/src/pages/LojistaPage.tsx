@@ -1,5 +1,10 @@
-import { PortalPlaceholder } from './PortalPlaceholder'
+import { LojistaApiProvider } from '@/features/lojista/hooks'
+import { PortalLojista } from '@/features/lojista/PortalLojista'
 
 export function LojistaPage() {
-  return <PortalPlaceholder card="ORD-11" title="Portal do Lojista" />
+  return (
+    <LojistaApiProvider>
+      <PortalLojista />
+    </LojistaApiProvider>
+  )
 }
